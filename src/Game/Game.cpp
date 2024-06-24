@@ -3,9 +3,13 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <glm.hpp>
+
+#include "../Logger/Logger.h"
+
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_impl_sdl2.h"
 #include "../imgui/imgui_impl_sdlrenderer2.h"
+#include "../AssetStore/AssetManager.h"
 
 int Game::windowWidth;
 int Game::windowHeight;
@@ -14,17 +18,21 @@ int Game::mapHeight;
 
 Game::Game() {
 	isRunning = false;
+	Logger::Log("Game constructor called!");
 }
 
 Game::~Game() {
+	Logger::Log("Game destructor called!");
 }
 
 void Game::Initialize() {
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+		Logger::Err("Error initializing SDL.");
 		return;
 	}
 	if (TTF_Init() != 0) {
+		Logger::Err("Error initializing SDL TTF.");
 		return;
 	}
 	SDL_DisplayMode displayMode;
@@ -42,10 +50,12 @@ void Game::Initialize() {
 		NULL
 	);
 	if (!window) {
+		Logger::Err("Error creating SDL window.");
 		return;
 	}
 	renderer = SDL_CreateRenderer(window, -1, 0);
 	if (!renderer) {
+		Logger::Err("Error creating SDL renderer.");
 		return;
 	}
 
@@ -118,6 +128,9 @@ void Game::Render() {
 
 	SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
 	SDL_RenderClear(renderer);
+
+	AssetManager::RenderImage(renderer, "assets/images/radar.png",0,0,100,100,1);
+	AssetManager::RenderText(renderer, "TESTEEEE", "assets/fonts/arial.ttf", 100, 0, 0);
 
 	ImGui::ShowDemoWindow();
 	ImGui::Render();

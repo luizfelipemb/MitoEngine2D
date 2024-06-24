@@ -1,5 +1,4 @@
-#ifndef GAME_H
-#define GAME_H
+#pragma once
 
 #include <memory>
 #include <SDL.h>
@@ -30,5 +29,3 @@ class Game {
         static int mapWidth;
         static int mapHeight;
 };
-
-#endif
