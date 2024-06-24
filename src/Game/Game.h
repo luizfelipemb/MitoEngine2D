@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <SDL.h>
+#include "../GameObjects/GameObject.h"
 
 const int FPS = 60;
 const int MILLISECS_PER_FRAME = 1000 / FPS;
@@ -13,7 +14,7 @@ class Game {
         SDL_Window* window;
         SDL_Renderer* renderer;
         SDL_Rect camera;
-
+        std::unique_ptr<Registry> m_registry;
     public:
         Game();
         ~Game();

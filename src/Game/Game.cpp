@@ -5,18 +5,20 @@
 #include <glm.hpp>
 
 #include "../Logger/Logger.h"
+#include "../AssetStore/AssetManager.h"
 
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_impl_sdl2.h"
 #include "../imgui/imgui_impl_sdlrenderer2.h"
-#include "../AssetStore/AssetManager.h"
+
 
 int Game::windowWidth;
 int Game::windowHeight;
 int Game::mapWidth;
 int Game::mapHeight;
 
-Game::Game() {
+Game::Game(): m_registry(std::make_unique<Registry>())
+{
 	isRunning = false;
 	Logger::Log("Game constructor called!");
 }
@@ -63,12 +65,12 @@ void Game::Initialize() {
 	isRunning = true;
 
 	IMGUI_CHECKVERSION();
-
 	ImGui::CreateContext();
-
 	ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
-
 	ImGui_ImplSDLRenderer2_Init(renderer);
+
+	GameObject player = m_registry->CreateGameObject();
+	player.AddComponent<TransformComponent>();
 }
 
 void Game::ProcessInput() {
