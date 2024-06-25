@@ -3,7 +3,7 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <glm.hpp>
-
+#include "../GameObjects/GameObject.h"
 #include "../Logger/Logger.h"
 #include "../AssetStore/AssetManager.h"
 
@@ -70,7 +70,7 @@ void Game::Initialize() {
 	ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
 	ImGui_ImplSDLRenderer2_Init(renderer);
 
-	std::shared_ptr<GameObject>& player = m_registry->CreateGameObject();
+	GameObject* player = m_registry->CreateGameObject();
 	player->AddComponent<TransformComponent>();
 }
 
@@ -113,6 +113,8 @@ void Game::Update() {
 
 	// Store the "previous" frame time
 	millisecsPreviousFrame = SDL_GetTicks();
+
+	m_registry->Update();
 }
 
 void Game::Run()

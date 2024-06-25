@@ -4,30 +4,29 @@
 #include "../Logger/Logger.h"
 
 
-//   GAMEOBJECT  /////////////////////////////////////////////////////////////////////////
-template <typename TComponent, typename ...TArgs>
-void GameObject::AddComponent(TArgs&& ...args) {
+void TransformComponent::Update()
+{
+	Logger::Log("TransformComponent::Update");
+}
 
-	TComponent newComponent(std::forward<TArgs>(args)...);
-
-	std::shared_ptr<TComponent> newSystem = std::make_shared<TComponent>(std::forward<TArgs>(args)...);
-	m_components.insert(std::make_pair(std::type_index(typeid(TComponent)), newSystem));
-
-	Logger::Log("GameObject::AddComponent called");
+void Registry::Update()
+{
+	Logger::Log("Registry::Update with gameobjects:" + gameObjects.size());
+	for(auto x : gameObjects)
+	{
+		for (auto y : x.Components)
+		{
+			y->Update();
+		}
+	}
 }
 
 //   REGISTRY  /////////////////////////////////////////////////////////////////////////
-std::shared_ptr<GameObject>& Registry::CreateGameObject(glm::vec3 position)
+GameObject* Registry::CreateGameObject(glm::vec3 position)
 {
 	Logger::Log("GameObject Created");
-	std::shared_ptr<GameObject> newGO = std::make_shared<GameObject>();
+	GameObject newGO = {};
 	gameObjects.emplace_back(newGO);
-	return gameObjects.back();
-}
-
-template <typename TComponent, typename ...TArgs>
-void Registry::AddComponent(GameObject entity, TArgs&& ...args) {
-
-	entity.AddComponent<TComponent>(std::forward<TArgs>(args)...);
+	return &gameObjects.back();
 }
 
