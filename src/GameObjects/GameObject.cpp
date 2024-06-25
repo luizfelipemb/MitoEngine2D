@@ -1,42 +1,33 @@
 #include "GameObject.h"
 
+#include "../Game/Game.h"
 #include "../Logger/Logger.h"
 
 
 //   GAMEOBJECT  /////////////////////////////////////////////////////////////////////////
-//void GameObject::AddComponent(Component* comp, std::string name)
+template <typename TComponent, typename ...TArgs>
+void GameObject::AddComponent(TArgs&& ...args) {
 
-	//Logger::Log("GameObject::AddComponent of name:" + name);
-	//m_components[name] = comp;
+	TComponent newComponent(std::forward<TArgs>(args)...);
 
+	std::shared_ptr<TComponent> newSystem = std::make_shared<TComponent>(std::forward<TArgs>(args)...);
+	m_components.insert(std::make_pair(std::type_index(typeid(TComponent)), newSystem));
 
-//Component* GameObject::GetComponent(std::string comp)
-
-	//return m_components[comp];
-
-
-
-//   REGISTRY  /////////////////////////////////////////////////////////////////////////
-GameObject Registry::CreateGameObject(glm::vec3 position)
-{
-	Logger::Log("GameObject Created");
-	return GameObject{};
+	Logger::Log("GameObject::AddComponent called");
 }
 
-//void Registry::InstantiateComponent(Component* comp, std::string name)
+//   REGISTRY  /////////////////////////////////////////////////////////////////////////
+std::shared_ptr<GameObject>& Registry::CreateGameObject(glm::vec3 position)
+{
+	Logger::Log("GameObject Created");
+	std::shared_ptr<GameObject> newGO = std::make_shared<GameObject>();
+	gameObjects.emplace_back(newGO);
+	return gameObjects.back();
+}
 
-	//Logger::Log("InstantiateComponent of name: " + name);
-	//m_components[name] = comp;
+template <typename TComponent, typename ...TArgs>
+void Registry::AddComponent(GameObject entity, TArgs&& ...args) {
 
-
-//void Registry::AddComponentTo(GameObject* gameobject, std::string componentName)
-
-	//Logger::Log("Registry::AddComponentTo of name:"+componentName);
-	//Component newInstanceOfComponent = *m_components[componentName];
-	//gameobject->AddComponent(&newInstanceOfComponent,componentName);
-
-
-//Component* Registry::GetComponentOf(GameObject* gameobject, std::string componentName)
-
-	//return gameobject->GetComponent(componentName);
+	entity.AddComponent<TComponent>(std::forward<TArgs>(args)...);
+}
 

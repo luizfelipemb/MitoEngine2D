@@ -17,6 +17,7 @@ int Game::windowHeight;
 int Game::mapWidth;
 int Game::mapHeight;
 
+
 Game::Game(): m_registry(std::make_unique<Registry>())
 {
 	isRunning = false;
@@ -69,8 +70,8 @@ void Game::Initialize() {
 	ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
 	ImGui_ImplSDLRenderer2_Init(renderer);
 
-	GameObject player = m_registry->CreateGameObject();
-	player.AddComponent<TransformComponent>();
+	std::shared_ptr<GameObject>& player = m_registry->CreateGameObject();
+	player->AddComponent<TransformComponent>();
 }
 
 void Game::ProcessInput() {
