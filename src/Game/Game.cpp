@@ -11,13 +11,6 @@
 #include "../imgui/imgui_impl_sdl2.h"
 #include "../imgui/imgui_impl_sdlrenderer2.h"
 
-
-int Game::windowWidth;
-int Game::windowHeight;
-int Game::mapWidth;
-int Game::mapHeight;
-
-
 Game::Game(): m_registry(std::make_unique<Registry>())
 {
 	isRunning = false;
@@ -30,48 +23,12 @@ Game::~Game() {
 
 void Game::Initialize() {
 
-	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-		Logger::Err("Error initializing SDL.");
-		return;
-	}
-	if (TTF_Init() != 0) {
-		Logger::Err("Error initializing SDL TTF.");
-		return;
-	}
-	SDL_DisplayMode displayMode;
-	SDL_GetCurrentDisplayMode(0, &displayMode);
-	windowWidth = displayMode.w / 2;
-	windowHeight = displayMode.h / 2;
-	mapWidth = windowWidth;
-	mapHeight = windowHeight;
-	window = SDL_CreateWindow(
-		NULL,
-		SDL_WINDOWPOS_CENTERED,
-		SDL_WINDOWPOS_CENTERED,
-		windowWidth,
-		windowHeight,
-		NULL
-	);
-	if (!window) {
-		Logger::Err("Error creating SDL window.");
-		return;
-	}
-	renderer = SDL_CreateRenderer(window, -1, 0);
-	if (!renderer) {
-		Logger::Err("Error creating SDL renderer.");
-		return;
-	}
-
-	//SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+	AssetManager::Initialize();
 	isRunning = true;
-
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
-	ImGui_ImplSDLRenderer2_Init(renderer);
 
 	GameObject* player = m_registry->CreateGameObject();
 	player->AddComponent<TransformComponent>();
+	player->AddComponent<SpriteComponent>("assets/images/radar.png");
 }
 
 void Game::ProcessInput() {
@@ -120,35 +77,15 @@ void Game::Update() {
 void Game::Run()
 {
 	while (isRunning) {
+		AssetManager::ClearFrameRender();
 		ProcessInput();
 		Update();
-		Render();
+		AssetManager::DrawFrameRender();
 	}
-}
-
-void Game::Render() {
-	ImGui_ImplSDLRenderer2_NewFrame();
-	ImGui_ImplSDL2_NewFrame();
-	ImGui::NewFrame();
-
-	SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
-	SDL_RenderClear(renderer);
-
-	AssetManager::RenderImage(renderer, "assets/images/radar.png",0,0,100,100,1);
-	AssetManager::RenderText(renderer, "TESTEEEE", "assets/fonts/arial.ttf", 100, 0, 0);
-
-	ImGui::ShowDemoWindow();
-	ImGui::Render();
-	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
-
-	SDL_RenderPresent(renderer);
 }
 
 
 void Game::Destroy() {
-
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
 	SDL_Quit();
 
 	ImGui_ImplSDLRenderer2_Shutdown();

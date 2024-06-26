@@ -11,8 +11,6 @@ class Game {
     private:
         bool isRunning;
         int millisecsPreviousFrame = 0;
-        SDL_Window* window;
-        SDL_Renderer* renderer;
         SDL_Rect camera;
         std::unique_ptr<Registry> m_registry;
     public:
@@ -22,11 +20,5 @@ class Game {
         void Run();
         void ProcessInput();
         void Update();
-        void Render();
         void Destroy();
-
-        static int windowWidth;
-        static int windowHeight;
-        static int mapWidth;
-        static int mapHeight;
 };

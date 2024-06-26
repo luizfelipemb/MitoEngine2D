@@ -4,9 +4,19 @@
 
 #include "../Logger/Logger.h"
 #include <SDL_image.h>
+#include "../imgui/imgui.h"
+#include "../imgui/imgui_impl_sdl2.h"
+#include "../imgui/imgui_impl_sdlrenderer2.h"
 
 std::map<std::string, SDL_Texture*> AssetManager::textures;
 std::map<std::string, TTF_Font*> AssetManager::fonts;
+
+int AssetManager::windowWidth;
+int AssetManager::windowHeight;
+int AssetManager::mapWidth;
+int AssetManager::mapHeight;
+SDL_Window* AssetManager::window;
+SDL_Renderer* AssetManager::renderer;
 
 AssetManager::AssetManager() {
     Logger::Log("AssetStore constructor called!");
@@ -15,6 +25,73 @@ AssetManager::AssetManager() {
 AssetManager::~AssetManager() {
     ClearAssets();
     Logger::Log("AssetStore destructor called!");
+
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+}
+
+void AssetManager::Initialize()
+{
+    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+        Logger::Err("Error initializing SDL.");
+        return;
+    }
+    if (TTF_Init() != 0) {
+        Logger::Err("Error initializing SDL TTF.");
+        return;
+    }
+    SDL_DisplayMode displayMode;
+    SDL_GetCurrentDisplayMode(0, &displayMode);
+    windowWidth = displayMode.w / 2;
+    windowHeight = displayMode.h / 2;
+    mapWidth = windowWidth;
+    mapHeight = windowHeight;
+    window = SDL_CreateWindow(
+        NULL,
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        windowWidth,
+        windowHeight,
+        NULL
+    );
+    if (!window) {
+        Logger::Err("Error creating SDL window.");
+        return;
+    }
+    renderer = SDL_CreateRenderer(window, -1, 0);
+    if (!renderer) {
+        Logger::Err("Error creating SDL renderer.");
+        return;
+    }
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
+    ImGui_ImplSDLRenderer2_Init(renderer);
+}
+
+void AssetManager::ClearFrameRender()
+{
+	ImGui_ImplSDLRenderer2_NewFrame();
+    ImGui_ImplSDL2_NewFrame();
+    ImGui::NewFrame();
+
+    SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
+    SDL_RenderClear(renderer);
+
+}
+
+void AssetManager::DrawFrameRender()
+{
+    
+    //RenderImage("assets/images/radar.png", 0, 0, 100, 100, 1);
+    RenderText("TESTEEEE", "assets/fonts/arial.ttf", 100, 0, 0);
+
+    ImGui::ShowDemoWindow();
+    ImGui::Render();
+    ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
+
+    SDL_RenderPresent(renderer);
 }
 
 void AssetManager::ClearAssets() {
@@ -29,7 +106,7 @@ void AssetManager::ClearAssets() {
     fonts.clear();
 }
 
-bool AssetManager::LoadTexture(SDL_Renderer* renderer, std::string fileName)
+bool AssetManager::LoadTexture(std::string fileName)
 {
     if (textures.find(fileName) != textures.end())
         return false;
@@ -58,7 +135,7 @@ bool AssetManager::LoadTexture(SDL_Renderer* renderer, std::string fileName)
     return false;
 }
 
-void AssetManager::RenderImage(SDL_Renderer* renderer, std::string filename, int x, int y, int w, int h, double scale,
+void AssetManager::RenderImage(std::string filename, int x, int y, int w, int h, double scale,
     std::optional<Color> color)
 {
     SDL_Rect destRect;
@@ -69,7 +146,7 @@ void AssetManager::RenderImage(SDL_Renderer* renderer, std::string filename, int
     SDL_RendererFlip flip = SDL_FLIP_NONE;
 
     if (textures.find(filename) == textures.end())
-        LoadTexture(renderer,filename);
+        LoadTexture(filename);
 
     if (color.has_value())
     {
@@ -84,7 +161,7 @@ void AssetManager::RenderImage(SDL_Renderer* renderer, std::string filename, int
         SDL_SetTextureColorMod(textures[filename], 255, 255, 255);
     }
 }
-void AssetManager::RenderText(SDL_Renderer* renderer, const std::string& text, const std::string& fontFile, int fontSize, int x, int y,
+void AssetManager::RenderText(const std::string& text, const std::string& fontFile, int fontSize, int x, int y,
     double scale, bool centered, std::optional<Color> color)
 {
     if (fonts.find(fontFile) == fonts.end())
@@ -151,7 +228,7 @@ void AssetManager::RenderText(SDL_Renderer* renderer, const std::string& text, c
 }
 
 
-void AssetManager::DrawRectangle(SDL_Renderer* renderer, int x, int y, float width, float height, Color color)
+void AssetManager::DrawRectangle(int x, int y, float width, float height, Color color)
 {
     // Set render color
     SDL_SetRenderDrawColor(renderer, color.red, color.green, color.blue, SDL_ALPHA_OPAQUE);
