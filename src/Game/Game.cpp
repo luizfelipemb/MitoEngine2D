@@ -10,8 +10,12 @@
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_impl_sdl2.h"
 #include "../imgui/imgui_impl_sdlrenderer2.h"
+#include "../Events/KeyPressedEvent.h"
+#include "../Events/EventBus.h"
 
-Game::Game(): m_registry(std::make_unique<Registry>())
+
+Game::Game():
+m_registry(std::make_unique<Registry>())
 {
 	isRunning = false;
 	Logger::Log("Game constructor called!");
@@ -19,16 +23,6 @@ Game::Game(): m_registry(std::make_unique<Registry>())
 
 Game::~Game() {
 	Logger::Log("Game destructor called!");
-}
-
-void Game::Initialize() {
-
-	AssetManager::Initialize();
-	isRunning = true;
-
-	GameObject* player = m_registry->CreateGameObject();
-	player->AddComponent<TransformComponent>();
-	player->AddComponent<SpriteComponent>("assets/images/radar.png");
 }
 
 void Game::ProcessInput() {
@@ -52,9 +46,29 @@ void Game::ProcessInput() {
 			if (sdlEvent.key.keysym.sym == SDLK_ESCAPE) {
 				isRunning = false;
 			}
-			//eventBus->EmitEvent<KeyPressedEvent>(sdlEvent.key.keysym.sym);
+			EventBus::EmitEvent<KeyPressedEvent>(sdlEvent.key.keysym.sym);
 			break;
 		}
+	}
+}
+
+void Game::Initialize() {
+
+	AssetManager::Initialize();
+	isRunning = true;
+
+	GameObject* player = m_registry->CreateGameObject();
+	player->AddComponent<TransformComponent>(glm::vec2(100,100));
+	player->AddComponent<SpriteComponent>("assets/images/radar.png");
+}
+
+void Game::Run()
+{
+	while (isRunning) {
+		AssetManager::ClearFrameRender();
+		ProcessInput();
+		Update();
+		AssetManager::DrawFrameRender();
 	}
 }
 
@@ -74,15 +88,7 @@ void Game::Update() {
 	m_registry->Update();
 }
 
-void Game::Run()
-{
-	while (isRunning) {
-		AssetManager::ClearFrameRender();
-		ProcessInput();
-		Update();
-		AssetManager::DrawFrameRender();
-	}
-}
+
 
 
 void Game::Destroy() {
