@@ -18,7 +18,7 @@ class Component
 public:
 	Component(GameObject* owner) : owner(owner) {}
 	virtual ~Component() = default;
-	virtual void Update() = 0;
+	virtual void Update(float deltaTime) = 0;
 
 protected:
 	GameObject* owner;
@@ -31,17 +31,13 @@ public:
                        glm::vec2 position = glm::vec2(0, 0), 
                        double scale = 1, 
                        double rotation = 0.0)
-        : Component(owner), m_position(position), m_scale(scale), m_rotation(rotation) {}
+        : Component(owner), Position(position), Scale(scale), Rotation(rotation) {}
 
-    void Update() override;
-	glm::vec2 GetPosition() const { return m_position; }
-	double GetScale() const { return m_scale; }
-	double GetRotation() const { return m_rotation; }
+    void Update(float deltaTime) override;
 
-private:
-    glm::vec2 m_position;
-	double m_scale;
-    double m_rotation;
+    glm::vec2 Position;
+	double Scale;
+    double Rotation;
 };
 
 class SpriteComponent : public Component
@@ -49,14 +45,34 @@ class SpriteComponent : public Component
 public:
 	SpriteComponent(GameObject* owner, std::string sprite) : Component(owner), sprite(sprite)
 	{
-		EventBus::SubscribeToEvent<KeyPressedEvent>(this, &SpriteComponent::OnKeyPressedEvent);
 	}
-	void Update() override;
-	void OnKeyPressedEvent(KeyPressedEvent& event) { Logger::Log("Key pressed:" + std::to_string(event.symbol)); }
+	void Update(float deltaTime) override;
 private:
 	std::string sprite;
 };
 
+class ControllerComponent : public Component
+{
+public:
+	ControllerComponent(GameObject* owner) : Component(owner)
+	{
+		EventBus::SubscribeToEvent<KeyPressedEvent>(this, &ControllerComponent::OnKeyPressedEvent);
+	}
+	void Update(float deltaTime) override;
+	void OnKeyPressedEvent(KeyPressedEvent& event);
+private:
+};
+
+class RigidBody2DComponent : public Component
+{
+public:
+	RigidBody2DComponent(GameObject* owner, glm::vec2 velocity = glm::vec2(0.0, 0.0)) :
+		Component(owner), m_velocity(velocity) {}
+
+	void Update(float deltaTime) override;
+private:
+	glm::vec2 m_velocity;
+};
 
 class GameObject
 {
@@ -64,16 +80,15 @@ public:
 	Component* GetComponent(std::string comp);
 	template <typename TComponent, typename ...TArgs> void AddComponent(TArgs&& ...args);
 	template <typename TComponent> TComponent* GetComponent();
-	std::vector<std::shared_ptr<Component>> Components;
+	std::unordered_map<std::type_index, std::shared_ptr<Component>> Components;
 private:
-	std::unordered_map<std::type_index, std::shared_ptr<Component>> m_components;
 };
 
 
 class Registry
 {
 public:
-	void Update();
+	void Update(float deltaTime);
 	GameObject* CreateGameObject(glm::vec3 position = glm::vec3(0,0,0));
 private:
 	std::vector<GameObject> gameObjects;
@@ -87,8 +102,7 @@ void GameObject::AddComponent(TArgs&& ...args)
 	std::shared_ptr<TComponent> newComponent = std::make_shared<TComponent>(this, std::forward<TArgs>(args)...);
 
 	// Insert the component into the unordered_map and the vector
-	m_components.insert(std::make_pair(std::type_index(typeid(TComponent)), newComponent));
-	Components.emplace_back(newComponent);
+	Components.insert(std::make_pair(std::type_index(typeid(TComponent)), newComponent));
 
 	Logger::Log("GameObject::AddComponent called");
 
@@ -97,9 +111,10 @@ void GameObject::AddComponent(TArgs&& ...args)
 template <typename TComponent>
 TComponent* GameObject::GetComponent()
 {
-	auto it = m_components.find(typeid(TComponent));
-	if (it != m_components.end())
+	auto it = Components.find(typeid(TComponent));
+	if (it != Components.end())
 	{
+		Logger::Log("Component found");
 		return std::static_pointer_cast<TComponent>(it->second).get();
 	}
 	else

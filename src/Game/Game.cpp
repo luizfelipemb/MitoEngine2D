@@ -60,6 +60,13 @@ void Game::Initialize() {
 	GameObject* player = m_registry->CreateGameObject();
 	player->AddComponent<TransformComponent>(glm::vec2(100,100));
 	player->AddComponent<SpriteComponent>("assets/images/radar.png");
+	player->AddComponent<ControllerComponent>();
+	player->AddComponent<RigidBody2DComponent>(glm::vec2(100,0));
+
+	GameObject* enemy = m_registry->CreateGameObject();
+	enemy->AddComponent<TransformComponent>(glm::vec2(200, 100));
+	enemy->AddComponent<SpriteComponent>("assets/images/radar.png");
+	enemy->AddComponent<RigidBody2DComponent>(glm::vec2(0, 20));
 }
 
 void Game::Run()
@@ -85,7 +92,7 @@ void Game::Update() {
 	// Store the "previous" frame time
 	millisecsPreviousFrame = SDL_GetTicks();
 
-	m_registry->Update();
+	m_registry->Update(deltaTime);
 }
 
 
