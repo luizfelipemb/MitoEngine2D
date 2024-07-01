@@ -9,7 +9,9 @@
 #include "../Logger/Logger.h"
 #include "../Events/EventBus.h"
 #include "../Events/KeyPressedEvent.h"
+#include "../AssetStore/AssetManager.h"
 
+class Registry;
 class KeyPressedEvent;
 class GameObject;
 
@@ -43,12 +45,14 @@ public:
 class SpriteComponent : public Component
 {
 public:
-	SpriteComponent(GameObject* owner, std::string sprite) : Component(owner), sprite(sprite)
-	{
-	}
+	SpriteComponent(GameObject* owner, std::string sprite, int width = 100, int height = 100, std::uint8_t red = 255, std::uint8_t green = 255, std::uint8_t blue = 255) :
+		Component(owner), m_sprite(sprite), m_width(width),m_height(height),m_color(Color{red,green,blue}) {}
 	void Update(float deltaTime) override;
 private:
-	std::string sprite;
+	std::string m_sprite;
+	int m_width;
+	int m_height;
+	Color m_color;
 };
 
 class ControllerComponent : public Component
@@ -74,13 +78,31 @@ private:
 	glm::vec2 m_velocity;
 };
 
+class BoxCollider2DComponent : public Component
+{
+public:
+	BoxCollider2DComponent(GameObject* owner, int width = 0, int height = 0, glm::vec2 offset = glm::vec2(0)) :
+		Component(owner), Width(width), Height(height), Offset(offset) {}
+
+	void Update(float deltaTime) override;
+	bool CheckAABBCollision(double aX, double aY, double aW, double aH, double bX, double bY, double bW, double bH);
+	int Width;
+	int Height;
+	glm::vec2 Offset;
+private:
+};
+
 class GameObject
 {
 public:
-	Component* GetComponent(std::string comp);
+	GameObject(Registry* reg): RefRegistry(reg) { Logger::Log("GameObject initialized"); }
 	template <typename TComponent, typename ...TArgs> void AddComponent(TArgs&& ...args);
 	template <typename TComponent> TComponent* GetComponent();
+	template <typename TComponent> bool HasComponent();
+
 	std::unordered_map<std::type_index, std::shared_ptr<Component>> Components;
+
+	Registry* RefRegistry;
 private:
 };
 
@@ -89,9 +111,11 @@ class Registry
 {
 public:
 	void Update(float deltaTime);
-	GameObject* CreateGameObject(glm::vec3 position = glm::vec3(0,0,0));
+	const std::vector<std::unique_ptr<GameObject>>& GetAllGameObjects() const;
+
+	std::unique_ptr<GameObject>& CreateGameObject(glm::vec3 position = glm::vec3(0,0,0));
 private:
-	std::vector<GameObject> gameObjects;
+	std::vector<std::unique_ptr<GameObject>> gameObjects;
 };
 
 //   GAMEOBJECT  /////////////////////////////////////////////////////////////////////////
@@ -104,18 +128,27 @@ void GameObject::AddComponent(TArgs&& ...args)
 	// Insert the component into the unordered_map and the vector
 	Components.insert(std::make_pair(std::type_index(typeid(TComponent)), newComponent));
 
-	Logger::Log("GameObject::AddComponent called");
+	Logger::Log("GameObject::AddComponent: Added component of type " + std::string(typeid(TComponent).name()));
 
 }
 
 template <typename TComponent>
 TComponent* GameObject::GetComponent()
 {
-	auto it = Components.find(typeid(TComponent));
+	auto it = Components.find(std::type_index(typeid(TComponent)));
 	if (it != Components.end())
 	{
-		Logger::Log("Component found");
-		return std::static_pointer_cast<TComponent>(it->second).get();
+		std::shared_ptr<Component> basePtr = it->second;
+		std::shared_ptr<TComponent> derivedPtr = std::dynamic_pointer_cast<TComponent>(basePtr);
+		if (derivedPtr)
+		{
+			return derivedPtr.get();
+		}
+		else
+		{
+			Logger::Err("Component cast failed");
+			return nullptr;
+		}
 	}
 	else
 	{
@@ -124,3 +157,9 @@ TComponent* GameObject::GetComponent()
 	}
 }
 
+template <typename TComponent>
+bool GameObject::HasComponent()
+{
+	auto it = Components.find(std::type_index(typeid(TComponent)));
+	return it != Components.end();
+}

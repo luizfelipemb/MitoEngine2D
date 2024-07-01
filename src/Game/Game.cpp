@@ -57,21 +57,26 @@ void Game::Initialize() {
 	AssetManager::Initialize();
 	isRunning = true;
 
-	GameObject* player = m_registry->CreateGameObject();
-	player->AddComponent<TransformComponent>(glm::vec2(100,100));
-	player->AddComponent<SpriteComponent>("assets/images/radar.png");
+	std::unique_ptr<GameObject>& player = m_registry->CreateGameObject();
+	player->AddComponent<TransformComponent>(glm::vec2(50, 100));
+	player->AddComponent<SpriteComponent>("assets/images/RoundedSquare.png",50,50,0,255,0);
 	player->AddComponent<ControllerComponent>();
 	player->AddComponent<RigidBody2DComponent>(glm::vec2(100,0));
+	player->AddComponent<BoxCollider2DComponent>(50, 50);
 
-	GameObject* enemy = m_registry->CreateGameObject();
-	enemy->AddComponent<TransformComponent>(glm::vec2(200, 100));
-	enemy->AddComponent<SpriteComponent>("assets/images/radar.png");
+	
+	std::unique_ptr<GameObject>& enemy = m_registry->CreateGameObject();
+	enemy->AddComponent<TransformComponent>(glm::vec2(200, 50));
+	enemy->AddComponent<SpriteComponent>("assets/images/RoundedSquare.png",100, 100, 255, 0, 0);
 	enemy->AddComponent<RigidBody2DComponent>(glm::vec2(0, 20));
+	enemy->AddComponent<BoxCollider2DComponent>(100, 100);
+	
 }
 
 void Game::Run()
 {
-	while (isRunning) {
+	while (isRunning)
+	{
 		AssetManager::ClearFrameRender();
 		ProcessInput();
 		Update();
