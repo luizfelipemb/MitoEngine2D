@@ -11,6 +11,7 @@
 #include "../Events/KeyPressedEvent.h"
 #include "../AssetStore/AssetManager.h"
 
+class KeyReleasedEvent;
 class Registry;
 class KeyPressedEvent;
 class GameObject;
@@ -61,9 +62,11 @@ public:
 	ControllerComponent(GameObject* owner) : Component(owner)
 	{
 		EventBus::SubscribeToEvent<KeyPressedEvent>(this, &ControllerComponent::OnKeyPressedEvent);
+		EventBus::SubscribeToEvent<KeyReleasedEvent>(this, &ControllerComponent::OnKeyReleasedEvent);
 	}
 	void Update(float deltaTime) override;
 	void OnKeyPressedEvent(KeyPressedEvent& event);
+	void OnKeyReleasedEvent(KeyReleasedEvent& event);
 private:
 };
 
@@ -71,11 +74,11 @@ class RigidBody2DComponent : public Component
 {
 public:
 	RigidBody2DComponent(GameObject* owner, glm::vec2 velocity = glm::vec2(0.0, 0.0)) :
-		Component(owner), m_velocity(velocity) {}
+		Component(owner), Velocity(velocity) {}
 
 	void Update(float deltaTime) override;
+	glm::vec2 Velocity;
 private:
-	glm::vec2 m_velocity;
 };
 
 class BoxCollider2DComponent : public Component

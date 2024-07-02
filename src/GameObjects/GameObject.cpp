@@ -4,9 +4,12 @@
 #include <ostream>
 
 #include "../AssetStore/AssetManager.h"
+#include "../Events/KeyReleasedEvent.h"
 #include "../Game/Game.h"
 #include "../Logger/Logger.h"
 
+
+class CollisionEvent;
 
 void TransformComponent::Update(float deltaTime)
 {
@@ -33,20 +36,54 @@ void ControllerComponent::Update(float deltaTime)
 
 void ControllerComponent::OnKeyPressedEvent(KeyPressedEvent& event)
 {
-	switch (event.symbol)
+	if( auto rigidBody = owner->GetComponent<RigidBody2DComponent>())
 	{
+		switch (event.symbol)
+		{
 		case SDLK_w:
 			Logger::Log("ControllerComponent Key Up Pressed");
+			rigidBody->Velocity.y -= 500;
 			break;
 		case SDLK_d:
 			Logger::Log("ControllerComponent Key Right Pressed");
+			rigidBody->Velocity.x += 500;
 			break;
 		case SDLK_s:
 			Logger::Log("ControllerComponent Key Down Pressed");
+			rigidBody->Velocity.y += 500;
 			break;
 		case SDLK_a:
 			Logger::Log("ControllerComponent Key Left Pressed");
+			rigidBody->Velocity.x -= 500;
 			break;
+		}
+	}
+	
+}
+
+void ControllerComponent::OnKeyReleasedEvent(KeyReleasedEvent& event)
+{
+	if (auto rigidBody = owner->GetComponent<RigidBody2DComponent>())
+	{
+		switch (event.symbol)
+		{
+		case SDLK_w:
+			Logger::Log("ControllerComponent Key Up Released");
+			rigidBody->Velocity.y += 500;
+			break;
+		case SDLK_d:
+			Logger::Log("ControllerComponent Key Right Released");
+			rigidBody->Velocity.x -= 500;
+			break;
+		case SDLK_s:
+			Logger::Log("ControllerComponent Key Down Released");
+			rigidBody->Velocity.y -= 500;
+			break;
+		case SDLK_a:
+			Logger::Log("ControllerComponent Key Left Released");
+			rigidBody->Velocity.x += 500;
+			break;
+		}
 	}
 }
 
@@ -54,8 +91,8 @@ void RigidBody2DComponent::Update(float deltaTime)
 {
 	if (auto transform = owner->GetComponent<TransformComponent>())
 	{
-		transform->Position.x += m_velocity.x * deltaTime;
-		transform->Position.y += m_velocity.y * deltaTime;
+		transform->Position.x += Velocity.x * deltaTime;
+		transform->Position.y += Velocity.y * deltaTime;
 	}
 }
 
@@ -101,7 +138,7 @@ void BoxCollider2DComponent::Update(float deltaTime)
 
 			if (collisionHappened) {
 				Logger::Log("Entities collided!");
-				//eventBus->EmitEvent<CollisionEvent>(a, b);
+				EventBus::EmitEvent<CollisionEvent>(a, b);
 			}
 		}
 	}

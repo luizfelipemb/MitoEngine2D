@@ -2,6 +2,8 @@
 
 #include "../Logger/Logger.h"
 #include "Event.h"
+#include "CollisionEvent.h"
+#include "KeyReleasedEvent.h"
 #include <map>
 #include <typeindex>
 #include <list>

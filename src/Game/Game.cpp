@@ -12,6 +12,7 @@
 #include "../imgui/imgui_impl_sdlrenderer2.h"
 #include "../Events/KeyPressedEvent.h"
 #include "../Events/EventBus.h"
+#include "../Events/KeyReleasedEvent.h"
 
 
 Game::Game():
@@ -27,6 +28,7 @@ Game::~Game() {
 
 void Game::ProcessInput() {
 	SDL_Event sdlEvent;
+	sdlEvent.key.repeat = 0;
 	while (SDL_PollEvent(&sdlEvent)) {
 
 		ImGui_ImplSDL2_ProcessEvent(&sdlEvent);
@@ -46,7 +48,13 @@ void Game::ProcessInput() {
 			if (sdlEvent.key.keysym.sym == SDLK_ESCAPE) {
 				isRunning = false;
 			}
-			EventBus::EmitEvent<KeyPressedEvent>(sdlEvent.key.keysym.sym);
+			if(sdlEvent.key.repeat == 0)
+			{
+				EventBus::EmitEvent<KeyPressedEvent>(sdlEvent.key.keysym.sym);
+			}
+			break;
+		case SDL_KEYUP:
+			EventBus::EmitEvent<KeyReleasedEvent>(sdlEvent.key.keysym.sym);
 			break;
 		}
 	}
@@ -61,7 +69,7 @@ void Game::Initialize() {
 	player->AddComponent<TransformComponent>(glm::vec2(50, 100));
 	player->AddComponent<SpriteComponent>("assets/images/RoundedSquare.png",50,50,0,255,0);
 	player->AddComponent<ControllerComponent>();
-	player->AddComponent<RigidBody2DComponent>(glm::vec2(100,0));
+	player->AddComponent<RigidBody2DComponent>();
 	player->AddComponent<BoxCollider2DComponent>(50, 50);
 
 	
