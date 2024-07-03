@@ -21,7 +21,6 @@ public:
 
 private:
 	bool m_isRunning;
-	int m_millisecsPreviousFrame = 0;
-	SDL_Rect m_camera;
+	int m_msPreviousFrame = 0;
 	std::unique_ptr<Registry> m_registry;
 };

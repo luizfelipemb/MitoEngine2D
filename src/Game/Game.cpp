@@ -52,11 +52,11 @@ void Game::ProcessInput()
 			}
 			if(sdlEvent.key.repeat == 0)
 			{
-				EventBus::EmitEvent<KeyPressedEvent>(sdlEvent.key.keysym.sym);
+				GlobalEventBus::EmitEvent<KeyPressedEvent>(sdlEvent.key.keysym.sym);
 			}
 			break;
 		case SDL_KEYUP:
-			EventBus::EmitEvent<KeyReleasedEvent>(sdlEvent.key.keysym.sym);
+			GlobalEventBus::EmitEvent<KeyReleasedEvent>(sdlEvent.key.keysym.sym);
 			break;
 		}
 	}
@@ -98,16 +98,16 @@ void Game::Run()
 void Game::Update()
 {
 	// If we are too fast, waste some time until we reach the MILLISECS_PER_FRAME
-	int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - m_millisecsPreviousFrame);
+	int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - m_msPreviousFrame);
 	if (timeToWait > 0 && timeToWait <= MILLISECS_PER_FRAME) {
 		SDL_Delay(timeToWait);
 	}
 
 	// The difference in ticks since the last frame, converted to seconds
-	double deltaTime = (SDL_GetTicks() - m_millisecsPreviousFrame) / 1000.0;
+	double deltaTime = (SDL_GetTicks() - m_msPreviousFrame) / 1000.0;
 
 	// Store the "previous" frame time
-	m_millisecsPreviousFrame = SDL_GetTicks();
+	m_msPreviousFrame = SDL_GetTicks();
 
 	m_registry->Update(deltaTime);
 }

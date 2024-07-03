@@ -10,6 +10,8 @@
 #include "../Events/EventBus.h"
 #include "../Events/KeyPressedEvent.h"
 #include "../AssetStore/AssetManager.h"
+#include "../Events/CollisionStayEvent.h"
+#include "../Events/GlobalEventBus.h"
 
 class KeyReleasedEvent;
 class Registry;
@@ -22,7 +24,6 @@ public:
 	Component(GameObject* owner) : m_owner(owner) {}
 	virtual ~Component() = default;
 	virtual void Update(float deltaTime) = 0;
-
 protected:
 	GameObject* m_owner;
 };
@@ -59,15 +60,13 @@ private:
 class ControllerComponent : public Component
 {
 public:
-	ControllerComponent(GameObject* owner) : Component(owner)
-	{
-		EventBus::SubscribeToEvent<KeyPressedEvent>(this, &ControllerComponent::OnKeyPressedEvent);
-		EventBus::SubscribeToEvent<KeyReleasedEvent>(this, &ControllerComponent::OnKeyReleasedEvent);
-	}
+	ControllerComponent(GameObject* owner);
 	void Update(float deltaTime) override;
+	void OnCollisionStay(CollisionStayEvent& event);
 	void OnKeyPressedEvent(KeyPressedEvent& event);
 	void OnKeyReleasedEvent(KeyReleasedEvent& event);
 private:
+
 };
 
 class RigidBody2DComponent : public Component
@@ -84,8 +83,7 @@ private:
 class BoxCollider2DComponent : public Component
 {
 public:
-	BoxCollider2DComponent(GameObject* owner, int width = 0, int height = 0, glm::vec2 offset = glm::vec2(0)) :
-		Component(owner), Width(width), Height(height), Offset(offset) {}
+	BoxCollider2DComponent(GameObject* owner, int width = 0, int height = 0, glm::vec2 offset = glm::vec2(0));
 
 	void Update(float deltaTime) override;
 	int Width;
@@ -101,11 +99,11 @@ public:
 	template <typename TComponent, typename ...TArgs> void AddComponent(TArgs&& ...args);
 	template <typename TComponent> TComponent* GetComponent();
 	template <typename TComponent> bool HasComponent();
-	void OnCollisionStay(const std::unique_ptr<GameObject>& other);
 
 	std::unordered_map<std::type_index, std::shared_ptr<Component>> Components;
 
 	Registry* RefRegistry;
+	EventBus LocalEventBus;
 private:
 };
 

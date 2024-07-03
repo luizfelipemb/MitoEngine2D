@@ -4,6 +4,7 @@
 #include <ostream>
 
 #include "../AssetStore/AssetManager.h"
+#include "../Events/CollisionStayEvent.h"
 #include "../Events/KeyReleasedEvent.h"
 #include "../Game/Game.h"
 #include "../Logger/Logger.h"
@@ -30,8 +31,20 @@ void SpriteComponent::Update(float deltaTime)
 }
 
 
+ControllerComponent::ControllerComponent(GameObject* owner) : Component(owner)
+{
+	GlobalEventBus::SubscribeToEvent<KeyPressedEvent>(this, &ControllerComponent::OnKeyPressedEvent);
+	GlobalEventBus::SubscribeToEvent<KeyReleasedEvent>(this, &ControllerComponent::OnKeyReleasedEvent);
+	owner->LocalEventBus.SubscribeToEvent<CollisionStayEvent>(this, &ControllerComponent::OnCollisionStay);
+}
+
 void ControllerComponent::Update(float deltaTime)
 {
+}
+
+void ControllerComponent::OnCollisionStay(CollisionStayEvent& event)
+{
+
 }
 
 void ControllerComponent::OnKeyPressedEvent(KeyPressedEvent& event)
@@ -96,16 +109,16 @@ void RigidBody2DComponent::Update(float deltaTime)
 	}
 }
 
+BoxCollider2DComponent::BoxCollider2DComponent(GameObject* owner, int width, int height, glm::vec2 offset) :
+	Component(owner), Width(width), Height(height), Offset(offset)
+{
+}
+
 void BoxCollider2DComponent::Update(float deltaTime)
 {
 	
 }
 
-void GameObject::OnCollisionStay(const std::unique_ptr<GameObject>& other)
-{
-	Logger::Log("Collided with other object");
-	
-}
 
 void Registry::Update(float deltaTime)
 {
@@ -182,7 +195,8 @@ void Registry::CalculateCollisions()
 			if (collisionHappened)
 			{
 				Logger::Log("Entities collided!");
-				a->OnCollisionStay(b);
+				a->LocalEventBus.EmitEvent<CollisionStayEvent>(b);
+				b->LocalEventBus.EmitEvent<CollisionStayEvent>(a);
 			}
 		}
 	}

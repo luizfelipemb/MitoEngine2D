@@ -45,7 +45,7 @@ typedef std::list<std::unique_ptr<IEventCallback>> HandlerList;
 
 class EventBus {
 private:
-    static std::map<std::type_index, std::unique_ptr<HandlerList>> subscribers;
+	std::map<std::type_index, std::unique_ptr<HandlerList>> subscribers;
 
 public:
     EventBus() {
@@ -62,7 +62,7 @@ public:
     }
 
     template <typename TEvent, typename TOwner>
-    void static SubscribeToEvent(TOwner* ownerInstance, void (TOwner::* callbackFunction)(TEvent&)) {
+    void SubscribeToEvent(TOwner* ownerInstance, void (TOwner::* callbackFunction)(TEvent&)) {
         if (!subscribers[typeid(TEvent)].get()) {
             subscribers[typeid(TEvent)] = std::make_unique<HandlerList>();
         }
@@ -71,7 +71,7 @@ public:
     }
 
     template <typename TEvent, typename ...TArgs>
-    void static EmitEvent(TArgs&& ...args) {
+    void EmitEvent(TArgs&& ...args) {
         auto handlers = subscribers[typeid(TEvent)].get();
         if (handlers) {
             for (auto it = handlers->begin(); it != handlers->end(); it++) {
