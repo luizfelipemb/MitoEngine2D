@@ -88,7 +88,6 @@ public:
 		Component(owner), Width(width), Height(height), Offset(offset) {}
 
 	void Update(float deltaTime) override;
-	bool CheckAABBCollision(double aX, double aY, double aW, double aH, double bX, double bY, double bW, double bH);
 	int Width;
 	int Height;
 	glm::vec2 Offset;
@@ -102,6 +101,7 @@ public:
 	template <typename TComponent, typename ...TArgs> void AddComponent(TArgs&& ...args);
 	template <typename TComponent> TComponent* GetComponent();
 	template <typename TComponent> bool HasComponent();
+	void OnCollisionStay(const std::unique_ptr<GameObject>& other);
 
 	std::unordered_map<std::type_index, std::shared_ptr<Component>> Components;
 
@@ -115,6 +115,8 @@ class Registry
 public:
 	void Update(float deltaTime);
 	const std::vector<std::unique_ptr<GameObject>>& GetAllGameObjects() const;
+	bool CheckAABBCollision(double aX, double aY, double aW, double aH, double bX, double bY, double bW, double bH);
+	void CalculateCollisions();
 
 	std::unique_ptr<GameObject>& CreateGameObject(glm::vec3 position = glm::vec3(0,0,0));
 private:

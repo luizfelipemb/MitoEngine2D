@@ -98,9 +98,51 @@ void RigidBody2DComponent::Update(float deltaTime)
 
 void BoxCollider2DComponent::Update(float deltaTime)
 {
-	auto& entities = m_owner->RefRegistry->GetAllGameObjects();
 	
-	for (auto i = entities.begin(); i != entities.end(); ++i)
+}
+
+void GameObject::OnCollisionStay(const std::unique_ptr<GameObject>& other)
+{
+	Logger::Log("Collided with other object");
+	
+}
+
+void Registry::Update(float deltaTime)
+{
+	//Update GameObjects
+	for (auto& gameObject : gameObjects)
+	{
+		for (auto& componentPair : gameObject->Components)
+		{
+			if (componentPair.second)
+			{
+				componentPair.second->Update(deltaTime);
+			}
+		}
+	}
+
+	CalculateCollisions();
+}
+
+const std::vector<std::unique_ptr<GameObject>>& Registry::GetAllGameObjects() const
+{
+	return gameObjects;
+}
+
+bool Registry::CheckAABBCollision(double aX, double aY, double aW, double aH, double bX, double bY, double bW,
+	double bH)
+{
+	return (
+		aX < bX + bW &&
+		aX + aW > bX &&
+		aY < bY + bH &&
+		aY + aH > bY
+		);
+}
+
+void Registry::CalculateCollisions()
+{
+	for (auto i = gameObjects.begin(); i != gameObjects.end(); ++i)
 	{
 		const std::unique_ptr<GameObject>& a = *i;
 
@@ -111,7 +153,7 @@ void BoxCollider2DComponent::Update(float deltaTime)
 		BoxCollider2DComponent* aCollider = a->GetComponent<BoxCollider2DComponent>();
 
 		// Loop all the entities that still need to be checked (to the right of i)
-		for (auto j = i; j != entities.end(); ++j)
+		for (auto j = i; j != gameObjects.end(); ++j)
 		{
 			const std::unique_ptr<GameObject>& b = *j;
 
@@ -140,40 +182,10 @@ void BoxCollider2DComponent::Update(float deltaTime)
 			if (collisionHappened)
 			{
 				Logger::Log("Entities collided!");
-				EventBus::EmitEvent<CollisionEvent>(a, b);
+				a->OnCollisionStay(b);
 			}
 		}
 	}
-}
-
-bool BoxCollider2DComponent::CheckAABBCollision(double aX, double aY, double aW, double aH, double bX, double bY,
-	double bW, double bH)
-{
-	return (
-		aX < bX + bW &&
-		aX + aW > bX &&
-		aY < bY + bH &&
-		aY + aH > bY
-		);
-}
-
-void Registry::Update(float deltaTime)
-{
-	for (auto& gameObject : gameObjects)
-	{
-		for (auto& componentPair : gameObject->Components)
-		{
-			if (componentPair.second)
-			{
-				componentPair.second->Update(deltaTime);
-			}
-		}
-	}
-}
-
-const std::vector<std::unique_ptr<GameObject>>& Registry::GetAllGameObjects() const
-{
-	return gameObjects;
 }
 
 //   REGISTRY  /////////////////////////////////////////////////////////////////////////
