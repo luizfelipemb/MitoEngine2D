@@ -4,27 +4,30 @@
 #include <chrono>
 #include <ctime>
 
-std::vector<LogEntry> Logger::messages;
+std::vector<LogEntry> Logger::Messages;
 
-std::string CurrentDateTimeToString() {
+std::string CurrentDateTimeToString()
+{
     std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     std::string output(30, '\0');
     std::strftime(&output[0], output.size(), "%d-%b-%Y %H:%M:%S", std::localtime(&now));
     return output;
 }
 
-void Logger::Log(const std::string& message) {
+void Logger::Log(const std::string& message)
+{
     LogEntry logEntry;
-    logEntry.type = LOG_INFO;
-    logEntry.message = "LOG: [" + CurrentDateTimeToString() + "]: " + message;
-    std::cout << "\x1B[32m" << logEntry.message << "\033[0m" << std::endl;
-    messages.push_back(logEntry);
+    logEntry.Type = LOG_INFO;
+    logEntry.Message = "LOG: [" + CurrentDateTimeToString() + "]: " + message;
+    std::cout << "\x1B[32m" << logEntry.Message << "\033[0m" << std::endl;
+    Messages.push_back(logEntry);
 }
 
-void Logger::Err(const std::string& message) {
+void Logger::Err(const std::string& message)
+{
     LogEntry logEntry;
-    logEntry.type = LOG_ERROR;
-    logEntry.message = "ERR: [" + CurrentDateTimeToString() + "]: " + message;
-    messages.push_back(logEntry);
-    std::cerr << "\x1B[91m"<< logEntry.message << "\033[0m" << std::endl;
+    logEntry.Type = LOG_ERROR;
+    logEntry.Message = "ERR: [" + CurrentDateTimeToString() + "]: " + message;
+    Messages.push_back(logEntry);
+    std::cerr << "\x1B[91m"<< logEntry.Message << "\033[0m" << std::endl;
 }

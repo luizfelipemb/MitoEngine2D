@@ -6,6 +6,6 @@
 class KeyPressedEvent : public Event
 {
 public:
-    SDL_Keycode symbol;
-    KeyPressedEvent(SDL_Keycode symbol) : symbol(symbol) {}
+    SDL_Keycode Symbol;
+    KeyPressedEvent(SDL_Keycode symbol) : Symbol(symbol) {}
 };

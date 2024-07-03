@@ -8,9 +8,9 @@
 
 struct Color
 {
-    std::uint8_t red;
-    std::uint8_t green;
-    std::uint8_t blue;
+    std::uint8_t Red;
+    std::uint8_t Green;
+    std::uint8_t Blue;
 };
 class AssetManager
 {
@@ -31,14 +31,14 @@ class AssetManager
         static void DrawRectangle(int x, int y, float width, float height, Color color);
 
 private:
-        static std::map<std::string, SDL_Texture*> textures;
-        static std::map<std::string, TTF_Font*> fonts;
+        static std::map<std::string, SDL_Texture*> m_textures;
+        static std::map<std::string, TTF_Font*> m_fonts;
 
-        static int windowWidth;
-        static int windowHeight;
-        static int mapWidth;
-        static int mapHeight;
+        static int m_windowWidth;
+        static int m_windowHeight;
+        static int m_mapWidth;
+        static int m_mapHeight;
 
-        static SDL_Window* window;
-        static SDL_Renderer* renderer;
+        static SDL_Window* m_window;
+        static SDL_Renderer* m_renderer;
 };

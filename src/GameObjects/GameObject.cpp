@@ -18,7 +18,7 @@ void TransformComponent::Update(float deltaTime)
 
 void SpriteComponent::Update(float deltaTime)
 {
-	if(auto transform = owner->GetComponent<TransformComponent>())
+	if(auto transform = m_owner->GetComponent<TransformComponent>())
 		AssetManager::RenderImage(
 			m_sprite, 
 			transform->Position.x,
@@ -36,9 +36,9 @@ void ControllerComponent::Update(float deltaTime)
 
 void ControllerComponent::OnKeyPressedEvent(KeyPressedEvent& event)
 {
-	if( auto rigidBody = owner->GetComponent<RigidBody2DComponent>())
+	if( auto rigidBody = m_owner->GetComponent<RigidBody2DComponent>())
 	{
-		switch (event.symbol)
+		switch (event.Symbol)
 		{
 		case SDLK_w:
 			Logger::Log("ControllerComponent Key Up Pressed");
@@ -63,9 +63,9 @@ void ControllerComponent::OnKeyPressedEvent(KeyPressedEvent& event)
 
 void ControllerComponent::OnKeyReleasedEvent(KeyReleasedEvent& event)
 {
-	if (auto rigidBody = owner->GetComponent<RigidBody2DComponent>())
+	if (auto rigidBody = m_owner->GetComponent<RigidBody2DComponent>())
 	{
-		switch (event.symbol)
+		switch (event.Symbol)
 		{
 		case SDLK_w:
 			Logger::Log("ControllerComponent Key Up Released");
@@ -89,7 +89,7 @@ void ControllerComponent::OnKeyReleasedEvent(KeyReleasedEvent& event)
 
 void RigidBody2DComponent::Update(float deltaTime)
 {
-	if (auto transform = owner->GetComponent<TransformComponent>())
+	if (auto transform = m_owner->GetComponent<TransformComponent>())
 	{
 		transform->Position.x += Velocity.x * deltaTime;
 		transform->Position.y += Velocity.y * deltaTime;
@@ -98,9 +98,10 @@ void RigidBody2DComponent::Update(float deltaTime)
 
 void BoxCollider2DComponent::Update(float deltaTime)
 {
-	auto& entities = owner->RefRegistry->GetAllGameObjects();
+	auto& entities = m_owner->RefRegistry->GetAllGameObjects();
 	
-	for (auto i = entities.begin(); i != entities.end(); ++i) {
+	for (auto i = entities.begin(); i != entities.end(); ++i)
+	{
 		const std::unique_ptr<GameObject>& a = *i;
 
 		if (!a->HasComponent<TransformComponent>() || !a->HasComponent<BoxCollider2DComponent>())
@@ -110,16 +111,16 @@ void BoxCollider2DComponent::Update(float deltaTime)
 		BoxCollider2DComponent* aCollider = a->GetComponent<BoxCollider2DComponent>();
 
 		// Loop all the entities that still need to be checked (to the right of i)
-		for (auto j = i; j != entities.end(); ++j) {
+		for (auto j = i; j != entities.end(); ++j)
+		{
 			const std::unique_ptr<GameObject>& b = *j;
 
 			if (!b->HasComponent<TransformComponent>() || !b->HasComponent<BoxCollider2DComponent>())
 				continue;
 
 			// Bypass if we are trying to test the same entity
-			if (a == b) {
+			if (a == b)
 				continue;
-			}
 
 			auto bTransform = b->GetComponent<TransformComponent>();
 			auto bCollider = b->GetComponent<BoxCollider2DComponent>();
@@ -136,7 +137,8 @@ void BoxCollider2DComponent::Update(float deltaTime)
 				bCollider->Height
 			);
 
-			if (collisionHappened) {
+			if (collisionHappened)
+			{
 				Logger::Log("Entities collided!");
 				EventBus::EmitEvent<CollisionEvent>(a, b);
 			}
@@ -155,10 +157,14 @@ bool BoxCollider2DComponent::CheckAABBCollision(double aX, double aY, double aW,
 		);
 }
 
-void Registry::Update(float deltaTime) {
-	for (auto& gameObject : gameObjects) {
-		for (auto& componentPair : gameObject->Components) {
-			if (componentPair.second) {  // Check if the shared_ptr is not null
+void Registry::Update(float deltaTime)
+{
+	for (auto& gameObject : gameObjects)
+	{
+		for (auto& componentPair : gameObject->Components)
+		{
+			if (componentPair.second)
+			{
 				componentPair.second->Update(deltaTime);
 			}
 		}

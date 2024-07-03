@@ -19,12 +19,12 @@ class GameObject;
 class Component
 {
 public:
-	Component(GameObject* owner) : owner(owner) {}
+	Component(GameObject* owner) : m_owner(owner) {}
 	virtual ~Component() = default;
 	virtual void Update(float deltaTime) = 0;
 
 protected:
-	GameObject* owner;
+	GameObject* m_owner;
 };
 
 class TransformComponent : public Component

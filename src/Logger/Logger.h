@@ -10,13 +10,13 @@ enum LogType {
 };
 
 struct LogEntry {
-    LogType type;
-    std::string message;
+    LogType Type;
+    std::string Message;
 };
 
 class Logger {
     public:
-        static std::vector<LogEntry> messages;
+        static std::vector<LogEntry> Messages;
         static void Log(const std::string& message);
         static void Err(const std::string& message);
 };

@@ -18,15 +18,17 @@
 Game::Game():
 m_registry(std::make_unique<Registry>())
 {
-	isRunning = false;
+	m_isRunning = false;
 	Logger::Log("Game constructor called!");
 }
 
-Game::~Game() {
+Game::~Game()
+{
 	Logger::Log("Game destructor called!");
 }
 
-void Game::ProcessInput() {
+void Game::ProcessInput()
+{
 	SDL_Event sdlEvent;
 	sdlEvent.key.repeat = 0;
 	while (SDL_PollEvent(&sdlEvent)) {
@@ -42,11 +44,11 @@ void Game::ProcessInput() {
 		// Handle core SDL events (close window, key pressed, etc.)
 		switch (sdlEvent.type) {
 		case SDL_QUIT:
-			isRunning = false;
+			m_isRunning = false;
 			break;
 		case SDL_KEYDOWN:
 			if (sdlEvent.key.keysym.sym == SDLK_ESCAPE) {
-				isRunning = false;
+				m_isRunning = false;
 			}
 			if(sdlEvent.key.repeat == 0)
 			{
@@ -60,10 +62,11 @@ void Game::ProcessInput() {
 	}
 }
 
-void Game::Initialize() {
+void Game::Initialize()
+{
 
 	AssetManager::Initialize();
-	isRunning = true;
+	m_isRunning = true;
 
 	std::unique_ptr<GameObject>& player = m_registry->CreateGameObject();
 	player->AddComponent<TransformComponent>(glm::vec2(50, 100));
@@ -83,7 +86,7 @@ void Game::Initialize() {
 
 void Game::Run()
 {
-	while (isRunning)
+	while (m_isRunning)
 	{
 		AssetManager::ClearFrameRender();
 		ProcessInput();
@@ -92,18 +95,19 @@ void Game::Run()
 	}
 }
 
-void Game::Update() {
+void Game::Update()
+{
 	// If we are too fast, waste some time until we reach the MILLISECS_PER_FRAME
-	int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - millisecsPreviousFrame);
+	int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - m_millisecsPreviousFrame);
 	if (timeToWait > 0 && timeToWait <= MILLISECS_PER_FRAME) {
 		SDL_Delay(timeToWait);
 	}
 
 	// The difference in ticks since the last frame, converted to seconds
-	double deltaTime = (SDL_GetTicks() - millisecsPreviousFrame) / 1000.0;
+	double deltaTime = (SDL_GetTicks() - m_millisecsPreviousFrame) / 1000.0;
 
 	// Store the "previous" frame time
-	millisecsPreviousFrame = SDL_GetTicks();
+	m_millisecsPreviousFrame = SDL_GetTicks();
 
 	m_registry->Update(deltaTime);
 }
@@ -111,7 +115,8 @@ void Game::Update() {
 
 
 
-void Game::Destroy() {
+void Game::Destroy()
+{
 	SDL_Quit();
 
 	ImGui_ImplSDLRenderer2_Shutdown();

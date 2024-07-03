@@ -4,7 +4,7 @@
 class KeyReleasedEvent : public Event
 {
     public:
-        SDL_Keycode symbol;
-        KeyReleasedEvent(SDL_Keycode symbol) : symbol(symbol) {}
+        SDL_Keycode Symbol;
+        KeyReleasedEvent(SDL_Keycode symbol) : Symbol(symbol) {}
 };
 
