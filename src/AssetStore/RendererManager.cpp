@@ -1,4 +1,12 @@
 ﻿#include "RendererManager.h"
+
+#include <iostream>
+#include <ostream>
+
+#include "../imgui/imgui.h"
+#include "../imgui/imgui_impl_sdl2.h"
+#include "../imgui/imgui_impl_sdlrenderer2.h"
+#include "../Logger/Logger.h"
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_impl_sdl2.h"
 #include "../imgui/imgui_impl_sdlrenderer2.h"
@@ -54,7 +62,7 @@ void RendererManager::ClearFrameRender()
     ImGui_ImplSDLRenderer2_NewFrame();
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
-
+    
     SDL_SetRenderDrawColor(Renderer, 21, 21, 21, 255);
     SDL_RenderClear(Renderer);
 }
@@ -64,10 +72,32 @@ void RendererManager::DrawFrameRender()
     //RenderImage("assets/images/radar.png", 0, 0, 100, 100, 1);
     //RenderText("TESTEEEE", "assets/fonts/arial.ttf", 100, 0, 0);
 
-    ImGui::ShowDemoWindow();
+    //ImGui::ShowDemoWindow();
+    
     ImGui::Begin("Log Window");
+    for (auto& element : Logger::Messages)
+    {
+        ImVec4 color;
+        switch (element.Type)
+        {
+        case LOG_INFO:
+            color = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);  // Green color for info
+            break;
+        case LOG_ERROR:
+            color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);  // Red color for error
+            break;
+        default:
+            color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);  // Default white color
+            break;
+        }
+        ImGui::PushStyleColor(ImGuiCol_Text, color);
+        ImGui::Text("%s", element.Message.c_str());
+        ImGui::PopStyleColor();
+        ImGui::SetScrollHereY(1.0f);  // Scroll to the bottom
+    }
+    //ImGui::SetScrollY(ImGui::GetScrollMaxY());
     ImGui::End();
-	
+    
     ImGui::Render();
     ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
 
