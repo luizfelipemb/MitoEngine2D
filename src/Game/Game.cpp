@@ -6,6 +6,7 @@
 #include "../GameObjects/GameObject.h"
 #include "../Logger/Logger.h"
 #include "../AssetStore/AssetManager.h"
+#include "../AssetStore/RendererManager.h"
 
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_impl_sdl2.h"
@@ -64,8 +65,8 @@ void Game::ProcessInput()
 
 void Game::Initialize()
 {
-
 	AssetManager::Initialize();
+	RendererManager::Initialize();
 	m_isRunning = true;
 
 	std::unique_ptr<GameObject>& player = m_registry->CreateGameObject();
@@ -88,10 +89,10 @@ void Game::Run()
 {
 	while (m_isRunning)
 	{
-		AssetManager::ClearFrameRender();
+		RendererManager::ClearFrameRender();
 		ProcessInput();
 		Update();
-		AssetManager::DrawFrameRender();
+		RendererManager::DrawFrameRender();
 	}
 }
 

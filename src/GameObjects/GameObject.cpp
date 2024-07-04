@@ -4,6 +4,7 @@
 #include <ostream>
 
 #include "../AssetStore/AssetManager.h"
+#include "../AssetStore/RendererManager.h"
 #include "../Events/CollisionStayEvent.h"
 #include "../Events/KeyReleasedEvent.h"
 #include "../Game/Game.h"
@@ -21,6 +22,7 @@ void SpriteComponent::Update(float deltaTime)
 {
 	if(auto transform = m_owner->GetComponent<TransformComponent>())
 		AssetManager::RenderImage(
+			RendererManager::Renderer,
 			m_sprite, 
 			transform->Position.x,
 			transform->Position.y,

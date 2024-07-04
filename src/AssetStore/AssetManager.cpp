@@ -11,13 +11,6 @@
 std::map<std::string, SDL_Texture*> AssetManager::m_textures;
 std::map<std::string, TTF_Font*> AssetManager::m_fonts;
 
-int AssetManager::m_windowWidth;
-int AssetManager::m_windowHeight;
-int AssetManager::m_mapWidth;
-int AssetManager::m_mapHeight;
-SDL_Window* AssetManager::m_window;
-SDL_Renderer* AssetManager::m_renderer;
-
 AssetManager::AssetManager() {
 	Logger::Log("AssetStore constructor called!");
 }
@@ -26,8 +19,6 @@ AssetManager::~AssetManager() {
 	ClearAssets();
 	Logger::Log("AssetStore destructor called!");
 
-	SDL_DestroyRenderer(m_renderer);
-	SDL_DestroyWindow(m_window);
 }
 
 void AssetManager::Initialize()
@@ -40,58 +31,6 @@ void AssetManager::Initialize()
 		Logger::Err("Error initializing SDL TTF.");
 		return;
 	}
-	SDL_DisplayMode displayMode;
-	SDL_GetCurrentDisplayMode(0, &displayMode);
-	m_windowWidth = displayMode.w / 2;
-	m_windowHeight = displayMode.h / 2;
-	m_mapWidth = m_windowWidth;
-	m_mapHeight = m_windowHeight;
-	m_window = SDL_CreateWindow(
-		NULL,
-		SDL_WINDOWPOS_CENTERED,
-		SDL_WINDOWPOS_CENTERED,
-		m_windowWidth,
-		m_windowHeight,
-		NULL
-	);
-	if (!m_window) {
-		Logger::Err("Error creating SDL window.");
-		return;
-	}
-	m_renderer = SDL_CreateRenderer(m_window, -1, 0);
-	if (!m_renderer) {
-		Logger::Err("Error creating SDL renderer.");
-		return;
-	}
-
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGui_ImplSDL2_InitForSDLRenderer(m_window, m_renderer);
-	ImGui_ImplSDLRenderer2_Init(m_renderer);
-}
-
-void AssetManager::ClearFrameRender()
-{
-	ImGui_ImplSDLRenderer2_NewFrame();
-	ImGui_ImplSDL2_NewFrame();
-	ImGui::NewFrame();
-
-	SDL_SetRenderDrawColor(m_renderer, 21, 21, 21, 255);
-	SDL_RenderClear(m_renderer);
-
-}
-
-void AssetManager::DrawFrameRender()
-{
-
-	//RenderImage("assets/images/radar.png", 0, 0, 100, 100, 1);
-	RenderText("TESTEEEE", "assets/fonts/arial.ttf", 100, 0, 0);
-
-	ImGui::ShowDemoWindow();
-	ImGui::Render();
-	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
-
-	SDL_RenderPresent(m_renderer);
 }
 
 void AssetManager::ClearAssets()
@@ -109,7 +48,7 @@ void AssetManager::ClearAssets()
 	m_fonts.clear();
 }
 
-bool AssetManager::LoadTexture(std::string fileName)
+bool AssetManager::LoadTexture(SDL_Renderer* renderer,std::string fileName)
 {
 	if (m_textures.find(fileName) != m_textures.end())
 	{
@@ -123,7 +62,7 @@ bool AssetManager::LoadTexture(std::string fileName)
 		return false;
 	}
 
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(m_renderer, tempSurf);
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, tempSurf);
 
 	SDL_FreeSurface(tempSurf);
 
@@ -139,7 +78,7 @@ bool AssetManager::LoadTexture(std::string fileName)
 	return false;
 }
 
-void AssetManager::RenderImage(std::string filename, int x, int y, int w, int h, double scale,
+void AssetManager::RenderImage(SDL_Renderer* renderer, std::string filename, int x, int y, int w, int h, double scale,
 	std::optional<Color> color)
 {
 	SDL_Rect destRect;
@@ -151,7 +90,7 @@ void AssetManager::RenderImage(std::string filename, int x, int y, int w, int h,
 
 	if (m_textures.find(filename) == m_textures.end())
 	{
-		LoadTexture(filename);
+		LoadTexture(renderer, filename);
 	}
 
 	if (color.has_value())
@@ -159,7 +98,7 @@ void AssetManager::RenderImage(std::string filename, int x, int y, int w, int h,
 		SDL_SetTextureColorMod(m_textures[filename], color->Red, color->Green, color->Blue);
 	}
 
-	if (SDL_RenderCopyEx(m_renderer, m_textures[filename], nullptr, &destRect, 0, nullptr, flip) != 0)
+	if (SDL_RenderCopyEx(renderer, m_textures[filename], nullptr, &destRect, 0, nullptr, flip) != 0)
 	{
 		std::cout << SDL_GetError() << std::endl;
 	}
@@ -169,7 +108,7 @@ void AssetManager::RenderImage(std::string filename, int x, int y, int w, int h,
 		SDL_SetTextureColorMod(m_textures[filename], 255, 255, 255);
 	}
 }
-void AssetManager::RenderText(const std::string& text, const std::string& fontFile, int fontSize, int x, int y,
+void AssetManager::RenderText(SDL_Renderer* renderer, const std::string& text, const std::string& fontFile, int fontSize, int x, int y,
 	double scale, bool centered, std::optional<Color> color)
 {
 	if (m_fonts.find(fontFile) == m_fonts.end())
@@ -202,7 +141,7 @@ void AssetManager::RenderText(const std::string& text, const std::string& fontFi
 	}
 
 	// Create texture from surface
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(m_renderer, surface);
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
 	if (!texture)
 	{
 		std::cerr << "Error creating texture from surface: " << SDL_GetError() << std::endl;
@@ -226,7 +165,7 @@ void AssetManager::RenderText(const std::string& text, const std::string& fontFi
 	SDL_Rect destRect = { x, y, textWidth, textHeight };
 
 	// Render text
-	if (SDL_RenderCopy(m_renderer, texture, nullptr, &destRect) != 0)
+	if (SDL_RenderCopy(renderer, texture, nullptr, &destRect) != 0)
 	{
 		std::cerr << "Error rendering text: " << SDL_GetError() << std::endl;
 	}
@@ -237,14 +176,14 @@ void AssetManager::RenderText(const std::string& text, const std::string& fontFi
 }
 
 
-void AssetManager::DrawRectangle(int x, int y, float width, float height, Color color)
+void AssetManager::DrawRectangle(SDL_Renderer* renderer, int x, int y, float width, float height, Color color)
 {
 	// Set render color
-	SDL_SetRenderDrawColor(m_renderer, color.Red, color.Green, color.Blue, SDL_ALPHA_OPAQUE);
+	SDL_SetRenderDrawColor(renderer, color.Red, color.Green, color.Blue, SDL_ALPHA_OPAQUE);
 
 	// Define rectangle
 	SDL_Rect rect = { x, y, width, height };
 
 	// Draw rectangle
-	SDL_RenderFillRect(m_renderer, &rect);
+	SDL_RenderFillRect(renderer, &rect);
 }
