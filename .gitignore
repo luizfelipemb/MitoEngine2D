@@ -6,3 +6,4 @@ bin-int
 *.user
 *.filters
 .idea
+cmake-build-debug

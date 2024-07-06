@@ -39,7 +39,7 @@ void RendererManager::Initialize()
         SDL_WINDOWPOS_CENTERED,
         m_windowWidth,
         m_windowHeight,
-        NULL
+        0
     );
     if (!m_window) {
         Logger::Err("Error creating SDL window.");

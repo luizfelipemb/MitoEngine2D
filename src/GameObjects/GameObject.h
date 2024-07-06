@@ -21,7 +21,7 @@ class GameObject;
 class Component
 {
 public:
-	Component(GameObject* owner) : m_owner(owner) {}
+	explicit Component(GameObject* owner) : m_owner(owner) {}
 	virtual ~Component() = default;
 	virtual void Update(float deltaTime) = 0;
 protected:
@@ -31,7 +31,7 @@ protected:
 class TransformComponent : public Component
 {
 public:
-    TransformComponent(GameObject* owner, 
+    explicit TransformComponent(GameObject* owner, 
                        glm::vec2 position = glm::vec2(0, 0), 
                        double scale = 1, 
                        double rotation = 0.0)
@@ -60,7 +60,7 @@ private:
 class ControllerComponent : public Component
 {
 public:
-	ControllerComponent(GameObject* owner);
+	explicit ControllerComponent(GameObject* owner);
 	void Update(float deltaTime) override;
 	void OnCollisionStay(CollisionStayEvent& event);
 	void OnKeyPressedEvent(KeyPressedEvent& event);
@@ -72,7 +72,7 @@ private:
 class RigidBody2DComponent : public Component
 {
 public:
-	RigidBody2DComponent(GameObject* owner, glm::vec2 velocity = glm::vec2(0.0, 0.0)) :
+	explicit RigidBody2DComponent(GameObject* owner, glm::vec2 velocity = glm::vec2(0.0, 0.0)) :
 		Component(owner), Velocity(velocity) {}
 
 	void Update(float deltaTime) override;
@@ -83,7 +83,7 @@ private:
 class BoxCollider2DComponent : public Component
 {
 public:
-	BoxCollider2DComponent(GameObject* owner, int width = 0, int height = 0, glm::vec2 offset = glm::vec2(0));
+	explicit BoxCollider2DComponent(GameObject* owner, int width = 0, int height = 0, glm::vec2 offset = glm::vec2(0));
 
 	void Update(float deltaTime) override;
 	int Width;

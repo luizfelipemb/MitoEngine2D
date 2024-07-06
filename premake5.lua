@@ -1,3 +1,5 @@
+require "cmake"
+
 workspace "MitoEngine2D"
     platforms { "Windows" }
     configurations { "Debug", "Release" }
@@ -58,7 +60,11 @@ project "MitoEngine2D"
         }
         
         postbuildcommands {
-            "{COPY} %{path.getabsolute('libs/SDL2/lib/x64/SDL2.dll')} %{cfg.targetdir}",
-			"{COPY} %{path.getabsolute('libs/SDL2_image/lib/x64/SDL2_image.dll')} %{cfg.targetdir}",
-			"{COPY} %{path.getabsolute('libs/SDL2_ttf/lib/x64/SDL2_ttf.dll')} %{cfg.targetdir}"
+            "{COPY} \"libs/SDL2/lib/x64/SDL2.dll\" \"%{cfg.targetdir}\"",
+            "{COPY} \"libs/SDL2_image/lib/x64/SDL2_image.dll\" \"%{cfg.targetdir}\"",
+            "{COPY} \"libs/SDL2_ttf/lib/x64/SDL2_ttf.dll\" \"%{cfg.targetdir}\"",
+			
+			"{COPY} \"libs/SDL2/lib/x64/SDL2.dll\" \"cmake-build-debug/bin/windows-Debug/x86_64/\"",
+			"{COPY} \"libs/SDL2_image/lib/x64/SDL2_image.dll\" \"cmake-build-debug/bin/windows-Debug/x86_64/\"",
+			"{COPY} \"libs/SDL2_ttf/lib/x64/SDL2_ttf.dll\" \"cmake-build-debug/bin/windows-Debug/x86_64/\""
         }

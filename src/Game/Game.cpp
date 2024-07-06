@@ -75,7 +75,6 @@ void Game::Initialize()
 	player->AddComponent<ControllerComponent>();
 	player->AddComponent<RigidBody2DComponent>();
 	player->AddComponent<BoxCollider2DComponent>(50, 50);
-
 	
 	std::unique_ptr<GameObject>& enemy = m_registry->CreateGameObject();
 	enemy->AddComponent<TransformComponent>(glm::vec2(200, 50));

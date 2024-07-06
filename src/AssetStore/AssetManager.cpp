@@ -182,7 +182,7 @@ void AssetManager::DrawRectangle(SDL_Renderer* renderer, int x, int y, float wid
 	SDL_SetRenderDrawColor(renderer, color.Red, color.Green, color.Blue, SDL_ALPHA_OPAQUE);
 
 	// Define rectangle
-	SDL_Rect rect = { x, y, width, height };
+	SDL_Rect rect = { x, y, static_cast<int>(width), static_cast<int>(height) };
 
 	// Draw rectangle
 	SDL_RenderFillRect(renderer, &rect);
