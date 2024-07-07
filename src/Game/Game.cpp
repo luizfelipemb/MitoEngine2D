@@ -81,6 +81,11 @@ void Game::Initialize()
 	enemy->AddComponent<SpriteComponent>("assets/images/RoundedSquare.png",100, 100, 255, 0, 0);
 	enemy->AddComponent<RigidBody2DComponent>(glm::vec2(0, 20));
 	enemy->AddComponent<BoxCollider2DComponent>(100, 100);
+
+	std::unique_ptr<GameObject>& enemy2 = m_registry->CreateGameObject();
+	enemy2->AddComponent<TransformComponent>(glm::vec2(300, 50));
+	enemy2->AddComponent<SpriteComponent>("assets/images/RoundedSquare.png",100, 100, 255, 0, 0);
+	enemy2->AddComponent<BoxCollider2DComponent>(100, 100);
 	
 }
 

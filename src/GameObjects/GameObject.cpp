@@ -5,12 +5,14 @@
 
 #include "../AssetStore/AssetManager.h"
 #include "../AssetStore/RendererManager.h"
+#include "../Events/CollisionEnterEvent.h"
 #include "../Events/CollisionStayEvent.h"
 #include "../Events/KeyReleasedEvent.h"
 #include "../Game/Game.h"
 #include "../Logger/Logger.h"
 
 
+class CollisionExitEvent;
 class CollisionEvent;
 
 void TransformComponent::Update(float deltaTime)
@@ -56,19 +58,19 @@ void ControllerComponent::OnKeyPressedEvent(KeyPressedEvent& event)
 		switch (event.Symbol)
 		{
 		case SDLK_w:
-			Logger::Log("ControllerComponent Key Up Pressed");
+			//Logger::Log("ControllerComponent Key Up Pressed");
 			rigidBody->Velocity.y -= 500;
 			break;
 		case SDLK_d:
-			Logger::Log("ControllerComponent Key Right Pressed");
+			//Logger::Log("ControllerComponent Key Right Pressed");
 			rigidBody->Velocity.x += 500;
 			break;
 		case SDLK_s:
-			Logger::Log("ControllerComponent Key Down Pressed");
+			//Logger::Log("ControllerComponent Key Down Pressed");
 			rigidBody->Velocity.y += 500;
 			break;
 		case SDLK_a:
-			Logger::Log("ControllerComponent Key Left Pressed");
+			//Logger::Log("ControllerComponent Key Left Pressed");
 			rigidBody->Velocity.x -= 500;
 			break;
 		}
@@ -83,19 +85,19 @@ void ControllerComponent::OnKeyReleasedEvent(KeyReleasedEvent& event)
 		switch (event.Symbol)
 		{
 		case SDLK_w:
-			Logger::Log("ControllerComponent Key Up Released");
+			//Logger::Log("ControllerComponent Key Up Released");
 			rigidBody->Velocity.y += 500;
 			break;
 		case SDLK_d:
-			Logger::Log("ControllerComponent Key Right Released");
+			//Logger::Log("ControllerComponent Key Right Released");
 			rigidBody->Velocity.x -= 500;
 			break;
 		case SDLK_s:
-			Logger::Log("ControllerComponent Key Down Released");
+			//Logger::Log("ControllerComponent Key Down Released");
 			rigidBody->Velocity.y -= 500;
 			break;
 		case SDLK_a:
-			Logger::Log("ControllerComponent Key Left Released");
+			//Logger::Log("ControllerComponent Key Left Released");
 			rigidBody->Velocity.x += 500;
 			break;
 		}
@@ -128,16 +130,16 @@ int GameObject::GetId() const
 
 std::unique_ptr<GameObject>& Registry::CreateGameObject(glm::vec3 position)
 {
-	gameObjects.emplace_back(std::make_unique<GameObject>(m_numberOfGameObjects,this));
+	m_gameObjects.emplace_back(std::make_unique<GameObject>(m_numberOfGameObjects,this));
 	Logger::Log("GameObject with id:" + std::to_string(m_numberOfGameObjects) + " created");
 	m_numberOfGameObjects++;
-	return gameObjects.back();
+	return m_gameObjects.back();
 }
 
 void Registry::Update(float deltaTime)
 {
 	//Update GameObjects
-	for (auto& gameObject : gameObjects)
+	for (auto& gameObject : m_gameObjects)
 	{
 		for (auto& componentPair : gameObject->Components)
 		{
@@ -153,7 +155,7 @@ void Registry::Update(float deltaTime)
 
 const std::vector<std::unique_ptr<GameObject>>& Registry::GetAllGameObjects() const
 {
-	return gameObjects;
+	return m_gameObjects;
 }
 
 bool Registry::CheckAABBCollision(double aX, double aY, double aW, double aH, double bX, double bY, double bW,
@@ -169,7 +171,7 @@ bool Registry::CheckAABBCollision(double aX, double aY, double aW, double aH, do
 
 void Registry::CalculateCollisions()
 {
-	for (auto i = gameObjects.begin(); i != gameObjects.end(); ++i)
+	for (auto i = m_gameObjects.begin(); i != m_gameObjects.end(); ++i)
 	{
 		const std::unique_ptr<GameObject>& a = *i;
 
@@ -180,7 +182,7 @@ void Registry::CalculateCollisions()
 		BoxCollider2DComponent* aCollider = a->GetComponent<BoxCollider2DComponent>();
 
 		// Loop all the entities that still need to be checked (to the right of i)
-		for (auto j = i; j != gameObjects.end(); ++j)
+		for (auto j = i; j != m_gameObjects.end(); ++j)
 		{
 			const std::unique_ptr<GameObject>& b = *j;
 
@@ -205,12 +207,52 @@ void Registry::CalculateCollisions()
 				bCollider->Width,
 				bCollider->Height
 			);
-
+			
+			bool wasColliding = false;
+			auto range = m_objectsColliding.equal_range(a->GetId());
+			for (auto it = range.first; it != range.second; ++it)
+			{
+				if (it->second == b->GetId())
+				{
+					wasColliding = true;
+					break;
+				}
+			}
 			if (collisionHappened)
 			{
-				Logger::Log("Entities " + std::to_string(a->GetId()) + " and " + std::to_string(b->GetId()) + " are colliding!");
-				a->LocalEventBus.EmitEvent<CollisionStayEvent>(b);
-				b->LocalEventBus.EmitEvent<CollisionStayEvent>(a);
+				//Logger::Log("Entities " + std::to_string(a->GetId()) + " and " + std::to_string(b->GetId()) + " are colliding!");
+
+				if(!wasColliding)
+				{
+					Logger::Log("Entities " + std::to_string(a->GetId()) + " and " + std::to_string(b->GetId()) + " started colliding!");
+					a->LocalEventBus.EmitEvent<CollisionEnterEvent>(b);
+					b->LocalEventBus.EmitEvent<CollisionEnterEvent>(a);
+					a->LocalEventBus.EmitEvent<CollisionStayEvent>(b);
+					b->LocalEventBus.EmitEvent<CollisionStayEvent>(a);
+					m_objectsColliding.insert(std::make_pair(a->GetId(),b->GetId()));
+				}else
+				{
+					a->LocalEventBus.EmitEvent<CollisionStayEvent>(b);
+					b->LocalEventBus.EmitEvent<CollisionStayEvent>(a);
+				}
+			}
+			else
+			{
+				if(wasColliding)
+				{
+					Logger::Log("Entities " + std::to_string(a->GetId()) + " and " + std::to_string(b->GetId()) + " exit colliding!");
+					a->LocalEventBus.EmitEvent<CollisionExitEvent>(b);
+                    b->LocalEventBus.EmitEvent<CollisionExitEvent>(a);
+					
+					// Find and remove the specific key-value pair
+					auto range = m_objectsColliding.equal_range(a->GetId());
+					for (auto it = range.first; it != range.second; ++it) {
+						if (it->second == b->GetId()) {
+							m_objectsColliding.erase(it);
+							break;
+						}
+					}
+				}
 			}
 		}
 	}

@@ -3,6 +3,10 @@
 #include "../Logger/Logger.h"
 #include "Event.h"
 #include "KeyReleasedEvent.h"
+#include "CollisionEnterEvent.h"
+#include "CollisionExitEvent.h"
+#include "CollisionStayEvent.h"
+
 #include <map>
 #include <typeindex>
 #include <list>

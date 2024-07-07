@@ -151,7 +151,8 @@ public:
 
 private:
     int m_numberOfGameObjects;
-    std::vector<std::unique_ptr<GameObject>> gameObjects;
+    std::vector<std::unique_ptr<GameObject>> m_gameObjects;
+    std::unordered_multimap<int,int> m_objectsColliding;
 };
 
 //   GAMEOBJECT  /////////////////////////////////////////////////////////////////////////
