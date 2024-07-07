@@ -46,7 +46,7 @@ void ControllerComponent::Update(float deltaTime)
 
 void ControllerComponent::OnCollisionStay(CollisionStayEvent& event)
 {
-
+	m_colliding = true;
 }
 
 void ControllerComponent::OnKeyPressedEvent(KeyPressedEvent& event)
@@ -121,6 +121,18 @@ void BoxCollider2DComponent::Update(float deltaTime)
 	
 }
 
+int GameObject::GetId() const
+{
+	return m_id;
+}
+
+std::unique_ptr<GameObject>& Registry::CreateGameObject(glm::vec3 position)
+{
+	gameObjects.emplace_back(std::make_unique<GameObject>(m_numberOfGameObjects,this));
+	Logger::Log("GameObject with id:" + std::to_string(m_numberOfGameObjects) + " created");
+	m_numberOfGameObjects++;
+	return gameObjects.back();
+}
 
 void Registry::Update(float deltaTime)
 {
@@ -196,7 +208,7 @@ void Registry::CalculateCollisions()
 
 			if (collisionHappened)
 			{
-				Logger::Log("Entities collided!");
+				Logger::Log("Entities " + std::to_string(a->GetId()) + " and " + std::to_string(b->GetId()) + " are colliding!");
 				a->LocalEventBus.EmitEvent<CollisionStayEvent>(b);
 				b->LocalEventBus.EmitEvent<CollisionStayEvent>(a);
 			}
@@ -204,10 +216,4 @@ void Registry::CalculateCollisions()
 	}
 }
 
-//   REGISTRY  /////////////////////////////////////////////////////////////////////////
-std::unique_ptr<GameObject>& Registry::CreateGameObject(glm::vec3 position)
-{
-	gameObjects.emplace_back(std::make_unique<GameObject>(this));
-	return gameObjects.back();
-}
 
