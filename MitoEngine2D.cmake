@@ -3,6 +3,8 @@
   "src/AssetStore/AssetManager.h"
   "src/AssetStore/RendererManager.cpp"
   "src/AssetStore/RendererManager.h"
+  "src/Events/CollisionEnterEvent.h"
+  "src/Events/CollisionExitEvent.h"
   "src/Events/CollisionStayEvent.h"
   "src/Events/Event.h"
   "src/Events/EventBus.h"
@@ -47,6 +49,8 @@ if(CMAKE_BUILD_TYPE STREQUAL Debug) # Include dirs
     libs/SDL2_image/include
     libs/SDL2_ttf/include
     libs/glm
+    libs/lua
+    libs/sol
   )
 endif()
 target_compile_definitions("MitoEngine2D" PRIVATE
@@ -57,6 +61,7 @@ if(CMAKE_BUILD_TYPE STREQUAL Debug) # Lib dirs
     libs/SDL2/lib/x64
     libs/SDL2_image/lib/x64
     libs/SDL2_ttf/lib/x64
+    libs/lua
   )
 endif()
 target_link_libraries("MitoEngine2D"
@@ -64,6 +69,7 @@ target_link_libraries("MitoEngine2D"
   $<$<CONFIG:Debug>:SDL2>
   $<$<CONFIG:Debug>:SDL2_image>
   $<$<CONFIG:Debug>:SDL2_ttf>
+  $<$<CONFIG:Debug>:liblua53.a>
 )
 if(CMAKE_BUILD_TYPE STREQUAL Debug)
   if (NOT MSVC)
@@ -98,12 +104,11 @@ if(CMAKE_BUILD_TYPE STREQUAL Debug)
   )
 endif()
 add_custom_command(TARGET MitoEngine2D POST_BUILD
-  COMMAND IF EXIST "libs/SDL2/lib/x64/SDL2.dll"\ (xcopy /Q /E /Y /I "libs/SDL2/lib/x64/SDL2.dll" "bin/windows-Debug/x86_64" > nul) ELSE (xcopy /Q /Y /I "libs/SDL2/lib/x64/SDL2.dll" "bin/windows-Debug/x86_64" > nul)
-  COMMAND IF EXIST "libs/SDL2_image/lib/x64/SDL2_image.dll"\ (xcopy /Q /E /Y /I "libs/SDL2_image/lib/x64/SDL2_image.dll" "bin/windows-Debug/x86_64" > nul) ELSE (xcopy /Q /Y /I "libs/SDL2_image/lib/x64/SDL2_image.dll" "bin/windows-Debug/x86_64" > nul)
-  COMMAND IF EXIST "libs/SDL2_ttf/lib/x64/SDL2_ttf.dll"\ (xcopy /Q /E /Y /I "libs/SDL2_ttf/lib/x64/SDL2_ttf.dll" "bin/windows-Debug/x86_64" > nul) ELSE (xcopy /Q /Y /I "libs/SDL2_ttf/lib/x64/SDL2_ttf.dll" "bin/windows-Debug/x86_64" > nul)
-  COMMAND IF EXIST "libs/SDL2/lib/x64/SDL2.dll"\ (xcopy /Q /E /Y /I "libs/SDL2/lib/x64/SDL2.dll" "cmake-build-debug/bin/windows-Debug/x86_64/" > nul) ELSE (xcopy /Q /Y /I "libs/SDL2/lib/x64/SDL2.dll" "cmake-build-debug/bin/windows-Debug/x86_64/" > nul)
-  COMMAND IF EXIST "libs/SDL2_image/lib/x64/SDL2_image.dll"\ (xcopy /Q /E /Y /I "libs/SDL2_image/lib/x64/SDL2_image.dll" "cmake-build-debug/bin/windows-Debug/x86_64/" > nul) ELSE (xcopy /Q /Y /I "libs/SDL2_image/lib/x64/SDL2_image.dll" "cmake-build-debug/bin/windows-Debug/x86_64/" > nul)
-  COMMAND IF EXIST "libs/SDL2_ttf/lib/x64/SDL2_ttf.dll"\ (xcopy /Q /E /Y /I "libs/SDL2_ttf/lib/x64/SDL2_ttf.dll" "cmake-build-debug/bin/windows-Debug/x86_64/" > nul) ELSE (xcopy /Q /Y /I "libs/SDL2_ttf/lib/x64/SDL2_ttf.dll" "cmake-build-debug/bin/windows-Debug/x86_64/" > nul)
+  COMMAND IF EXIST libs/SDL2/lib/x64/SDL2.dll\ (xcopy /Q /E /Y /I libs/SDL2/lib/x64/SDL2.dll bin/windows-Debug/x86_64 > nul) ELSE (xcopy /Q /Y /I libs/SDL2/lib/x64/SDL2.dll bin/windows-Debug/x86_64 > nul)
+  COMMAND IF EXIST libs/SDL2_image/lib/x64/SDL2_image.dll\ (xcopy /Q /E /Y /I libs/SDL2_image/lib/x64/SDL2_image.dll bin/windows-Debug/x86_64 > nul) ELSE (xcopy /Q /Y /I libs/SDL2_image/lib/x64/SDL2_image.dll bin/windows-Debug/x86_64 > nul)
+  COMMAND IF EXIST libs/SDL2_ttf/lib/x64/SDL2_ttf.dll\ (xcopy /Q /E /Y /I libs/SDL2_ttf/lib/x64/SDL2_ttf.dll bin/windows-Debug/x86_64 > nul) ELSE (xcopy /Q /Y /I libs/SDL2_ttf/lib/x64/SDL2_ttf.dll bin/windows-Debug/x86_64 > nul)
+  COMMAND IF EXIST libs/lua/lua53.dll\ (xcopy /Q /E /Y /I libs/lua/lua53.dll bin/windows-Debug/x86_64 > nul) ELSE (xcopy /Q /Y /I libs/lua/lua53.dll bin/windows-Debug/x86_64 > nul)
+  COMMAND IF EXIST libs/lua/liblua53.a.lib\ (xcopy /Q /E /Y /I libs/lua/liblua53.a.lib bin/windows-Debug/x86_64 > nul) ELSE (xcopy /Q /Y /I libs/lua/liblua53.a.lib bin/windows-Debug/x86_64 > nul)
 )
 if(CMAKE_BUILD_TYPE STREQUAL Release)
   set_target_properties("MitoEngine2D" PROPERTIES
@@ -119,6 +124,8 @@ if(CMAKE_BUILD_TYPE STREQUAL Release) # Include dirs
     libs/SDL2_image/include
     libs/SDL2_ttf/include
     libs/glm
+    libs/lua
+    libs/sol
   )
 endif()
 target_compile_definitions("MitoEngine2D" PRIVATE
@@ -129,6 +136,7 @@ if(CMAKE_BUILD_TYPE STREQUAL Release) # Lib dirs
     libs/SDL2/lib/x64
     libs/SDL2_image/lib/x64
     libs/SDL2_ttf/lib/x64
+    libs/lua
   )
 endif()
 target_link_libraries("MitoEngine2D"
@@ -136,6 +144,7 @@ target_link_libraries("MitoEngine2D"
   $<$<CONFIG:Release>:SDL2>
   $<$<CONFIG:Release>:SDL2_image>
   $<$<CONFIG:Release>:SDL2_ttf>
+  $<$<CONFIG:Release>:liblua53.a>
 )
 if(CMAKE_BUILD_TYPE STREQUAL Release)
   if (NOT MSVC)
@@ -170,10 +179,9 @@ if(CMAKE_BUILD_TYPE STREQUAL Release)
   )
 endif()
 add_custom_command(TARGET MitoEngine2D POST_BUILD
-  COMMAND IF EXIST "libs/SDL2/lib/x64/SDL2.dll"\ (xcopy /Q /E /Y /I "libs/SDL2/lib/x64/SDL2.dll" "bin/windows-Release/x86_64" > nul) ELSE (xcopy /Q /Y /I "libs/SDL2/lib/x64/SDL2.dll" "bin/windows-Release/x86_64" > nul)
-  COMMAND IF EXIST "libs/SDL2_image/lib/x64/SDL2_image.dll"\ (xcopy /Q /E /Y /I "libs/SDL2_image/lib/x64/SDL2_image.dll" "bin/windows-Release/x86_64" > nul) ELSE (xcopy /Q /Y /I "libs/SDL2_image/lib/x64/SDL2_image.dll" "bin/windows-Release/x86_64" > nul)
-  COMMAND IF EXIST "libs/SDL2_ttf/lib/x64/SDL2_ttf.dll"\ (xcopy /Q /E /Y /I "libs/SDL2_ttf/lib/x64/SDL2_ttf.dll" "bin/windows-Release/x86_64" > nul) ELSE (xcopy /Q /Y /I "libs/SDL2_ttf/lib/x64/SDL2_ttf.dll" "bin/windows-Release/x86_64" > nul)
-  COMMAND IF EXIST "libs/SDL2/lib/x64/SDL2.dll"\ (xcopy /Q /E /Y /I "libs/SDL2/lib/x64/SDL2.dll" "cmake-build-debug/bin/windows-Debug/x86_64/" > nul) ELSE (xcopy /Q /Y /I "libs/SDL2/lib/x64/SDL2.dll" "cmake-build-debug/bin/windows-Debug/x86_64/" > nul)
-  COMMAND IF EXIST "libs/SDL2_image/lib/x64/SDL2_image.dll"\ (xcopy /Q /E /Y /I "libs/SDL2_image/lib/x64/SDL2_image.dll" "cmake-build-debug/bin/windows-Debug/x86_64/" > nul) ELSE (xcopy /Q /Y /I "libs/SDL2_image/lib/x64/SDL2_image.dll" "cmake-build-debug/bin/windows-Debug/x86_64/" > nul)
-  COMMAND IF EXIST "libs/SDL2_ttf/lib/x64/SDL2_ttf.dll"\ (xcopy /Q /E /Y /I "libs/SDL2_ttf/lib/x64/SDL2_ttf.dll" "cmake-build-debug/bin/windows-Debug/x86_64/" > nul) ELSE (xcopy /Q /Y /I "libs/SDL2_ttf/lib/x64/SDL2_ttf.dll" "cmake-build-debug/bin/windows-Debug/x86_64/" > nul)
+  COMMAND IF EXIST libs/SDL2/lib/x64/SDL2.dll\ (xcopy /Q /E /Y /I libs/SDL2/lib/x64/SDL2.dll bin/windows-Release/x86_64 > nul) ELSE (xcopy /Q /Y /I libs/SDL2/lib/x64/SDL2.dll bin/windows-Release/x86_64 > nul)
+  COMMAND IF EXIST libs/SDL2_image/lib/x64/SDL2_image.dll\ (xcopy /Q /E /Y /I libs/SDL2_image/lib/x64/SDL2_image.dll bin/windows-Release/x86_64 > nul) ELSE (xcopy /Q /Y /I libs/SDL2_image/lib/x64/SDL2_image.dll bin/windows-Release/x86_64 > nul)
+  COMMAND IF EXIST libs/SDL2_ttf/lib/x64/SDL2_ttf.dll\ (xcopy /Q /E /Y /I libs/SDL2_ttf/lib/x64/SDL2_ttf.dll bin/windows-Release/x86_64 > nul) ELSE (xcopy /Q /Y /I libs/SDL2_ttf/lib/x64/SDL2_ttf.dll bin/windows-Release/x86_64 > nul)
+  COMMAND IF EXIST libs/lua/lua53.dll\ (xcopy /Q /E /Y /I libs/lua/lua53.dll bin/windows-Release/x86_64 > nul) ELSE (xcopy /Q /Y /I libs/lua/lua53.dll bin/windows-Release/x86_64 > nul)
+  COMMAND IF EXIST libs/lua/liblua53.a.lib\ (xcopy /Q /E /Y /I libs/lua/liblua53.a.lib bin/windows-Release/x86_64 > nul) ELSE (xcopy /Q /Y /I libs/lua/liblua53.a.lib bin/windows-Release/x86_64 > nul)
 )

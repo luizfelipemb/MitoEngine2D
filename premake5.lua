@@ -42,6 +42,8 @@ project "MitoEngine2D"
 			"libs/SDL2_image/include",
 			"libs/SDL2_ttf/include",
 			"libs/glm",
+			"libs/lua",
+            "libs/sol"
         }
 
         libdirs
@@ -49,6 +51,7 @@ project "MitoEngine2D"
             "libs/SDL2/lib/x64",
 			"libs/SDL2_image/lib/x64",
 			"libs/SDL2_ttf/lib/x64",
+			"libs/lua"			
         }
 
         links 
@@ -56,15 +59,14 @@ project "MitoEngine2D"
             "SDL2main", 
             "SDL2",
 			"SDL2_image",
-			"SDL2_ttf"
+			"SDL2_ttf",
+			"liblua53.a"
         }
         
         postbuildcommands {
-            "{COPY} \"libs/SDL2/lib/x64/SDL2.dll\" \"%{cfg.targetdir}\"",
-            "{COPY} \"libs/SDL2_image/lib/x64/SDL2_image.dll\" \"%{cfg.targetdir}\"",
-            "{COPY} \"libs/SDL2_ttf/lib/x64/SDL2_ttf.dll\" \"%{cfg.targetdir}\"",
-			
-			"{COPY} \"libs/SDL2/lib/x64/SDL2.dll\" \"cmake-build-debug/bin/windows-Debug/x86_64/\"",
-			"{COPY} \"libs/SDL2_image/lib/x64/SDL2_image.dll\" \"cmake-build-debug/bin/windows-Debug/x86_64/\"",
-			"{COPY} \"libs/SDL2_ttf/lib/x64/SDL2_ttf.dll\" \"cmake-build-debug/bin/windows-Debug/x86_64/\""
+            "{COPY} %{path.getabsolute('libs/SDL2/lib/x64/SDL2.dll')} %{cfg.targetdir}",
+			"{COPY} %{path.getabsolute('libs/SDL2_image/lib/x64/SDL2_image.dll')} %{cfg.targetdir}",
+			"{COPY} %{path.getabsolute('libs/SDL2_ttf/lib/x64/SDL2_ttf.dll')} %{cfg.targetdir}",
+            "{COPY} %{path.getabsolute('libs/lua/lua53.dll')} %{cfg.targetdir}",
+			"{COPY} %{path.getabsolute('libs/lua/liblua53.a.lib')} %{cfg.targetdir}"
         }

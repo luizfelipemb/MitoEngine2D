@@ -53,8 +53,8 @@ public:
 class SpriteComponent : public Component
 {
 public:
-    SpriteComponent(GameObject* owner, std::string sprite, int width = 100, int height = 100, std::uint8_t red = 255,
-                    std::uint8_t green = 255, std::uint8_t blue = 255) :
+    SpriteComponent(GameObject* owner, std::string sprite,int width = 100, int height = 100,
+                    std::uint8_t red = 255, std::uint8_t green = 255, std::uint8_t blue = 255) :
         Component(owner), m_sprite(sprite), m_width(width), m_height(height), m_color(Color{red, green, blue})
     {
     }
