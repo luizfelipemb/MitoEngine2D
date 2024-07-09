@@ -37,13 +37,24 @@ void SpriteComponent::Update(float deltaTime)
 
 ControllerComponent::ControllerComponent(GameObject* owner) : Component(owner)
 {
+	m_currentVelocity = glm::vec2(0,0);
+	m_previousVelocity = m_currentVelocity;
 	GlobalEventBus::SubscribeToEvent<KeyPressedEvent>(this, &ControllerComponent::OnKeyPressedEvent);
 	GlobalEventBus::SubscribeToEvent<KeyReleasedEvent>(this, &ControllerComponent::OnKeyReleasedEvent);
 	owner->LocalEventBus.SubscribeToEvent<CollisionStayEvent>(this, &ControllerComponent::OnCollisionStay);
+	owner->LocalEventBus.SubscribeToEvent<CollisionEnterEvent>(this, &ControllerComponent::OnCollisionEnter);
+	owner->LocalEventBus.SubscribeToEvent<CollisionExitEvent>(this, &ControllerComponent::OnCollisionExit);
 }
 
 void ControllerComponent::Update(float deltaTime)
 {
+	if(auto rigidBody = m_owner->GetComponent<RigidBody2DComponent>())
+	{
+		rigidBody->Velocity += m_currentVelocity - m_previousVelocity;
+		Logger::Log(std::to_string(static_cast<int>(m_currentVelocity.x))+" "+
+							std::to_string(static_cast<int>(m_currentVelocity.y)));
+	}
+	m_previousVelocity = m_currentVelocity;
 }
 
 void ControllerComponent::OnCollisionStay(CollisionStayEvent& event)
@@ -51,27 +62,34 @@ void ControllerComponent::OnCollisionStay(CollisionStayEvent& event)
 	m_colliding = true;
 }
 
+void ControllerComponent::OnCollisionEnter(CollisionEnterEvent& event)
+{
+	m_colliding = true;
+	m_currentVelocity = glm::vec2(0,0);
+}
+
+void ControllerComponent::OnCollisionExit(CollisionExitEvent& event)
+{
+	m_colliding = false;
+}
+
 void ControllerComponent::OnKeyPressedEvent(KeyPressedEvent& event)
 {
-	if( auto rigidBody = m_owner->GetComponent<RigidBody2DComponent>())
+	if(auto rigidBody = m_owner->GetComponent<RigidBody2DComponent>())
 	{
 		switch (event.Symbol)
 		{
 		case SDLK_w:
-			//Logger::Log("ControllerComponent Key Up Pressed");
-			rigidBody->Velocity.y -= 500;
+			m_currentVelocity.y -= 500;
 			break;
 		case SDLK_d:
-			//Logger::Log("ControllerComponent Key Right Pressed");
-			rigidBody->Velocity.x += 500;
+			m_currentVelocity.x += 500;
 			break;
 		case SDLK_s:
-			//Logger::Log("ControllerComponent Key Down Pressed");
-			rigidBody->Velocity.y += 500;
+			m_currentVelocity.y += 500;
 			break;
 		case SDLK_a:
-			//Logger::Log("ControllerComponent Key Left Pressed");
-			rigidBody->Velocity.x -= 500;
+			m_currentVelocity.x -= 500;
 			break;
 		}
 	}
@@ -85,20 +103,16 @@ void ControllerComponent::OnKeyReleasedEvent(KeyReleasedEvent& event)
 		switch (event.Symbol)
 		{
 		case SDLK_w:
-			//Logger::Log("ControllerComponent Key Up Released");
-			rigidBody->Velocity.y += 500;
+			m_currentVelocity.y = 0;
 			break;
 		case SDLK_d:
-			//Logger::Log("ControllerComponent Key Right Released");
-			rigidBody->Velocity.x -= 500;
+			m_currentVelocity.x = 0;
 			break;
 		case SDLK_s:
-			//Logger::Log("ControllerComponent Key Down Released");
-			rigidBody->Velocity.y -= 500;
+			m_currentVelocity.y = 0;
 			break;
 		case SDLK_a:
-			//Logger::Log("ControllerComponent Key Left Released");
-			rigidBody->Velocity.x += 500;
+			m_currentVelocity.x = 0;
 			break;
 		}
 	}
@@ -220,8 +234,6 @@ void Registry::CalculateCollisions()
 			}
 			if (collisionHappened)
 			{
-				//Logger::Log("Entities " + std::to_string(a->GetId()) + " and " + std::to_string(b->GetId()) + " are colliding!");
-
 				if(!wasColliding)
 				{
 					Logger::Log("Entities " + std::to_string(a->GetId()) + " and " + std::to_string(b->GetId()) + " started colliding!");

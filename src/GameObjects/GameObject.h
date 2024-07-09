@@ -74,11 +74,15 @@ public:
     explicit ControllerComponent(GameObject* owner);
     void Update(float deltaTime) override;
     void OnCollisionStay(CollisionStayEvent& event);
+    void OnCollisionEnter(CollisionEnterEvent& event);
+    void OnCollisionExit(CollisionExitEvent& event);
     void OnKeyPressedEvent(KeyPressedEvent& event);
     void OnKeyReleasedEvent(KeyReleasedEvent& event);
 
 private:
-    bool m_colliding;
+    bool m_colliding=false;
+    glm::vec2 m_currentVelocity;
+    glm::vec2 m_previousVelocity;
 };
 
 class RigidBody2DComponent : public Component
