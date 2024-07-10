@@ -1,9 +1,9 @@
+#include <sol.hpp>
 #include "./Game.h"
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <glm.hpp>
-#include <sol.hpp>
 
 #include "../GameObjects/GameObject.h"
 #include "../Logger/Logger.h"
@@ -70,9 +70,32 @@ void Game::Initialize()
 	AssetManager::Initialize();
 	RendererManager::Initialize();
 	m_isRunning = true;
+	
+	LevelSetupViaLua();
 
-	// This checks the syntax of our script, but it does not execute the script
-	sol::state lua;
+	/*
+	std::unique_ptr<GameObject>& player = m_registry->CreateGameObject();
+	player->AddComponent<TransformComponent>(glm::vec2(50, 100));
+	player->AddComponent<SpriteComponent>("assets/images/RoundedSquare.png",50,50,0,255,0);
+	player->AddComponent<ControllerComponent>();
+	player->AddComponent<RigidBody2DComponent>();
+	player->AddComponent<BoxCollider2DComponent>(50, 50);
+	
+	std::unique_ptr<GameObject>& enemy = m_registry->CreateGameObject();
+	enemy->AddComponent<TransformComponent>(glm::vec2(200, 50));
+	enemy->AddComponent<SpriteComponent>("assets/images/RoundedSquare.png",100, 100, 255, 0, 0);
+	enemy->AddComponent<RigidBody2DComponent>(glm::vec2(0, 20));
+	enemy->AddComponent<BoxCollider2DComponent>(100, 100);
+
+	std::unique_ptr<GameObject>& enemy2 = m_registry->CreateGameObject();
+	enemy2->AddComponent<TransformComponent>(glm::vec2(300, 50));
+	enemy2->AddComponent<SpriteComponent>("assets/images/RoundedSquare.png",100, 100, 255, 0, 0);
+	enemy2->AddComponent<BoxCollider2DComponent>(100, 100);
+	*/
+}
+
+void Game::LevelSetupViaLua()
+{
 	lua.open_libraries(sol::lib::base, sol::lib::math);
 	sol::load_result script = lua.load_file("./assets/scripts/Level1.lua");
 	if (!script.valid()) {
@@ -147,30 +170,16 @@ void Game::Initialize()
 					entity["components"]["sprite"]["blue"].get_or(255)
 				);
 			}
+			// Script
+			sol::optional<sol::table> script = entity["components"]["on_update_script"];
+			if (script != sol::nullopt) {
+				sol::function func = entity["components"]["on_update_script"][0];
+				newGameObject->AddComponent<ScriptComponent>(func);
+			}
 		}
 
 		i++;
 	}
-	
-	/*
-	std::unique_ptr<GameObject>& player = m_registry->CreateGameObject();
-	player->AddComponent<TransformComponent>(glm::vec2(50, 100));
-	player->AddComponent<SpriteComponent>("assets/images/RoundedSquare.png",50,50,0,255,0);
-	player->AddComponent<ControllerComponent>();
-	player->AddComponent<RigidBody2DComponent>();
-	player->AddComponent<BoxCollider2DComponent>(50, 50);
-	
-	std::unique_ptr<GameObject>& enemy = m_registry->CreateGameObject();
-	enemy->AddComponent<TransformComponent>(glm::vec2(200, 50));
-	enemy->AddComponent<SpriteComponent>("assets/images/RoundedSquare.png",100, 100, 255, 0, 0);
-	enemy->AddComponent<RigidBody2DComponent>(glm::vec2(0, 20));
-	enemy->AddComponent<BoxCollider2DComponent>(100, 100);
-
-	std::unique_ptr<GameObject>& enemy2 = m_registry->CreateGameObject();
-	enemy2->AddComponent<TransformComponent>(glm::vec2(300, 50));
-	enemy2->AddComponent<SpriteComponent>("assets/images/RoundedSquare.png",100, 100, 255, 0, 0);
-	enemy2->AddComponent<BoxCollider2DComponent>(100, 100);
-	*/
 }
 
 void Game::Run()

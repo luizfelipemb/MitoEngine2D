@@ -1,8 +1,4 @@
 #include "GameObject.h"
-
-#include <iostream>
-#include <ostream>
-
 #include "../AssetStore/AssetManager.h"
 #include "../AssetStore/RendererManager.h"
 #include "../Events/CollisionEnterEvent.h"
@@ -10,7 +6,6 @@
 #include "../Events/KeyReleasedEvent.h"
 #include "../Game/Game.h"
 #include "../Logger/Logger.h"
-
 
 class CollisionExitEvent;
 class CollisionEvent;
@@ -51,8 +46,8 @@ void ControllerComponent::Update(float deltaTime)
 	if(auto rigidBody = m_owner->GetComponent<RigidBody2DComponent>())
 	{
 		rigidBody->Velocity += m_currentVelocity - m_previousVelocity;
-		Logger::Log(std::to_string(static_cast<int>(m_currentVelocity.x))+" "+
-							std::to_string(static_cast<int>(m_currentVelocity.y)));
+		//Logger::Log(std::to_string(static_cast<int>(m_currentVelocity.x))+" "+
+		//					std::to_string(static_cast<int>(m_currentVelocity.y)));
 	}
 	m_previousVelocity = m_currentVelocity;
 }
@@ -135,6 +130,12 @@ BoxCollider2DComponent::BoxCollider2DComponent(GameObject* owner, int width, int
 void BoxCollider2DComponent::Update(float deltaTime)
 {
 	
+}
+
+void ScriptComponent::Update(float deltaTime)
+{
+	if(Func != sol::lua_nil)
+		Func();
 }
 
 int GameObject::GetId() const

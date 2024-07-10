@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include <SDL.h>
 #include "../GameObjects/GameObject.h"
 
 class EventBus;
@@ -14,6 +13,7 @@ public:
 	Game();
 	~Game();
 	void Initialize();
+	void LevelSetupViaLua();
 	void Run();
 	void ProcessInput();
 	void Update();
@@ -23,4 +23,5 @@ private:
 	bool m_isRunning;
 	int m_msPreviousFrame = 0;
 	std::unique_ptr<Registry> m_registry;
+	sol::state lua;
 };

@@ -1,4 +1,5 @@
 #pragma once
+#include <sol.hpp>
 #include <memory>
 #include <string>
 #include <typeindex>
@@ -6,6 +7,7 @@
 #include <vec2.hpp>
 #include <vec3.hpp>
 #include <vector>
+#include <tuple>
 #include "../Logger/Logger.h"
 #include "../Events/EventBus.h"
 #include "../Events/KeyPressedEvent.h"
@@ -112,6 +114,7 @@ public:
 private:
 };
 
+
 class GameObject
 {
 public:
@@ -144,6 +147,20 @@ public:
 };
 
 
+class ScriptComponent : public Component
+{
+public:
+    ScriptComponent(GameObject* owner, sol::function func = sol::lua_nil)
+        : Component(owner){this->Func = func;}
+
+    void CreateLuaBindings(sol::state& lua)
+    {
+        
+    }
+    void Update(float deltaTime) override;
+    sol::function Func;
+private:
+};
 class Registry
 {
 public:

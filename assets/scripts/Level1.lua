@@ -47,9 +47,14 @@ Level = {
                     red = 255,
                     green = 0,
                     blue = 0
+                },
+                on_update_script = {
+                    [0] =
+                        function(entity, delta_time, ellapsed_time)
+                            print("Executing Lua script!")
+                        end
                 }
-            } 
+            }
         }
-
     }
 }
