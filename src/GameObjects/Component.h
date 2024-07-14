@@ -102,17 +102,18 @@ public:
 
 private:
 };
+
+
 class ScriptComponent : public Component
 {
 public:
-    ScriptComponent(GameObject* owner, sol::function func = sol::lua_nil)
-        : Component(owner){this->Func = func;}
-
-    void CreateLuaBindings(sol::state& lua)
+    ScriptComponent(GameObject* owner,sol::state& lua, sol::function func = sol::lua_nil)
+        : Component(owner), Func(func)
     {
-        
     }
+
     void Update(float deltaTime) override;
+    void CallFunction();
     sol::function Func;
 private:
 };

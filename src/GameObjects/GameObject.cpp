@@ -32,7 +32,13 @@ void Registry::Update(float deltaTime)
 			}
 		}
 	}
-
+	for (auto& entity: m_gameObjects) {
+		if(auto script = entity->GetComponent<ScriptComponent>())
+		{
+			script->CallFunction();
+		}
+	}
+	
 	CalculateCollisions();
 }
 

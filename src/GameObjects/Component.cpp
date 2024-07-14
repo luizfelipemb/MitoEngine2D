@@ -125,6 +125,11 @@ void BoxCollider2DComponent::Update(float deltaTime)
 
 void ScriptComponent::Update(float deltaTime)
 {
+	
+}
+
+void ScriptComponent::CallFunction()
+{
 	if(Func != sol::lua_nil)
-		Func();
+		Func(m_owner);
 }

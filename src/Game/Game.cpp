@@ -98,6 +98,12 @@ void Game::LevelSetupViaLua()
 {
 	lua.open_libraries(sol::lib::base, sol::lib::math);
 	sol::load_result script = lua.load_file("./assets/scripts/Level1.lua");
+	lua.new_usertype<GameObject>(
+			"gameobject",
+			"get_id", &GameObject::GetId
+		);
+	//lua.set_function("get_id", &GameObject::GetId );
+	
 	if (!script.valid()) {
 		sol::error err = script;
 		std::string errorMessage = err.what();
@@ -174,7 +180,7 @@ void Game::LevelSetupViaLua()
 			sol::optional<sol::table> script = entity["components"]["on_update_script"];
 			if (script != sol::nullopt) {
 				sol::function func = entity["components"]["on_update_script"][0];
-				newGameObject->AddComponent<ScriptComponent>(func);
+				newGameObject->AddComponent<ScriptComponent>(lua, func);
 			}
 		}
 
@@ -203,7 +209,7 @@ void Game::Update()
 
 	// The difference in ticks since the last frame, converted to seconds
 	double deltaTime = (SDL_GetTicks() - m_msPreviousFrame) / 1000.0;
-
+	
 	// Store the "previous" frame time
 	m_msPreviousFrame = SDL_GetTicks();
 

@@ -63,7 +63,6 @@ private:
     std::unordered_multimap<int,int> m_objectsColliding;
 };
 
-//   GAMEOBJECT  /////////////////////////////////////////////////////////////////////////
 template <typename TComponent, typename... TArgs>
 void GameObject::AddComponent(TArgs&&... args)
 {

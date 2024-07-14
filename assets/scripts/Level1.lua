@@ -22,6 +22,12 @@ Level = {
                     red = 0,
                     green = 255,
                     blue = 0
+                },
+                on_update_script = {
+                    [0] =
+                    function(gameobject)
+                        print(gameobject:get_id())
+                    end
                 }
             }
         },
@@ -50,8 +56,8 @@ Level = {
                 },
                 on_update_script = {
                     [0] =
-                        function(entity, delta_time, ellapsed_time)
-                            print("Executing Lua script!")
+                        function(gameobject)
+                            print(gameobject:get_id())
                         end
                 }
             }
