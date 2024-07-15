@@ -94,6 +94,16 @@ void Game::Initialize()
 	*/
 }
 
+void SetEntityPosition(GameObject* entity, double x, double y)
+{
+	if (entity->HasComponent<TransformComponent>()) {
+		auto transform = entity->GetComponent<TransformComponent>();
+		transform->Position.x = x;
+		transform->Position.y = y;
+	} else {
+		Logger::Err("Trying to set the position of an entity that has no transform component");
+	}
+}
 void Game::LevelSetupViaLua()
 {
 	lua.open_libraries(sol::lib::base, sol::lib::math);
@@ -102,7 +112,7 @@ void Game::LevelSetupViaLua()
 			"gameobject",
 			"get_id", &GameObject::GetId
 		);
-	//lua.set_function("get_id", &GameObject::GetId );
+	lua.set_function("set_position", SetEntityPosition);
 	
 	if (!script.valid()) {
 		sol::error err = script;

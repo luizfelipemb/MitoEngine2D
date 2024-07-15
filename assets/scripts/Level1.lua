@@ -25,9 +25,9 @@ Level = {
                 },
                 on_update_script = {
                     [0] =
-                    function(gameobject)
-                        print(gameobject:get_id())
-                    end
+                        function(gameobject)
+                            print("GameObject Id:", gameobject:get_id())
+                        end
                 }
             }
         },
@@ -57,7 +57,9 @@ Level = {
                 on_update_script = {
                     [0] =
                         function(gameobject)
-                            print(gameobject:get_id())
+                            print("GameObject Id:", gameobject:get_id())
+                            set_position(gameobject,500,500)
+                            hello_world();
                         end
                 }
             }
