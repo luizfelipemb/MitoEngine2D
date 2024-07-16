@@ -19,32 +19,26 @@ class Component;
 class GameObject
 {
 public:
-    GameObject(int id, Registry* reg): RefRegistry(reg), m_id(id)
-    {
-    }
+    GameObject(int id, Registry* reg, std::string name = "GameObject"):
+            RefRegistry(reg), m_id(id), m_name(name) {}
     int GetId() const;
-    
-    template <typename TComponent, typename... TArgs>
-    void AddComponent(TArgs&&... args);
-    template <typename TComponent>
-    TComponent* GetComponent();
-    template <typename TComponent>
-    bool HasComponent();
-
-    std::unordered_map<std::type_index, std::shared_ptr<Component>> Components;
-
-    Registry* RefRegistry;
-    EventBus LocalEventBus;
-
-    // Operator overloading for entity objects
+    std::string GetName() const;
+    template <typename TComponent, typename... TArgs> void AddComponent(TArgs&&... args);
+    template <typename TComponent> TComponent* GetComponent();
+    template <typename TComponent> bool HasComponent();
     GameObject& operator =(const GameObject& other) = default;
     bool operator ==(const GameObject& other) const { return m_id == other.m_id; }
     bool operator !=(const GameObject& other) const { return m_id != other.m_id; }
     bool operator >(const GameObject& other) const { return m_id > other.m_id; }
     bool operator <(const GameObject& other) const { return m_id < other.m_id; }
+    
+    std::unordered_map<std::type_index, std::shared_ptr<Component>> Components;
+    Registry* RefRegistry;
+    EventBus LocalEventBus;
 
     private:
         int m_id;
+        std::string m_name;
 };
 
 
@@ -55,7 +49,7 @@ public:
     const std::vector<std::unique_ptr<GameObject>>& GetAllGameObjects() const;
     bool CheckAABBCollision(double aX, double aY, double aW, double aH, double bX, double bY, double bW, double bH);
     void CalculateCollisions();
-    std::unique_ptr<GameObject>& CreateGameObject(glm::vec3 position = glm::vec3(0, 0, 0));
+    std::unique_ptr<GameObject>& CreateGameObject(std::string name = "GameObject");
 
 private:
     int m_numberOfGameObjects;

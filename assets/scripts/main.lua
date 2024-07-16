@@ -1,7 +1,8 @@
 Level = {
     entities = {
-        [0] = {
-            --player
+        [0] =
+        {
+            name = "player",
             components = {
                 transform = {
                     position = { x = 50, y = 100 },
@@ -21,18 +22,18 @@ Level = {
                     height = 32,
                     red = 0,
                     green = 255,
+                    green = 255,
                     blue = 0
                 },
                 on_update_script = {
                     [0] =
                         function(gameobject)
-                            print("GameObject Id:", gameobject:get_id())
+                            mito_log("GameObject named:" .. gameobject:get_name())
                         end
                 }
             }
         },
         {
-            --enemy
             components = {
                 transform = {
                     position = { x = 200, y = 50 },
@@ -57,7 +58,7 @@ Level = {
                 on_update_script = {
                     [0] =
                         function(gameobject)
-                            print("GameObject Id:", gameobject:get_id())
+                            mito_log("GameObject named:" .. gameobject:get_name())
                             set_position(gameobject,500,500)
                             hello_world();
                         end

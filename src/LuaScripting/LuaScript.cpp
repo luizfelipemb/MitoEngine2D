@@ -18,16 +18,23 @@ void SetEntityPosition(GameObject* entity, double x, double y)
     }
 }
 
+void LuaPrint(const std::string& message) {
+    
+    Logger::Lua(message);
+}
+
 void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
 {
     lua.open_libraries(sol::lib::base, sol::lib::math);
     lua.new_usertype<GameObject>(
         "gameobject",
-        "get_id", &GameObject::GetId
+        "get_id", &GameObject::GetId,
+        "get_name", &GameObject::GetName
     );
     lua.set_function("set_position", SetEntityPosition);
+    lua.set_function("mito_log",LuaPrint);
 
-    sol::load_result luaScript = lua.load_file("./assets/scripts/Level1.lua");
+    sol::load_result luaScript = lua.load_file("./assets/scripts/main.lua");
     if (!luaScript.valid())
     {
         sol::error err = luaScript;
@@ -36,7 +43,7 @@ void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
         return;
     }
     // Executes the script using the Sol state
-    lua.script_file("./assets/scripts/Level1.lua");
+    lua.script_file("./assets/scripts/main.lua");
 
     // Read the big table for the current level
     sol::table level = lua["Level"];
@@ -52,7 +59,13 @@ void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
 
         sol::table entity = entities[i];
 
-        std::unique_ptr<GameObject>& newGameObject = registry->CreateGameObject();
+        std::string name;
+        if (entity["name"] != sol::nil)
+        {
+            name.assign(entity["name"]);
+        }
+        std::unique_ptr<GameObject>& newGameObject = registry->CreateGameObject(name);
+        
         // Components
         sol::optional<sol::table> hasComponents = entity["components"];
         if (hasComponents != sol::nullopt)

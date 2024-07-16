@@ -7,6 +7,7 @@ enum LogType
 {
     LOG_INFO,
     LOG_WARNING,
+    LOG_LUA,
     LOG_ERROR
 };
 
@@ -21,5 +22,6 @@ class Logger
     public:
         static std::vector<LogEntry> Messages;
         static void Log(const std::string& message);
+        static void Lua(const std::string& message);
         static void Err(const std::string& message);
 };

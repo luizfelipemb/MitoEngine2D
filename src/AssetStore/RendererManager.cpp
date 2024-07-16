@@ -81,13 +81,16 @@ void RendererManager::DrawFrameRender()
         switch (element.Type)
         {
         case LOG_INFO:
-            color = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);  // Green color for info
+            color = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
             break;
         case LOG_ERROR:
-            color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);  // Red color for error
+            color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+            break;
+        case LOG_LUA:
+            color = ImVec4(0.2f, 0.2f, 1.0f, 1.f);
             break;
         default:
-            color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);  // Default white color
+            color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
             break;
         }
         ImGui::PushStyleColor(ImGuiCol_Text, color);

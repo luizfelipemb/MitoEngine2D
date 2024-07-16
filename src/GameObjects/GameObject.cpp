@@ -11,9 +11,18 @@ int GameObject::GetId() const
 	return m_id;
 }
 
-std::unique_ptr<GameObject>& Registry::CreateGameObject(glm::vec3 position)
+std::string GameObject::GetName() const
 {
-	m_gameObjects.emplace_back(std::make_unique<GameObject>(m_numberOfGameObjects,this));
+	return m_name;
+}
+
+std::unique_ptr<GameObject>& Registry::CreateGameObject(std::string name)
+{
+	if(name.empty())
+	{
+		name = "GameObject";
+	}
+	m_gameObjects.emplace_back(std::make_unique<GameObject>(m_numberOfGameObjects,this,name));
 	Logger::Log("GameObject with id:" + std::to_string(m_numberOfGameObjects) + " created");
 	m_numberOfGameObjects++;
 	return m_gameObjects.back();

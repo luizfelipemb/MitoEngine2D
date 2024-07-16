@@ -26,6 +26,15 @@ void Logger::Log(const std::string& message)
     Messages.push_back(logEntry);
 }
 
+void Logger::Lua(const std::string& message)
+{
+    LogEntry logEntry;
+    logEntry.Type = LOG_LUA;
+    logEntry.Message = CurrentDateTimeToString() + ": " + message;
+    Messages.push_back(logEntry);
+    std::cerr << "\x1B[94m" << logEntry.Message << "\033[0m" << std::endl;
+}
+
 void Logger::Err(const std::string& message)
 {
     LogEntry logEntry;
