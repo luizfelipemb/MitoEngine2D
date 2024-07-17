@@ -1,0 +1,1 @@
+﻿mito_log("This is the player.lua script")

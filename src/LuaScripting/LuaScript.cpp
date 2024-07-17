@@ -121,23 +121,25 @@ void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
                 );
             }
             // Other Lua script add
-            sol::optional<sol::table> scriptTable = entity["components"]["script"];
-            if (entity["components"]["script"] != sol::nil)
+            sol::optional<sol::table> scriptsTable = entity["components"]["scripts"];
+            if (scriptsTable != sol::nullopt)
             {
-                std::string scriptPath = entity["components"]["script"];
-                sol::load_result script = lua.load_file("./assets/scripts/" + scriptPath);
-                Logger::Log(scriptPath);
-                if (!script.valid())
+                for (auto& scriptEntry : scriptsTable.value())
                 {
-                    sol::error err = script;
-                    std::string errorMessage = err.what();
-                    Logger::Err("Error loading the script: " + errorMessage);
-                }
-                else
-                {
-                    sol::function func = script;
-                    newGameObject->AddComponent<ScriptComponent>(lua,func);
-                    Logger::Log("aaa");
+                    std::string scriptPath = scriptEntry.second.as<std::string>();
+                    sol::load_result script = lua.load_file("./assets/scripts/" + scriptPath);
+                    Logger::Log(scriptPath);
+                    if (!script.valid())
+                    {
+                        sol::error err = script;
+                        std::string errorMessage = err.what();
+                        Logger::Err("Error loading the script: " + errorMessage);
+                    }
+                    else
+                    {
+                        sol::function func = script;
+                        newGameObject->AddComponent<ScriptComponent>(lua, func);
+                    }
                 }
             }
             // Script

@@ -54,7 +54,10 @@ Level = {
                     green = 0,
                     blue = 0
                 },
-                script = "enemy.lua"
+                scripts = {
+                    "enemy.lua",
+                    "player.lua"
+                }
             }
         }
     }
