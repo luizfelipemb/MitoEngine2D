@@ -1,6 +1,5 @@
 Level = {
     entities = {
-        [0] =
         {
             name = "player",
             components = {
@@ -26,15 +25,15 @@ Level = {
                     blue = 0
                 },
                 on_update_script = {
-                    [0] =
-                        function(gameobject)
-                            mito_log("GameObject named:" .. gameobject:get_name())
-                        end
+                    function(gameobject) 
+                        --mito_log("GameObject named:" .. gameobject:get_name())
+                    end
                 }
             }
         },
         {
-            components = {
+            components = 
+            {
                 transform = {
                     position = { x = 200, y = 50 },
                     scale = 1,
@@ -55,14 +54,7 @@ Level = {
                     green = 0,
                     blue = 0
                 },
-                on_update_script = {
-                    [0] =
-                        function(gameobject)
-                            mito_log("GameObject named:" .. gameobject:get_name())
-                            set_position(gameobject,500,500)
-                            hello_world();
-                        end
-                }
+                script = "enemy.lua"
             }
         }
     }

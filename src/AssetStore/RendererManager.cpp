@@ -87,7 +87,7 @@ void RendererManager::DrawFrameRender()
             color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
             break;
         case LOG_LUA:
-            color = ImVec4(0.2f, 0.2f, 1.0f, 1.f);
+            color = ImVec4(0.12f, 0.69f, 1.f, 1.f);
             break;
         default:
             color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);

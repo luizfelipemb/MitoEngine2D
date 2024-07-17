@@ -48,7 +48,7 @@ void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
     // Read the big table for the current level
     sol::table level = lua["Level"];
     sol::table entities = level["entities"];
-    int i = 0;
+    int i = 1; // Lua table start at 1
     while (true)
     {
         sol::optional<sol::table> hasEntity = entities[i];
@@ -120,11 +120,31 @@ void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
                     entity["components"]["sprite"]["blue"].get_or(255)
                 );
             }
+            // Other Lua script add
+            sol::optional<sol::table> scriptTable = entity["components"]["script"];
+            if (entity["components"]["script"] != sol::nil)
+            {
+                std::string scriptPath = entity["components"]["script"];
+                sol::load_result script = lua.load_file("./assets/scripts/" + scriptPath);
+                Logger::Log(scriptPath);
+                if (!script.valid())
+                {
+                    sol::error err = script;
+                    std::string errorMessage = err.what();
+                    Logger::Err("Error loading the script: " + errorMessage);
+                }
+                else
+                {
+                    sol::function func = script;
+                    newGameObject->AddComponent<ScriptComponent>(lua,func);
+                    Logger::Log("aaa");
+                }
+            }
             // Script
             sol::optional<sol::table> updateScript = entity["components"]["on_update_script"];
             if (updateScript != sol::nullopt)
             {
-                sol::function func = entity["components"]["on_update_script"][0];
+                sol::function func = entity["components"]["on_update_script"][1];
                 newGameObject->AddComponent<ScriptComponent>(lua, func);
             }
         }
