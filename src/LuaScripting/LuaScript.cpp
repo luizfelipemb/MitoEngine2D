@@ -34,7 +34,7 @@ void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
     lua.set_function("set_position", SetEntityPosition);
     lua.set_function("mito_log",LuaPrint);
 
-    sol::load_result luaScript = lua.load_file("./assets/scripts/main.lua");
+    sol::load_result luaScript = lua.load_file(LEVELS_PATH+INITIAL_LEVEL_NAME);
     if (!luaScript.valid())
     {
         sol::error err = luaScript;
@@ -43,7 +43,7 @@ void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
         return;
     }
     // Executes the script using the Sol state
-    lua.script_file("./assets/scripts/main.lua");
+    lua.script_file(LEVELS_PATH+INITIAL_LEVEL_NAME);
 
     // Read the big table for the current level
     sol::table level = lua["Level"];
@@ -126,9 +126,9 @@ void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
             {
                 for (auto& scriptEntry : scriptsTable.value())
                 {
-                    std::string scriptPath = scriptEntry.second.as<std::string>();
-                    sol::load_result script = lua.load_file("./assets/scripts/" + scriptPath);
-                    Logger::Log(scriptPath);
+                    std::string scriptName = scriptEntry.second.as<std::string>();
+                    sol::load_result script = lua.load_file(SCRIPTS_PATH + scriptName);
+                    Logger::Log(scriptName);
                     if (!script.valid())
                     {
                         sol::error err = script;

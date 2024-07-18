@@ -71,7 +71,6 @@ void Game::Initialize()
 	RendererManager::Initialize();
 	m_isRunning = true;
 	
-	m_luaScript = LuaScript();
 	m_luaScript.LevelSetupViaLua(m_registry);
 
 	/*
