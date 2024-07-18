@@ -45,6 +45,7 @@ public:
 class Registry
 {
 public:
+    void Start();
     void Update(float deltaTime);
     const std::vector<std::unique_ptr<GameObject>>& GetAllGameObjects() const;
     bool CheckAABBCollision(double aX, double aY, double aW, double aH, double bX, double bY, double bW, double bH);

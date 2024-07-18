@@ -128,8 +128,14 @@ void ScriptComponent::Update(float deltaTime)
 	
 }
 
-void ScriptComponent::CallFunction()
+void ScriptComponent::CallUpdate()
 {
-	if(Func != sol::lua_nil)
-		Func(m_owner);
+	if(UpdateFunc != sol::lua_nil)
+		UpdateFunc(m_owner);
+}
+
+void ScriptComponent::CallStart()
+{
+	if(StartFunc != sol::lua_nil)
+		StartFunc(m_owner);
 }

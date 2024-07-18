@@ -23,15 +23,11 @@ Level = {
                     green = 255,
                     green = 255,
                     blue = 0
-                },
-                on_update_script = {
-                    function(gameobject) 
-                        --mito_log("GameObject named:" .. gameobject:get_name())
-                    end
                 }
             }
         },
         {
+            name = "enemy",
             components = 
             {
                 transform = {
@@ -55,7 +51,6 @@ Level = {
                     blue = 0
                 },
                 scripts = {
-                    "enemy.lua",
                     "player.lua"
                 }
             }

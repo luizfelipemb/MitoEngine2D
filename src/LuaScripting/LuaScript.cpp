@@ -137,12 +137,14 @@ void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
                     }
                     else
                     {
-                        sol::function func = script;
-                        newGameObject->AddComponent<ScriptComponent>(lua, func);
+                        lua.script_file(SCRIPTS_PATH + scriptName);
+                        newGameObject->AddComponent<ScriptComponent>(lua);
+                        newGameObject->GetComponent<ScriptComponent>()->StartFunc = lua["start"];
+                        newGameObject->GetComponent<ScriptComponent>()->UpdateFunc = lua["update"];
                     }
                 }
             }
-            // Script
+            // Update Script
             sol::optional<sol::table> updateScript = entity["components"]["on_update_script"];
             if (updateScript != sol::nullopt)
             {

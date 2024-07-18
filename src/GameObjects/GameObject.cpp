@@ -28,6 +28,17 @@ std::unique_ptr<GameObject>& Registry::CreateGameObject(std::string name)
 	return m_gameObjects.back();
 }
 
+void Registry::Start()
+{
+	for (auto& entity: m_gameObjects) {
+		if(entity->HasComponent<ScriptComponent>())
+		{
+			auto script = entity->GetComponent<ScriptComponent>();
+			script->CallStart();
+		}
+	}
+}
+
 void Registry::Update(float deltaTime)
 {
 	//Update GameObjects
@@ -42,9 +53,10 @@ void Registry::Update(float deltaTime)
 		}
 	}
 	for (auto& entity: m_gameObjects) {
-		if(auto script = entity->GetComponent<ScriptComponent>())
+		if(entity->HasComponent<ScriptComponent>())
 		{
-			script->CallFunction();
+			auto script = entity->GetComponent<ScriptComponent>();
+			script->CallUpdate();
 		}
 	}
 	

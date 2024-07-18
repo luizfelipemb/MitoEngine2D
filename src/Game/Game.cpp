@@ -72,26 +72,7 @@ void Game::Initialize()
 	m_isRunning = true;
 	
 	m_luaScript.LevelSetupViaLua(m_registry);
-
-	/*
-	std::unique_ptr<GameObject>& player = m_registry->CreateGameObject();
-	player->AddComponent<TransformComponent>(glm::vec2(50, 100));
-	player->AddComponent<SpriteComponent>("assets/images/RoundedSquare.png",50,50,0,255,0);
-	player->AddComponent<ControllerComponent>();
-	player->AddComponent<RigidBody2DComponent>();
-	player->AddComponent<BoxCollider2DComponent>(50, 50);
-	
-	std::unique_ptr<GameObject>& enemy = m_registry->CreateGameObject();
-	enemy->AddComponent<TransformComponent>(glm::vec2(200, 50));
-	enemy->AddComponent<SpriteComponent>("assets/images/RoundedSquare.png",100, 100, 255, 0, 0);
-	enemy->AddComponent<RigidBody2DComponent>(glm::vec2(0, 20));
-	enemy->AddComponent<BoxCollider2DComponent>(100, 100);
-
-	std::unique_ptr<GameObject>& enemy2 = m_registry->CreateGameObject();
-	enemy2->AddComponent<TransformComponent>(glm::vec2(300, 50));
-	enemy2->AddComponent<SpriteComponent>("assets/images/RoundedSquare.png",100, 100, 255, 0, 0);
-	enemy2->AddComponent<BoxCollider2DComponent>(100, 100);
-	*/
+	m_registry->Start();
 }
 
 void Game::Run()
