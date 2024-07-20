@@ -107,16 +107,16 @@ private:
 class ScriptComponent : public Component
 {
 public:
-    ScriptComponent(GameObject* owner,sol::state& lua, sol::function func = sol::lua_nil)
+    ScriptComponent(GameObject* owner)
         : Component(owner)
     {
     }
-
+    void AddScript(sol::state& lua);
     void Update(float deltaTime) override;
     void CallUpdate();
     void CallStart();
-    sol::function StartFunc;
-    sol::function UpdateFunc;
+    std::vector<sol::function> StartFunc;
+    std::vector<sol::function> UpdateFunc;
     
 private:
 };

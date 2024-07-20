@@ -124,6 +124,7 @@ void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
             sol::optional<sol::table> scriptsTable = entity["components"]["scripts"];
             if (scriptsTable != sol::nullopt)
             {
+                newGameObject->AddComponent<ScriptComponent>();
                 for (auto& scriptEntry : scriptsTable.value())
                 {
                     std::string scriptName = scriptEntry.second.as<std::string>();
@@ -138,18 +139,9 @@ void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
                     else
                     {
                         lua.script_file(SCRIPTS_PATH + scriptName);
-                        newGameObject->AddComponent<ScriptComponent>(lua);
-                        newGameObject->GetComponent<ScriptComponent>()->StartFunc = lua["start"];
-                        newGameObject->GetComponent<ScriptComponent>()->UpdateFunc = lua["update"];
+                        newGameObject->GetComponent<ScriptComponent>()->AddScript(lua);
                     }
                 }
-            }
-            // Update Script
-            sol::optional<sol::table> updateScript = entity["components"]["on_update_script"];
-            if (updateScript != sol::nullopt)
-            {
-                sol::function func = entity["components"]["on_update_script"][1];
-                newGameObject->AddComponent<ScriptComponent>(lua, func);
             }
         }
 

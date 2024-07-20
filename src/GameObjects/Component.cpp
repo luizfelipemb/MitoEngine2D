@@ -123,6 +123,12 @@ void BoxCollider2DComponent::Update(float deltaTime)
 	
 }
 
+void ScriptComponent::AddScript(sol::state& lua)
+{
+	StartFunc.push_back(lua["start"]);
+	UpdateFunc.push_back(lua["update"]);
+}
+
 void ScriptComponent::Update(float deltaTime)
 {
 	
@@ -130,12 +136,18 @@ void ScriptComponent::Update(float deltaTime)
 
 void ScriptComponent::CallUpdate()
 {
-	if(UpdateFunc != sol::lua_nil)
-		UpdateFunc(m_owner);
+	for (auto& func : UpdateFunc)
+	{
+		if(func != sol::lua_nil)
+			func(m_owner);
+	}
 }
 
 void ScriptComponent::CallStart()
 {
-	if(StartFunc != sol::lua_nil)
-		StartFunc(m_owner);
+	for (auto& func : StartFunc)
+	{
+		if(func != sol::lua_nil)
+			func(m_owner);
+	}
 }
