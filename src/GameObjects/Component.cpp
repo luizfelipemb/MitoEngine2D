@@ -123,10 +123,22 @@ void BoxCollider2DComponent::Update(float deltaTime)
 	
 }
 
+void ScriptComponent::OnKeyPressedEvent(KeyPressedEvent& event)
+{
+	KeyPressedFunc(std::to_string(event.Symbol));
+}
+
 void ScriptComponent::AddScript(sol::state& lua)
 {
-	StartFunc.push_back(lua["start"]);
-	UpdateFunc.push_back(lua["update"]);
+	if(lua["start"] != sol::lua_nil)
+		StartFunc.push_back(lua["start"]);
+	if(lua["update"] != sol::lua_nil)
+		UpdateFunc.push_back(lua["update"]);
+	if(lua["on_key_pressed"] != sol::lua_nil)
+	{
+		KeyPressedFunc = lua["on_key_pressed"];
+	}
+	
 }
 
 void ScriptComponent::Update(float deltaTime)
