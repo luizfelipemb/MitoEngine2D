@@ -26,11 +26,24 @@ void LuaPrint(const std::string& message) {
 void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
 {
     lua.open_libraries(sol::lib::base, sol::lib::math);
+    lua.new_usertype<glm::vec2>(
+            "vec2",
+            "x", &glm::vec2::x,
+            "y", &glm::vec2::y
+        );
+    lua.new_usertype<TransformComponent>(
+            "transform_component",
+            "position", &TransformComponent::Position,
+            "scale", &TransformComponent::Scale,
+            "rotation", &TransformComponent::Rotation
+        );
     lua.new_usertype<GameObject>(
         "gameobject",
         "get_id", &GameObject::GetId,
-        "get_name", &GameObject::GetName
+        "get_name", &GameObject::GetName,
+        "get_component_transform", &GameObject::GetComponent<TransformComponent>
     );
+    
     lua.set_function("set_position", SetEntityPosition);
     lua.set_function("mito_log",LuaPrint);
 

@@ -125,7 +125,7 @@ void BoxCollider2DComponent::Update(float deltaTime)
 
 void ScriptComponent::OnKeyPressedEvent(KeyPressedEvent& event)
 {
-	KeyPressedFunc(std::to_string(event.Symbol));
+	KeyPressedFunc(m_owner,std::to_string(event.Symbol));
 }
 
 void ScriptComponent::AddScript(sol::state& lua)

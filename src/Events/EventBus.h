@@ -57,7 +57,6 @@ class EventBus
 {
 private:
     std::map<std::type_index, std::unique_ptr<HandlerList>> subscribers;
-
 public:
     EventBus()
     {
@@ -92,7 +91,7 @@ public:
         auto handlers = subscribers[typeid(TEvent)].get();
         if (handlers)
         {
-            for (auto it = handlers->begin(); it != handlers->end(); it++)
+            for (auto it = handlers->begin(); it != handlers->end(); ++it)
             {
                 auto handler = it->get();
                 TEvent event(std::forward<TArgs>(args)...);
