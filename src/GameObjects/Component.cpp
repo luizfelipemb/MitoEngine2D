@@ -123,54 +123,42 @@ void BoxCollider2DComponent::Update(float deltaTime)
 	
 }
 
-void ScriptComponent::AddScript(sol::state& lua)
+void ScriptComponent::AddScript(sol::environment& luaEnv)
 {
-	if(lua["start"] != sol::lua_nil)
-	{
-		StartFunc.push_back(lua["start"]);
+	if (luaEnv["start"] != sol::lua_nil) {
+		StartFunc.push_back(luaEnv["start"]);
 	}
-	if(lua["update"] != sol::lua_nil)
-	{
-		UpdateFunc.push_back(lua["update"]);
+	if (luaEnv["update"] != sol::lua_nil) {
+		UpdateFunc.push_back(luaEnv["update"]);
 	}
-	if(lua["on_key_pressed"] != sol::lua_nil)
-	{
+	if (luaEnv["on_key_pressed"] != sol::lua_nil) {
 		GlobalEventBus::SubscribeToEvent<KeyPressedEvent>(
-			[this, &lua](KeyPressedEvent& event)
-			{
-				lua["on_key_pressed"](m_owner, std::to_string(event.Symbol));
+			[this, luaEnv](KeyPressedEvent& event) mutable {
+				luaEnv["on_key_pressed"](m_owner, std::to_string(event.Symbol));
 			});
 	}
-	if(lua["on_key_released"] != sol::lua_nil)
-	{
+	if (luaEnv["on_key_released"] != sol::lua_nil) {
 		GlobalEventBus::SubscribeToEvent<KeyReleasedEvent>(
-			[this, &lua](KeyReleasedEvent& event)
-			{
-				lua["on_key_released"](m_owner, std::to_string(event.Symbol));
+			[this, luaEnv](KeyReleasedEvent& event) mutable {
+				luaEnv["on_key_released"](m_owner, std::to_string(event.Symbol));
 			});
 	}
-	if(lua["on_collision_enter"] != sol::lua_nil)
-	{
+	if (luaEnv["on_collision_enter"] != sol::lua_nil) {
 		m_owner->LocalEventBus.SubscribeToEvent<CollisionEnterEvent>(
-			[this, &lua](CollisionEnterEvent& event)
-			{
-				lua["on_collision_enter"](m_owner,event.Other.get());
+			[this, luaEnv](CollisionEnterEvent& event) mutable {
+				luaEnv["on_collision_enter"](m_owner, event.Other.get());
 			});
 	}
-	if(lua["on_collision_stay"] != sol::lua_nil)
-	{
+	if (luaEnv["on_collision_stay"] != sol::lua_nil) {
 		m_owner->LocalEventBus.SubscribeToEvent<CollisionEnterEvent>(
-			[this, &lua](CollisionEnterEvent& event)
-			{
-				lua["on_collision_stay"](m_owner,event.Other.get());
+			[this, luaEnv](CollisionEnterEvent& event) mutable {
+				luaEnv["on_collision_stay"](m_owner, event.Other.get());
 			});
 	}
-	if(lua["on_collision_exit"] != sol::lua_nil)
-	{
+	if (luaEnv["on_collision_exit"] != sol::lua_nil) {
 		m_owner->LocalEventBus.SubscribeToEvent<CollisionEnterEvent>(
-			[this, &lua](CollisionEnterEvent& event)
-			{
-				lua["on_collision_exit"](m_owner,event.Other.get());
+			[this, luaEnv](CollisionEnterEvent& event) mutable {
+				luaEnv["on_collision_exit"](m_owner, event.Other.get());
 			});
 	}
 }

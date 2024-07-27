@@ -111,7 +111,7 @@ public:
         : Component(owner)
     {}
     
-    void AddScript(sol::state& lua);
+    void AddScript(sol::environment& luaEnv);
     void Update(float deltaTime) override;
     void CallUpdate(float deltaTime);
     void CallStart();

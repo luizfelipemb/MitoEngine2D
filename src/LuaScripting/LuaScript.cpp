@@ -137,11 +137,15 @@ void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
             sol::optional<sol::table> scriptsTable = entity["components"]["scripts"];
             if (scriptsTable != sol::nullopt)
             {
-                
                 newGameObject->AddComponent<ScriptComponent>();
                 for (auto& scriptEntry : scriptsTable.value())
                 {
                     std::string scriptName = scriptEntry.second.as<std::string>();
+
+                    // Create a new environment table
+                    //TODO: load all scripts previously and add to a map and assign here according
+                    sol::environment scriptEnv(lua, sol::create, lua.globals());
+                    
                     sol::load_result script = lua.load_file(SCRIPTS_PATH + scriptName);
                     Logger::Log(scriptName);
                     if (!script.valid())
@@ -149,11 +153,10 @@ void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
                         sol::error err = script;
                         std::string errorMessage = err.what();
                         Logger::Err("Error loading the script: " + errorMessage);
-                    }
-                    else
+                    } else
                     {
-                        lua.script_file(SCRIPTS_PATH + scriptName);
-                        newGameObject->GetComponent<ScriptComponent>()->AddScript(lua);
+                        lua.script_file(SCRIPTS_PATH + scriptName, scriptEnv);
+                        newGameObject->GetComponent<ScriptComponent>()->AddScript(scriptEnv);
                     }
                 }
             }
