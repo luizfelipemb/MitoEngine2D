@@ -15,6 +15,11 @@ public:
         m_eventBus.SubscribeToEvent<TEvent>(ownerInstance, callbackFunction);
     }
 
+    template <typename TEvent>
+    static void SubscribeToEvent(std::function<void(TEvent&)> callbackFunction) {
+        m_eventBus.SubscribeToEvent<TEvent>(callbackFunction);
+    }
+
     template <typename TEvent, typename ...TArgs>
     static void EmitEvent(TArgs&& ...args) {
         m_eventBus.EmitEvent<TEvent>(std::forward<TArgs>(args)...);
@@ -22,5 +27,4 @@ public:
 
 private:
     static EventBus m_eventBus;
-
 };

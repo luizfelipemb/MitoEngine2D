@@ -109,17 +109,12 @@ class ScriptComponent : public Component
 public:
     ScriptComponent(GameObject* owner)
         : Component(owner)
-    {
-        GlobalEventBus::SubscribeToEvent<KeyPressedEvent>(this, &ScriptComponent::OnKeyPressedEvent);
-    }
-    void OnKeyPressedEvent(KeyPressedEvent& event);
+    {}
+    
     void AddScript(sol::state& lua);
     void Update(float deltaTime) override;
     void CallUpdate();
     void CallStart();
     std::vector<sol::function> StartFunc;
     std::vector<sol::function> UpdateFunc;
-    sol::function KeyPressedFunc;
-    
-private:
 };
