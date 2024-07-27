@@ -137,6 +137,7 @@ void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
             sol::optional<sol::table> scriptsTable = entity["components"]["scripts"];
             if (scriptsTable != sol::nullopt)
             {
+                
                 newGameObject->AddComponent<ScriptComponent>();
                 for (auto& scriptEntry : scriptsTable.value())
                 {

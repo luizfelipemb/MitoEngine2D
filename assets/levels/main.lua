@@ -4,7 +4,7 @@ Level = {
             name = "player",
             components = {
                 transform = {
-                    position = { x = 50, y = 100 },
+                    position = { x = 50, y = 650 },
                     scale = 1,
                     rotation = 0.0,
                 },
@@ -12,17 +12,44 @@ Level = {
                     velocity = { x = 0.0, y = 0.0 }
                 },
                 boxcollider = {
-                    width = 50,
-                    height = 50
+                    width = 128,
+                    height = 16
                 },
                 sprite = {
                     sprite_name = "assets/images/RoundedSquare.png",
-                    width = 32,
-                    height = 32,
+                    width = 128,
+                    height = 16,
                     red = 0,
                     green = 255,
-                    green = 255,
                     blue = 0
+                },
+                scripts = {
+                    "player.lua"
+                }
+            }
+        },
+        {
+            name = "ball",
+            components = {
+                transform = {
+                    position = { x = 300, y = 300 },
+                    scale = 1,
+                    rotation = 0.0,
+                },
+                boxcollider = {
+                    width = 10,
+                    height = 10
+                },
+                sprite = {
+                    sprite_name = "assets/images/RoundedSquare.png",
+                    width = 10,
+                    height = 10,
+                    red = 255,
+                    green = 255,
+                    blue = 255
+                },
+                scripts = {
+                    "player.lua"
                 }
             }
         },
@@ -51,8 +78,7 @@ Level = {
                     blue = 0
                 },
                 scripts = {
-                    "enemy.lua",
-                    "player.lua"
+                    "enemy.lua"
                 }
             }
         }

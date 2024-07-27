@@ -113,7 +113,7 @@ public:
     
     void AddScript(sol::state& lua);
     void Update(float deltaTime) override;
-    void CallUpdate();
+    void CallUpdate(float deltaTime);
     void CallStart();
     std::vector<sol::function> StartFunc;
     std::vector<sol::function> UpdateFunc;

@@ -138,11 +138,39 @@ void ScriptComponent::AddScript(sol::state& lua)
 		GlobalEventBus::SubscribeToEvent<KeyPressedEvent>(
 			[this, &lua](KeyPressedEvent& event)
 			{
-				sol::function luaEventFunc = lua["on_key_pressed"];
-				if (luaEventFunc != sol::lua_nil)
-				{
-					luaEventFunc(m_owner, std::to_string(event.Symbol));
-				}
+				lua["on_key_pressed"](m_owner, std::to_string(event.Symbol));
+			});
+	}
+	if(lua["on_key_released"] != sol::lua_nil)
+	{
+		GlobalEventBus::SubscribeToEvent<KeyReleasedEvent>(
+			[this, &lua](KeyReleasedEvent& event)
+			{
+				lua["on_key_released"](m_owner, std::to_string(event.Symbol));
+			});
+	}
+	if(lua["on_collision_enter"] != sol::lua_nil)
+	{
+		m_owner->LocalEventBus.SubscribeToEvent<CollisionEnterEvent>(
+			[this, &lua](CollisionEnterEvent& event)
+			{
+				lua["on_collision_enter"](m_owner,event.Other.get());
+			});
+	}
+	if(lua["on_collision_stay"] != sol::lua_nil)
+	{
+		m_owner->LocalEventBus.SubscribeToEvent<CollisionEnterEvent>(
+			[this, &lua](CollisionEnterEvent& event)
+			{
+				lua["on_collision_stay"](m_owner,event.Other.get());
+			});
+	}
+	if(lua["on_collision_exit"] != sol::lua_nil)
+	{
+		m_owner->LocalEventBus.SubscribeToEvent<CollisionEnterEvent>(
+			[this, &lua](CollisionEnterEvent& event)
+			{
+				lua["on_collision_exit"](m_owner,event.Other.get());
 			});
 	}
 }
@@ -152,12 +180,12 @@ void ScriptComponent::Update(float deltaTime)
 	
 }
 
-void ScriptComponent::CallUpdate()
+void ScriptComponent::CallUpdate(float deltaTime)
 {
 	for (auto& func : UpdateFunc)
 	{
 		if(func != sol::lua_nil)
-			func(m_owner);
+			func(m_owner,deltaTime);
 	}
 }
 

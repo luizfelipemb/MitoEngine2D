@@ -56,7 +56,7 @@ void Registry::Update(float deltaTime)
 		if(entity->HasComponent<ScriptComponent>())
 		{
 			auto script = entity->GetComponent<ScriptComponent>();
-			script->CallUpdate();
+			script->CallUpdate(deltaTime);
 		}
 	}
 	
