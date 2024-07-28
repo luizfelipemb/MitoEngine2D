@@ -28,6 +28,7 @@ void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
     lua.open_libraries(sol::lib::base, sol::lib::math);
     lua.new_usertype<glm::vec2>(
             "vec2",
+            sol::constructors<glm::vec2(), glm::vec2(float, float)>(),
             "x", &glm::vec2::x,
             "y", &glm::vec2::y
         );
@@ -37,11 +38,16 @@ void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
             "scale", &TransformComponent::Scale,
             "rotation", &TransformComponent::Rotation
         );
+    lua.new_usertype<RigidBody2DComponent>(
+            "rigidbody_component",
+            "velocity", &RigidBody2DComponent::Velocity
+        );
     lua.new_usertype<GameObject>(
         "gameobject",
         "get_id", &GameObject::GetId,
         "get_name", &GameObject::GetName,
-        "get_component_transform", &GameObject::GetComponent<TransformComponent>
+        "get_component_transform", &GameObject::GetComponent<TransformComponent>,
+        "get_component_rigidbody", &GameObject::GetComponent<RigidBody2DComponent>
     );
     
     lua.set_function("set_position", SetEntityPosition);

@@ -36,6 +36,9 @@ Level = {
                     scale = 1,
                     rotation = 0.0,
                 },
+                rigidbody = {
+                    velocity = { x = 0.0, y = 0.0 }
+                },
                 boxcollider = {
                     width = 10,
                     height = 10
@@ -49,7 +52,7 @@ Level = {
                     blue = 255
                 },
                 scripts = {
-                    "player.lua"
+                    "ball.lua"
                 }
             }
         },

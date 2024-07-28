@@ -6,8 +6,6 @@ function start(gameobject)
 end
 
 function update(gameobject,deltaTime)
-    --mito_log("Update player function called on "..gameobject:get_name())
-    --mito_log(gameobject:get_name() .. " update with goright:" .. tostring(goRight))
     local transform = gameobject:get_component_transform()
     if (goRight) then
         transform.position.x = transform.position.x + deltaTime * 300;
