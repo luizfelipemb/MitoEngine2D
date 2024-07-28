@@ -112,9 +112,11 @@ public:
     {}
     
     void AddScript(sol::environment& luaEnv);
+    sol::function GetScriptFunction(const std::string& name);
     void Update(float deltaTime) override;
     void CallUpdate(float deltaTime);
     void CallStart();
     std::vector<sol::function> StartFunc;
     std::vector<sol::function> UpdateFunc;
+    std::map<std::string, sol::function> scriptFunctions;
 };

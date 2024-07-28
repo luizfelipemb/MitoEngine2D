@@ -42,12 +42,17 @@ void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
             "rigidbody_component",
             "velocity", &RigidBody2DComponent::Velocity
         );
+    lua.new_usertype<ScriptComponent>(
+            "script_component",
+            "get_function", &ScriptComponent::GetScriptFunction
+        );
     lua.new_usertype<GameObject>(
         "gameobject",
         "get_id", &GameObject::GetId,
         "get_name", &GameObject::GetName,
         "get_component_transform", &GameObject::GetComponent<TransformComponent>,
-        "get_component_rigidbody", &GameObject::GetComponent<RigidBody2DComponent>
+        "get_component_rigidbody", &GameObject::GetComponent<RigidBody2DComponent>,
+        "get_component_script", &GameObject::GetComponent<ScriptComponent> 
     );
     
     lua.set_function("set_position", SetEntityPosition);

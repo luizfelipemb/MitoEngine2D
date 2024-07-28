@@ -1,7 +1,7 @@
 ﻿local goingUp = false
 
 function start(gameobject)
-
+    mito_log(gameobject:get_name() .. "start called")
 end
 
 function update(gameobject, deltaTime)
@@ -18,4 +18,8 @@ function on_collision_enter(gameobject, other)
     if (other:get_name() == "player") then
         goingUp = true
     end
+end
+
+function test()
+    mito_log("test function called")
 end

@@ -161,8 +161,23 @@ void ScriptComponent::AddScript(sol::environment& luaEnv)
 				luaEnv["on_collision_exit"](m_owner, event.Other.get());
 			});
 	}
-}
 
+	// Store functions in a map for retrieval
+	for (auto& pair : luaEnv) {
+		std::string funcName = pair.first.as<std::string>();
+		if (luaEnv[funcName].is<sol::function>()) {
+			scriptFunctions[funcName] = luaEnv[funcName];
+		}
+	}
+}
+sol::function ScriptComponent::GetScriptFunction(const std::string& name)
+{
+	if (scriptFunctions.find(name) != scriptFunctions.end())
+	{
+		return scriptFunctions[name];
+	}
+	return sol::nil;
+}
 void ScriptComponent::Update(float deltaTime)
 {
 	
