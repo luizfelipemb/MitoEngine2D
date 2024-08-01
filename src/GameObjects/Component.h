@@ -110,7 +110,11 @@ public:
     ScriptComponent(GameObject* owner)
         : Component(owner)
     {}
-    
+    void OnCollisionStay(CollisionStayEvent& event);
+    void OnCollisionEnter(CollisionEnterEvent& event);
+    void OnCollisionExit(CollisionExitEvent& event);
+    void OnKeyPressedEvent(KeyPressedEvent& event);
+    void OnKeyReleasedEvent(KeyReleasedEvent& event);
     void AddScript(sol::environment& luaEnv);
     sol::function GetScriptFunction(const std::string& name);
     void Update(float deltaTime) override;
@@ -119,4 +123,5 @@ public:
     std::vector<sol::function> StartFunc;
     std::vector<sol::function> UpdateFunc;
     std::map<std::string, sol::function> scriptFunctions;
+    std::unordered_map<std::string, std::function<void(Event&)>> scriptFunctions2;
 };

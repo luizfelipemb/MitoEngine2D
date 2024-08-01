@@ -51,10 +51,11 @@ public:
     bool CheckAABBCollision(double aX, double aY, double aW, double aH, double bX, double bY, double bW, double bH);
     void CalculateCollisions();
     std::unique_ptr<GameObject>& CreateGameObject(std::string name = "GameObject");
-
+    static void DestroyGameObject(int id);
 private:
-    int m_numberOfGameObjects;
-    std::vector<std::unique_ptr<GameObject>> m_gameObjects;
+    static std::vector<int> m_idsToDestroy;
+    static int m_numberOfGameObjects;
+    static std::vector<std::unique_ptr<GameObject>> m_gameObjects;
     std::unordered_multimap<int,int> m_objectsColliding;
 };
 

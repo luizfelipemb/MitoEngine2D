@@ -15,6 +15,9 @@ std::string GameObject::GetName() const
 {
 	return m_name;
 }
+std::vector<std::unique_ptr<GameObject>> Registry::m_gameObjects;
+int Registry::m_numberOfGameObjects;
+std::vector<int> Registry::m_idsToDestroy;
 
 std::unique_ptr<GameObject>& Registry::CreateGameObject(std::string name)
 {
@@ -26,6 +29,11 @@ std::unique_ptr<GameObject>& Registry::CreateGameObject(std::string name)
 	Logger::Log("GameObject with id:" + std::to_string(m_numberOfGameObjects) + " created");
 	m_numberOfGameObjects++;
 	return m_gameObjects.back();
+}
+
+void Registry::DestroyGameObject(int id)
+{
+	m_idsToDestroy.emplace_back(id);
 }
 
 void Registry::Start()
@@ -61,6 +69,33 @@ void Registry::Update(float deltaTime)
 	}
 	
 	CalculateCollisions();
+
+	for(auto& id : m_idsToDestroy)
+	{
+		Logger::Log("Trying to destroy id:" + std::to_string(id));
+		auto it = std::find_if(m_gameObjects.begin(), m_gameObjects.end(),
+							   [id](const std::unique_ptr<GameObject>& obj) {
+								   return obj->GetId() == id;
+							   });
+        
+		if (it != m_gameObjects.end())
+		{
+			Logger::Log("GameObject with id:" + std::to_string(id) + " destroyed");
+			if(it->get()->HasComponent<ScriptComponent>())
+			{
+				GlobalEventBus::UnsubscribeFromOwner(it->get()->GetComponent<ScriptComponent>());
+				it->get()->LocalEventBus.Reset();
+			}
+			
+			m_gameObjects.erase(it);
+			m_numberOfGameObjects--;
+		}
+		else
+		{
+			Logger::Log("GameObject with id:" + std::to_string(id) + " not found");
+		}
+	}
+	m_idsToDestroy.clear();
 }
 
 const std::vector<std::unique_ptr<GameObject>>& Registry::GetAllGameObjects() const

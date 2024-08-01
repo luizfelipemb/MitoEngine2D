@@ -38,7 +38,7 @@ end
 
 function on_collision_enter(gameobject, other)
     mito_log(gameobject:get_name().." collided with "..other:get_name())
-    
+    destroy(other:get_id())
     local startFunc = other:get_component_script():get_function("test")
     startFunc()
 end

@@ -24,6 +24,10 @@ public:
     static void EmitEvent(TArgs&& ...args) {
         m_eventBus.EmitEvent<TEvent>(std::forward<TArgs>(args)...);
     }
+    template <typename TOwner>
+    static void UnsubscribeFromOwner(TOwner* ownerInstance) {
+        m_eventBus.UnsubscribeFromOwner(ownerInstance);
+    }
 
 private:
     static EventBus m_eventBus;

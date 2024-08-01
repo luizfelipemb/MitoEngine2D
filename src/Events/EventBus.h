@@ -3,6 +3,7 @@
 #include "../Logger/Logger.h"
 #include "Event.h"
 #include "KeyReleasedEvent.h"
+#include "KeyPressedEvent.h"
 #include "CollisionEnterEvent.h"
 #include "CollisionExitEvent.h"
 #include "CollisionStayEvent.h"
@@ -12,6 +13,7 @@
 #include <list>
 #include <memory>
 #include <functional>
+#include <utility>
 
 class IEventCallback
 {
@@ -40,14 +42,14 @@ private:
 
 public:
     EventCallback(std::function<void(TEvent&)> callbackFunction)
-        : callbackFunction(callbackFunction)
+        : callbackFunction(std::move(callbackFunction))
     {
     }
 
     virtual ~EventCallback() override = default;
 };
 
-typedef std::list<std::unique_ptr<IEventCallback>> HandlerList;
+typedef std::list<std::pair<void*, std::unique_ptr<IEventCallback>>> HandlerList;
 
 class EventBus
 {
@@ -74,18 +76,34 @@ public:
     template <typename TEvent, typename TOwner>
     void SubscribeToEvent(TOwner* ownerInstance, void (TOwner::*callbackFunction)(TEvent&))
     {
-        SubscribeToEvent<TEvent>([=](TEvent& event) { (ownerInstance->*callbackFunction)(event); });
+        SubscribeToEvent<TEvent>(ownerInstance, [=](TEvent& event)
+        {
+            (ownerInstance->*callbackFunction)(event);
+        });
     }
 
-    template <typename TEvent>
-    void SubscribeToEvent(std::function<void(TEvent&)> callbackFunction)
+    template <typename TEvent, typename TOwner>
+    void SubscribeToEvent(TOwner* ownerInstance, std::function<void(TEvent&)> callbackFunction)
     {
         if (!subscribers[typeid(TEvent)].get())
         {
             subscribers[typeid(TEvent)] = std::make_unique<HandlerList>();
         }
-        auto subscriber = std::make_unique<EventCallback<TEvent>>(callbackFunction);
-        subscribers[typeid(TEvent)]->push_back(std::move(subscriber));
+        auto subscriber = std::make_unique<EventCallback<TEvent>>(std::move(callbackFunction));
+        subscribers[typeid(TEvent)]->emplace_back(ownerInstance, std::move(subscriber));
+    }
+
+    template <typename TOwner>
+    void UnsubscribeFromOwner(TOwner* ownerInstance)
+    {
+        for (auto& [type, handlers] : subscribers)
+        {
+            handlers->remove_if(
+            [ownerInstance](const std::pair<void*, std::unique_ptr<IEventCallback>>& handlerPair)
+            {
+                return handlerPair.first == ownerInstance;
+            });
+        }
     }
 
     template <typename TEvent, typename... TArgs>
@@ -94,9 +112,9 @@ public:
         auto handlers = subscribers[typeid(TEvent)].get();
         if (handlers)
         {
-            for (auto it = handlers->begin(); it != handlers->end(); ++it)
+            for (auto& handlerPair : *handlers)
             {
-                auto handler = it->get();
+                auto handler = handlerPair.second.get();
                 TEvent event(std::forward<TArgs>(args)...);
                 handler->Execute(event);
             }

@@ -22,6 +22,10 @@ void LuaPrint(const std::string& message) {
     
     Logger::Lua(message);
 }
+void Destroy(int id)
+{
+    Registry::DestroyGameObject(id);
+}
 
 void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
 {
@@ -54,7 +58,7 @@ void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
         "get_component_rigidbody", &GameObject::GetComponent<RigidBody2DComponent>,
         "get_component_script", &GameObject::GetComponent<ScriptComponent> 
     );
-    
+    lua.set_function("destroy", Destroy);
     lua.set_function("set_position", SetEntityPosition);
     lua.set_function("mito_log",LuaPrint);
 
