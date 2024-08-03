@@ -12,40 +12,36 @@
 #include "../imgui/imgui_impl_sdlrenderer2.h"
 #include "../Logger/Logger.h"
 
-int RendererManager::m_windowWidth;
-int RendererManager::m_windowHeight;
-int RendererManager::m_mapWidth;
-int RendererManager::m_mapHeight;
-SDL_Window* RendererManager::m_window;
+int RendererManager::WindowWidth;
+int RendererManager::WindowHeight;
+SDL_Window* RendererManager::Window;
 SDL_Renderer* RendererManager::Renderer;
 
 RendererManager::~RendererManager()
 {
     SDL_DestroyRenderer(Renderer);
-    SDL_DestroyWindow(m_window);
+    SDL_DestroyWindow(Window);
 }
 
 void RendererManager::Initialize()
 {
     SDL_DisplayMode displayMode;
     SDL_GetCurrentDisplayMode(0, &displayMode);
-    m_windowWidth = displayMode.w / 2;
-    m_windowHeight = displayMode.h / 2;
-    m_mapWidth = m_windowWidth;
-    m_mapHeight = m_windowHeight;
-    m_window = SDL_CreateWindow(
+    //WindowWidth = displayMode.w / 2;
+    //WindowHeight = displayMode.h / 2;
+    Window = SDL_CreateWindow(
         NULL,
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        m_windowWidth,
-        m_windowHeight,
+        WindowWidth,
+        WindowHeight,
         0
     );
-    if (!m_window) {
+    if (!Window) {
         Logger::Err("Error creating SDL window.");
         return;
     }
-    Renderer = SDL_CreateRenderer(m_window, -1, 0);
+    Renderer = SDL_CreateRenderer(Window, -1, 0);
     if (!Renderer) {
         Logger::Err("Error creating SDL renderer.");
         return;
@@ -53,7 +49,7 @@ void RendererManager::Initialize()
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGui_ImplSDL2_InitForSDLRenderer(m_window, Renderer);
+    ImGui_ImplSDL2_InitForSDLRenderer(Window, Renderer);
     ImGui_ImplSDLRenderer2_Init(Renderer);
 }
 

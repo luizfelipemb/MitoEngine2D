@@ -112,11 +112,6 @@ void RigidBody2DComponent::Update(float deltaTime)
     }
 }
 
-BoxCollider2DComponent::BoxCollider2DComponent(GameObject* owner, int width, int height, glm::vec2 offset) :
-    Component(owner), Width(width), Height(height), Offset(offset)
-{
-}
-
 void BoxCollider2DComponent::Update(float deltaTime)
 {
 }

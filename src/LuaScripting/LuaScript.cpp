@@ -2,22 +2,6 @@
 #include "../Logger/Logger.h"
 #include "../GameObjects/GameObject.h"
 
-class TransformComponent;
-
-void SetEntityPosition(GameObject* entity, double x, double y)
-{
-    if (entity->HasComponent<TransformComponent>())
-    {
-        auto transform = entity->GetComponent<TransformComponent>();
-        transform->Position.x = x;
-        transform->Position.y = y;
-    }
-    else
-    {
-        Logger::Err("Trying to set the position of an entity that has no transform component");
-    }
-}
-
 void LuaPrint(const std::string& message) {
     
     Logger::Lua(message);
@@ -26,8 +10,79 @@ void Destroy(int id)
 {
     Registry::DestroyGameObject(id);
 }
+GameObject* CreateGameObject(std::string name)
+{
+    return Registry::CreateGameObject(name).get();
+}
 
-void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
+void AddTransformComponent(GameObject* gameObject,
+    sol::optional<glm::vec2> position,
+    sol::optional<double> scale,
+    sol::optional<double> rotation)
+{
+    gameObject->AddComponent<TransformComponent>(
+        position ? std::optional<glm::vec2>(*position) : std::nullopt,
+        scale ? std::optional<double>(*scale) : std::nullopt,
+        rotation ? std::optional<double>(*rotation) : std::nullopt);
+}
+void AddSpriteComponent(GameObject* gameObject,
+    const std::string& sprite,
+    sol::optional<int> width,
+    sol::optional<int> height,
+    sol::optional<std::uint8_t> red,
+    sol::optional<std::uint8_t> green,
+    sol::optional<std::uint8_t> blue)
+{
+    gameObject->AddComponent<SpriteComponent>(
+        sprite,
+        width ? std::optional<int>(*width) : std::nullopt,
+        height ? std::optional<int>(*height) : std::nullopt,
+        red ? std::optional<std::uint8_t>(*red) : std::nullopt,
+        green ? std::optional<std::uint8_t>(*green) : std::nullopt,
+        blue ? std::optional<std::uint8_t>(*blue) : std::nullopt);
+}
+
+void AddRigidBody2DComponent(GameObject* gameObject,
+    sol::optional<glm::vec2> velocity)
+{
+    gameObject->AddComponent<RigidBody2DComponent>(
+        velocity ? std::optional<glm::vec2>(*velocity) : std::nullopt);
+}
+
+void AddBoxCollider2DComponent(GameObject* gameObject,
+    sol::optional<int> width,
+    sol::optional<int> height,
+    sol::optional<glm::vec2> offset)
+{
+    gameObject->AddComponent<BoxCollider2DComponent>(
+        width ? std::optional<int>(*width) : std::nullopt,
+        height ? std::optional<int>(*height) : std::nullopt,
+        offset ? std::optional<glm::vec2>(*offset) : std::nullopt);
+}
+
+void LuaScript::SettingsSetup()
+{
+    Logger::Log("SettingsSetup");
+    lua.open_libraries(sol::lib::base, sol::lib::math);
+    sol::load_result luaScript = lua.load_file(SETTINGS_PATH+"settings.lua");
+    if (!luaScript.valid())
+    {
+        sol::error err = luaScript;
+        std::string errorMessage = err.what();
+        Logger::Err("Error loading the lua script: " + errorMessage);
+        return;
+    }
+    lua.script_file(SETTINGS_PATH+"settings.lua");
+    sol::table settings = lua["Settings"];
+    sol::table window = settings["window"];
+    int windowHeight = window["height"];
+    int windowWidth = window["width"];
+    RendererManager::WindowHeight = windowHeight;
+    RendererManager::WindowWidth = windowWidth;
+    Logger::Log("Window Height:"+std::to_string(windowHeight));
+}
+
+void LuaScript::LevelSetupViaLua()
 {
     lua.open_libraries(sol::lib::base, sol::lib::math);
     lua.new_usertype<glm::vec2>(
@@ -54,12 +109,21 @@ void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
         "gameobject",
         "get_id", &GameObject::GetId,
         "get_name", &GameObject::GetName,
+        
+        "add_component_transform", &AddTransformComponent,
+        "add_component_sprite", &AddSpriteComponent,
+        "add_component_boxcollider", &AddBoxCollider2DComponent,
+        "add_component_rigidbody", &AddRigidBody2DComponent,
+        
         "get_component_transform", &GameObject::GetComponent<TransformComponent>,
+        "get_component_sprite", &GameObject::GetComponent<SpriteComponent>,
+        "get_component_boxcollider", &GameObject::GetComponent<BoxCollider2DComponent>,
         "get_component_rigidbody", &GameObject::GetComponent<RigidBody2DComponent>,
-        "get_component_script", &GameObject::GetComponent<ScriptComponent> 
+        "get_component_script", &GameObject::GetComponent<ScriptComponent>
     );
+    
+    lua.set_function("create",CreateGameObject);
     lua.set_function("destroy", Destroy);
-    lua.set_function("set_position", SetEntityPosition);
     lua.set_function("mito_log",LuaPrint);
 
     sol::load_result luaScript = lua.load_file(LEVELS_PATH+INITIAL_LEVEL_NAME);
@@ -92,7 +156,7 @@ void LuaScript::LevelSetupViaLua(std::unique_ptr<Registry>& registry)
         {
             name.assign(entity["name"]);
         }
-        std::unique_ptr<GameObject>& newGameObject = registry->CreateGameObject(name);
+        std::unique_ptr<GameObject>& newGameObject = Registry::CreateGameObject(name);
         
         // Components
         sol::optional<sol::table> hasComponents = entity["components"];

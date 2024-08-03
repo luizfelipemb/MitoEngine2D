@@ -27,10 +27,13 @@ class TransformComponent : public Component
 {
 public:
     explicit TransformComponent(GameObject* owner,
-                                glm::vec2 position = glm::vec2(0, 0),
-                                double scale = 1,
-                                double rotation = 0.0)
-        : Component(owner), Position(position), Scale(scale), Rotation(rotation)
+                                std::optional<glm::vec2> position = std::nullopt,
+                                std::optional<double> scale = std::nullopt,
+                                std::optional<double> rotation = std::nullopt)
+        : Component(owner), 
+          Position(position.value_or(glm::vec2{})), 
+          Scale(scale.value_or(1.0)), 
+          Rotation(rotation.value_or(0.0))
     {
     }
 
@@ -44,9 +47,18 @@ public:
 class SpriteComponent : public Component
 {
 public:
-    SpriteComponent(GameObject* owner, std::string sprite,int width = 100, int height = 100,
-                    std::uint8_t red = 255, std::uint8_t green = 255, std::uint8_t blue = 255) :
-        Component(owner), m_sprite(sprite), m_width(width), m_height(height), m_color(Color{red, green, blue})
+    explicit SpriteComponent(GameObject* owner, 
+                             std::string sprite,
+                             std::optional<int> width = std::nullopt, 
+                             std::optional<int> height = std::nullopt,
+                             std::optional<std::uint8_t> red = std::nullopt, 
+                             std::optional<std::uint8_t> green = std::nullopt, 
+                             std::optional<std::uint8_t> blue = std::nullopt) 
+        : Component(owner), 
+          m_sprite(sprite),
+          m_width(width.value_or(100)), 
+          m_height(height.value_or(100)), 
+          m_color(Color{red.value_or(255), green.value_or(255), blue.value_or(255)})
     {
     }
 
@@ -71,7 +83,7 @@ public:
     void OnKeyReleasedEvent(KeyReleasedEvent& event);
 
 private:
-    bool m_colliding=false;
+    bool m_colliding = false;
     glm::vec2 m_currentVelocity;
     glm::vec2 m_previousVelocity;
 };
@@ -79,30 +91,36 @@ private:
 class RigidBody2DComponent : public Component
 {
 public:
-    explicit RigidBody2DComponent(GameObject* owner, glm::vec2 velocity = glm::vec2(0.0, 0.0)) :
-        Component(owner), Velocity(velocity)
+    explicit RigidBody2DComponent(GameObject* owner, 
+                                  std::optional<glm::vec2> velocity = std::nullopt) 
+        : Component(owner), 
+          Velocity(velocity.value_or(glm::vec2(0.0, 0.0)))
     {
     }
 
     void Update(float deltaTime) override;
     glm::vec2 Velocity;
-
-private:
 };
 
 class BoxCollider2DComponent : public Component
 {
 public:
-    explicit BoxCollider2DComponent(GameObject* owner, int width = 0, int height = 0, glm::vec2 offset = glm::vec2(0));
+    explicit BoxCollider2DComponent(GameObject* owner, 
+                                    std::optional<int> width = std::nullopt, 
+                                    std::optional<int> height = std::nullopt, 
+                                    std::optional<glm::vec2> offset = std::nullopt)
+        : Component(owner), 
+          Width(width.value_or(0)), 
+          Height(height.value_or(0)), 
+          Offset(offset.value_or(glm::vec2(0)))
+    {
+    }
 
     void Update(float deltaTime) override;
     int Width;
     int Height;
     glm::vec2 Offset;
-
-private:
 };
-
 
 class ScriptComponent : public Component
 {

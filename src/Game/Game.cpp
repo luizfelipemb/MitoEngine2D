@@ -67,11 +67,12 @@ void Game::ProcessInput()
 
 void Game::Initialize()
 {
+	m_luaScript.SettingsSetup();
 	AssetManager::Initialize();
 	RendererManager::Initialize();
 	m_isRunning = true;
 	
-	m_luaScript.LevelSetupViaLua(m_registry);
+	m_luaScript.LevelSetupViaLua();
 	m_registry->Start();
 }
 

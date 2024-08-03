@@ -15,12 +15,13 @@
 
 class Registry;
 class Component;
+class TransformComponent;
 
 class GameObject
 {
 public:
-    GameObject(int id, Registry* reg, std::string name = "GameObject"):
-            RefRegistry(reg), m_id(id), m_name(name) {}
+    GameObject(int id, std::string name = "GameObject"):
+             m_id(id), m_name(name) {}
     int GetId() const;
     std::string GetName() const;
     template <typename TComponent, typename... TArgs> void AddComponent(TArgs&&... args);
@@ -31,9 +32,7 @@ public:
     bool operator !=(const GameObject& other) const { return m_id != other.m_id; }
     bool operator >(const GameObject& other) const { return m_id > other.m_id; }
     bool operator <(const GameObject& other) const { return m_id < other.m_id; }
-    
     std::unordered_map<std::type_index, std::shared_ptr<Component>> Components;
-    Registry* RefRegistry;
     EventBus LocalEventBus;
 
     private:
@@ -50,11 +49,11 @@ public:
     const std::vector<std::unique_ptr<GameObject>>& GetAllGameObjects() const;
     bool CheckAABBCollision(double aX, double aY, double aW, double aH, double bX, double bY, double bW, double bH);
     void CalculateCollisions();
-    std::unique_ptr<GameObject>& CreateGameObject(std::string name = "GameObject");
+    static std::unique_ptr<GameObject>& CreateGameObject(std::string name = "GameObject");
     static void DestroyGameObject(int id);
 private:
     static std::vector<int> m_idsToDestroy;
-    static int m_numberOfGameObjects;
+    static int m_nextFreeId;
     static std::vector<std::unique_ptr<GameObject>> m_gameObjects;
     std::unordered_multimap<int,int> m_objectsColliding;
 };

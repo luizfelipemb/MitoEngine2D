@@ -5,7 +5,8 @@
 #include "../LuaScripting/LuaScript.h"
 
 class EventBus;
-constexpr int FPS = 60;
+
+constexpr static int FPS = 60;
 constexpr int MILLISECS_PER_FRAME = 1000 / FPS;
 
 class Game

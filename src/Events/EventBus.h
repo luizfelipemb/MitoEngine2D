@@ -64,7 +64,7 @@ public:
 
     ~EventBus()
     {
-        Logger::Log("EventBus destructor called!");
+        //Logger::Log("EventBus destructor called!");
     }
 
     // Clears the subscribers list

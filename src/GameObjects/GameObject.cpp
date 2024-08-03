@@ -16,7 +16,7 @@ std::string GameObject::GetName() const
 	return m_name;
 }
 std::vector<std::unique_ptr<GameObject>> Registry::m_gameObjects;
-int Registry::m_numberOfGameObjects;
+int Registry::m_nextFreeId;
 std::vector<int> Registry::m_idsToDestroy;
 
 std::unique_ptr<GameObject>& Registry::CreateGameObject(std::string name)
@@ -25,9 +25,9 @@ std::unique_ptr<GameObject>& Registry::CreateGameObject(std::string name)
 	{
 		name = "GameObject";
 	}
-	m_gameObjects.emplace_back(std::make_unique<GameObject>(m_numberOfGameObjects,this,name));
-	Logger::Log("GameObject with id:" + std::to_string(m_numberOfGameObjects) + " created");
-	m_numberOfGameObjects++;
+	m_gameObjects.emplace_back(std::make_unique<GameObject>(m_nextFreeId,name));
+	Logger::Log("GameObject with id:" + std::to_string(m_nextFreeId) + " created");
+	m_nextFreeId++;
 	return m_gameObjects.back();
 }
 
@@ -88,7 +88,6 @@ void Registry::Update(float deltaTime)
 			}
 			
 			m_gameObjects.erase(it);
-			m_numberOfGameObjects--;
 		}
 		else
 		{
