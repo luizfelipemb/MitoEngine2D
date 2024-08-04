@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <ostream>
+#include <SDL_image.h>
 
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_impl_sdl2.h"
@@ -14,6 +15,8 @@
 
 int RendererManager::WindowWidth;
 int RendererManager::WindowHeight;
+std::string RendererManager::WindowName;
+std::string RendererManager::IconImageLocation;
 SDL_Window* RendererManager::Window;
 SDL_Renderer* RendererManager::Renderer;
 
@@ -30,13 +33,25 @@ void RendererManager::Initialize()
     //WindowWidth = displayMode.w / 2;
     //WindowHeight = displayMode.h / 2;
     Window = SDL_CreateWindow(
-        NULL,
+        WindowName.c_str(),
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         WindowWidth,
         WindowHeight,
         0
     );
+
+    //Load Icon
+    SDL_Surface* icon = IMG_Load(IconImageLocation.c_str());
+    if (icon != nullptr)
+    {
+        SDL_SetWindowIcon(Window, icon);
+    }
+    else
+    {
+        std::cerr << "IMG_Load Error: " << IMG_GetError() << '\n';
+    }
+    
     if (!Window) {
         Logger::Err("Error creating SDL window.");
         return;

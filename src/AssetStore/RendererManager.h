@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <SDL_render.h>
+#include <string>
 
 class RendererManager
 {
@@ -11,6 +12,8 @@ public:
     
     static int WindowWidth;
     static int WindowHeight;
+    static std::string WindowName;
+    static std::string IconImageLocation;
 
     static SDL_Window* Window;
     static SDL_Renderer* Renderer;

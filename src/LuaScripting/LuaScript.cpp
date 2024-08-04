@@ -75,11 +75,11 @@ void LuaScript::SettingsSetup()
     lua.script_file(SETTINGS_PATH+"settings.lua");
     sol::table settings = lua["Settings"];
     sol::table window = settings["window"];
-    int windowHeight = window["height"];
-    int windowWidth = window["width"];
-    RendererManager::WindowHeight = windowHeight;
-    RendererManager::WindowWidth = windowWidth;
-    Logger::Log("Window Height:"+std::to_string(windowHeight));
+    
+    RendererManager::WindowHeight = window["height"].get_or(1280);
+    RendererManager::WindowWidth = window["width"].get_or(720);
+    RendererManager::WindowName = window["name"].get_or_create<std::string>("Game");
+    RendererManager::IconImageLocation = window["icon"].get_or_create<std::string>("./assets/images/icon.png");
 }
 
 void LuaScript::LevelSetupViaLua()
