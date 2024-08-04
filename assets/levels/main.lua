@@ -1,6 +1,14 @@
 Level = {
     entities = {
         {
+            name = "GameManager",
+            components = {
+                scripts = {
+                    "GameManager.lua"
+                }
+            }
+        },
+        {
             name = "player",
             components = {
                 transform = {
@@ -16,12 +24,9 @@ Level = {
                     height = 16
                 },
                 sprite = {
-                    sprite_name = "assets/images/RoundedSquare.png",
+                    sprite_name = "assets/images/paddle.png",
                     width = 128,
-                    height = 16,
-                    red = 0,
-                    green = 255,
-                    blue = 0
+                    height = 28
                 },
                 scripts = {
                     "player.lua"
@@ -44,12 +49,9 @@ Level = {
                     height = 10
                 },
                 sprite = {
-                    sprite_name = "assets/images/RoundedSquare.png",
-                    width = 10,
-                    height = 10,
-                    red = 255,
-                    green = 255,
-                    blue = 255
+                    sprite_name = "assets/images/ball.png",
+                    width = 16,
+                    height = 16
                 },
                 scripts = {
                     "ball.lua"

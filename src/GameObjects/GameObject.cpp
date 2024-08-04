@@ -102,8 +102,22 @@ const std::vector<std::unique_ptr<GameObject>>& Registry::GetAllGameObjects() co
 	return m_gameObjects;
 }
 
+const std::unique_ptr<GameObject>& Registry::GetGameObjectFromId(int id)
+{
+	auto it = std::find_if(m_gameObjects.begin(), m_gameObjects.end(),
+			[id](const std::unique_ptr<GameObject>& obj) {
+				return obj->GetId() == id;
+			});
+
+	if (it != m_gameObjects.end()) {
+		return *it;
+	} else {
+		return nullptr; // Return nullptr if not found
+	}
+}
+
 bool Registry::CheckAABBCollision(double aX, double aY, double aW, double aH, double bX, double bY, double bW,
-	double bH)
+                                  double bH)
 {
 	return (
 		aX < bX + bW &&

@@ -19,11 +19,6 @@ end
 
 function on_key_pressed(gameobject, key)
     if (key == "97") then
-        local go = create("name")
-        mito_log(tostring(go))
-        go:add_component_transform(vec2:new(100, 100))
-        go:add_component_sprite("assets/images/RoundedSquare.png", 100, 100)
-        mito_log("created in lua, object named:" .. go:get_name())
         goLeft = true
     end
     if (key == "100") then

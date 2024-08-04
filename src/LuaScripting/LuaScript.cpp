@@ -15,6 +15,11 @@ GameObject* CreateGameObject(std::string name)
     return Registry::CreateGameObject(name).get();
 }
 
+GameObject* GetFromId(int id)
+{
+    return Registry::GetGameObjectFromId(id).get();
+}
+
 void AddTransformComponent(GameObject* gameObject,
     sol::optional<glm::vec2> position,
     sol::optional<double> scale,
@@ -126,7 +131,8 @@ void LuaScript::LevelSetupViaLua()
         "get_component_rigidbody", &GameObject::GetComponent<RigidBody2DComponent>,
         "get_component_script", &GameObject::GetComponent<ScriptComponent>
     );
-    
+
+    lua.set_function("get_from_id",GetFromId);
     lua.set_function("create",CreateGameObject);
     lua.set_function("destroy", Destroy);
     lua.set_function("mito_log",LuaPrint);
