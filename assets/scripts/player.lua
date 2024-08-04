@@ -3,6 +3,7 @@ local goLeft = false
 
 function start(gameobject)
     mito_log("Start player function called on " .. gameobject:get_name())
+    mito_log("Window height:" .. Window.height)
 end
 
 function update(gameobject, deltaTime)

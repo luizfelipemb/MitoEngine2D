@@ -76,15 +76,20 @@ void LuaScript::SettingsSetup()
     sol::table settings = lua["Settings"];
     sol::table window = settings["window"];
     
-    RendererManager::WindowHeight = window["height"].get_or(1280);
-    RendererManager::WindowWidth = window["width"].get_or(720);
-    RendererManager::WindowName = window["name"].get_or_create<std::string>("Game");
-    RendererManager::IconImageLocation = window["icon"].get_or_create<std::string>("./assets/images/icon.png");
+    WindowSettings::WindowHeight = window["height"].get_or(1280);
+    WindowSettings::WindowWidth = window["width"].get_or(720);
+    WindowSettings::WindowName = window["name"].get_or_create<std::string>("Game");
+    WindowSettings::IconImageLocation = window["icon"].get_or_create<std::string>("./assets/images/icon.png");
 }
 
 void LuaScript::LevelSetupViaLua()
 {
     lua.open_libraries(sol::lib::base, sol::lib::math);
+    lua.new_usertype<WindowSettings>(
+        "Window",
+        "width",sol::property(&WindowSettings::GetWidth),
+        "height", sol::property(&WindowSettings::GetHeight)
+        );
     lua.new_usertype<glm::vec2>(
             "vec2",
             sol::constructors<glm::vec2(), glm::vec2(float, float)>(),

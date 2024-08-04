@@ -13,10 +13,10 @@
 #include "../imgui/imgui_impl_sdlrenderer2.h"
 #include "../Logger/Logger.h"
 
-int RendererManager::WindowWidth;
-int RendererManager::WindowHeight;
-std::string RendererManager::WindowName;
-std::string RendererManager::IconImageLocation;
+int WindowSettings::WindowWidth;
+int WindowSettings::WindowHeight;
+std::string WindowSettings::WindowName;
+std::string WindowSettings::IconImageLocation;
 SDL_Window* RendererManager::Window;
 SDL_Renderer* RendererManager::Renderer;
 
@@ -33,16 +33,16 @@ void RendererManager::Initialize()
     //WindowWidth = displayMode.w / 2;
     //WindowHeight = displayMode.h / 2;
     Window = SDL_CreateWindow(
-        WindowName.c_str(),
+        WindowSettings::WindowName.c_str(),
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        WindowWidth,
-        WindowHeight,
+        WindowSettings::WindowWidth,
+         WindowSettings::WindowHeight,
         0
     );
 
     //Load Icon
-    SDL_Surface* icon = IMG_Load(IconImageLocation.c_str());
+    SDL_Surface* icon = IMG_Load(WindowSettings::IconImageLocation.c_str());
     if (icon != nullptr)
     {
         SDL_SetWindowIcon(Window, icon);
