@@ -47,7 +47,7 @@ public:
     void Start();
     void Update(float deltaTime);
     const std::vector<std::unique_ptr<GameObject>>& GetAllGameObjects() const;
-    static const std::unique_ptr<GameObject>& GetGameObjectFromId(int id);
+    static std::unique_ptr<GameObject>* GetGameObjectFromId(int id);
     bool CheckAABBCollision(double aX, double aY, double aW, double aH, double bX, double bY, double bW, double bH);
     void CalculateCollisions();
     static std::unique_ptr<GameObject>& CreateGameObject(std::string name = "GameObject");
@@ -62,14 +62,19 @@ private:
 template <typename TComponent, typename... TArgs>
 void GameObject::AddComponent(TArgs&&... args)
 {
+    if(HasComponent<TComponent>())
+    {
+        Logger::Err("GameObject with id:" + std::to_string(m_id) +
+        "; already have component: " + std::string(typeid(TComponent).name()));
+    }
     // Create the component with the owner and forward the remaining arguments
     std::shared_ptr<TComponent> newComponent = std::make_shared<TComponent>(this, std::forward<TArgs>(args)...);
 
     // Insert the component into the unordered_map and the vector
     Components.insert(std::make_pair(std::type_index(typeid(TComponent)), newComponent));
 
-    Logger::Log(
-        "GameObject with id:" + std::to_string(m_id) + "; added component: " + std::string(typeid(TComponent).name()));
+    Logger::Log("GameObject with id:" + std::to_string(m_id) +
+        "; added component: " + std::string(typeid(TComponent).name()));
 }
 
 template <typename TComponent>

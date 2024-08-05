@@ -81,12 +81,6 @@ bool AssetManager::LoadTexture(SDL_Renderer* renderer,std::string fileName)
 void AssetManager::RenderImage(SDL_Renderer* renderer, std::string filename, int x, int y, int w, int h, double scale,
 	std::optional<Color> color)
 {
-	SDL_Rect destRect;
-	destRect.x = x;
-	destRect.y = y;
-	destRect.w = w * scale;
-	destRect.h = h * scale;
-	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
 	if (m_textures.find(filename) == m_textures.end())
 	{
@@ -97,6 +91,18 @@ void AssetManager::RenderImage(SDL_Renderer* renderer, std::string filename, int
 	{
 		SDL_SetTextureColorMod(m_textures[filename], color->Red, color->Green, color->Blue);
 	}
+	if (w == 0 && h==0)
+	{
+        SDL_QueryTexture(m_textures[filename], nullptr, nullptr, &w, &h);
+	}
+	
+	
+	SDL_Rect destRect;
+	destRect.x = x;
+	destRect.y = y;
+	destRect.w = w * scale;
+	destRect.h = h * scale;
+	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
 	if (SDL_RenderCopyEx(renderer, m_textures[filename], nullptr, &destRect, 0, nullptr, flip) != 0)
 	{

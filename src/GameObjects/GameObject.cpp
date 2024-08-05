@@ -38,8 +38,15 @@ void Registry::DestroyGameObject(int id)
 
 void Registry::Start()
 {
-	for (auto& entity: m_gameObjects) {
-		if(entity->HasComponent<ScriptComponent>())
+	std::vector<GameObject*> temp;
+	for (auto& entity : m_gameObjects)
+	{
+		temp.emplace_back(entity.get());
+	}
+
+	for (auto entity : temp)
+	{
+		if (entity->HasComponent<ScriptComponent>())
 		{
 			auto script = entity->GetComponent<ScriptComponent>();
 			script->CallStart();
@@ -102,7 +109,7 @@ const std::vector<std::unique_ptr<GameObject>>& Registry::GetAllGameObjects() co
 	return m_gameObjects;
 }
 
-const std::unique_ptr<GameObject>& Registry::GetGameObjectFromId(int id)
+std::unique_ptr<GameObject>* Registry::GetGameObjectFromId(int id)
 {
 	auto it = std::find_if(m_gameObjects.begin(), m_gameObjects.end(),
 			[id](const std::unique_ptr<GameObject>& obj) {
@@ -110,7 +117,7 @@ const std::unique_ptr<GameObject>& Registry::GetGameObjectFromId(int id)
 			});
 
 	if (it != m_gameObjects.end()) {
-		return *it;
+		return &*it;
 	} else {
 		return nullptr; // Return nullptr if not found
 	}
