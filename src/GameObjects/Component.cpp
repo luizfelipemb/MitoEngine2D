@@ -205,8 +205,15 @@ void ScriptComponent::CallUpdate(float deltaTime)
 {
     for (auto& func : UpdateFunc)
     {
-        if (func != sol::lua_nil)
-            func(m_owner, deltaTime);
+        if (func == sol::lua_nil)
+            continue;
+            
+        sol::protected_function_result safe_result = func(m_owner,deltaTime);
+        if (!safe_result.valid()) {
+            sol::error err = safe_result;
+            std::cout << "Error calling safe_function: " << err.what() << '\n';
+        }
+        func(m_owner,deltaTime);
     }
 }
 
@@ -214,7 +221,14 @@ void ScriptComponent::CallStart()
 {
     for (auto& func : StartFunc)
     {
-        if (func != sol::lua_nil)
-            func(m_owner);
+        if (func == sol::lua_nil)
+            continue;
+            
+        sol::protected_function_result safe_result = func(m_owner);
+        if (!safe_result.valid()) {
+            sol::error err = safe_result;
+            std::cout << "Error calling safe_function: " << err.what() << '\n';
+        }
+        func(m_owner);
     }
 }
