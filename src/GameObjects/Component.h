@@ -143,3 +143,15 @@ public:
     std::map<std::string, sol::function> scriptFunctions;
     std::unordered_map<std::string, std::function<void(Event&)>> scriptFunctions2;
 };
+
+template<typename... Args>
+    void CallLuaFunction(sol::function& func, Args&&... args) {
+    if (func == sol::lua_nil)
+        return;
+
+    sol::protected_function_result safe_result = func(std::forward<Args>(args)...);
+    if (!safe_result.valid()) {
+        sol::error err = safe_result;
+        std::cout << "Error calling Lua function: " << err.what() << '\n';
+    }
+}

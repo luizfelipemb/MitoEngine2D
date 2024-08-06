@@ -118,27 +118,27 @@ void BoxCollider2DComponent::Update(float deltaTime)
 
 void ScriptComponent::OnCollisionStay(CollisionStayEvent& event)
 {
-    scriptFunctions["on_collision_stay"](m_owner, event.Other.get());
+    CallLuaFunction(scriptFunctions["on_collision_stay"], m_owner, event.Other.get());
 }
 
 void ScriptComponent::OnCollisionEnter(CollisionEnterEvent& event)
 {
-    scriptFunctions["on_collision_enter"](m_owner, event.Other.get());
+    CallLuaFunction(scriptFunctions["on_collision_enter"], m_owner, event.Other.get());
 }
 
 void ScriptComponent::OnCollisionExit(CollisionExitEvent& event)
 {
-    scriptFunctions["on_collision_exit"](m_owner, event.Other.get());
+    CallLuaFunction(scriptFunctions["on_collision_exit"], m_owner, event.Other.get());
 }
 
 void ScriptComponent::OnKeyPressedEvent(KeyPressedEvent& event)
 {
-    scriptFunctions["on_key_pressed"](m_owner, std::to_string(event.Symbol));
+    CallLuaFunction(scriptFunctions["on_key_pressed"], m_owner, std::to_string(event.Symbol));
 }
 
 void ScriptComponent::OnKeyReleasedEvent(KeyReleasedEvent& event)
 {
-    scriptFunctions["on_key_released"](m_owner, std::to_string(event.Symbol));
+    CallLuaFunction(scriptFunctions["on_key_released"], m_owner, std::to_string(event.Symbol));
 }
 
 void ScriptComponent::AddScript(sol::environment& luaEnv)
@@ -205,15 +205,7 @@ void ScriptComponent::CallUpdate(float deltaTime)
 {
     for (auto& func : UpdateFunc)
     {
-        if (func == sol::lua_nil)
-            continue;
-            
-        sol::protected_function_result safe_result = func(m_owner,deltaTime);
-        if (!safe_result.valid()) {
-            sol::error err = safe_result;
-            std::cout << "Error calling safe_function: " << err.what() << '\n';
-        }
-        func(m_owner,deltaTime);
+        CallLuaFunction(func, m_owner,deltaTime);
     }
 }
 
@@ -221,14 +213,7 @@ void ScriptComponent::CallStart()
 {
     for (auto& func : StartFunc)
     {
-        if (func == sol::lua_nil)
-            continue;
-            
-        sol::protected_function_result safe_result = func(m_owner);
-        if (!safe_result.valid()) {
-            sol::error err = safe_result;
-            std::cout << "Error calling safe_function: " << err.what() << '\n';
-        }
-        func(m_owner);
+        CallLuaFunction(func, m_owner);
     }
 }
+
