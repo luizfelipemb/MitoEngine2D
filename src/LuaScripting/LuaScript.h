@@ -8,6 +8,7 @@ class LuaScript
 public:
     void SettingsSetup();
     void LevelSetupViaLua();
+    void AddScriptComponent(GameObject* gameObject, const std::string& scriptName);
 private:
     sol::state lua;
     const std::string SCRIPTS_PATH = "./assets/scripts/";

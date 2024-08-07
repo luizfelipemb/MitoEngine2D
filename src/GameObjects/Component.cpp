@@ -14,8 +14,8 @@ void SpriteComponent::Update(float deltaTime)
             m_sprite,
             transform->Position.x,
             transform->Position.y,
-            m_width,
-            m_height,
+            Width,
+            Height,
             transform->Scale,
             m_color);
 }
@@ -143,6 +143,10 @@ void ScriptComponent::OnKeyReleasedEvent(KeyReleasedEvent& event)
 
 void ScriptComponent::AddScript(sol::environment& luaEnv)
 {
+    if (luaEnv["on_enable"] != sol::lua_nil)
+    {
+        luaEnv["on_enable"](m_owner);
+    }
     if (luaEnv["start"] != sol::lua_nil)
     {
         StartFunc.push_back(luaEnv["start"]);
@@ -185,6 +189,25 @@ void ScriptComponent::AddScript(sol::environment& luaEnv)
         {
             scriptFunctions[funcName] = luaEnv[funcName];
         }
+    }
+}
+
+void ScriptComponent::CreateEnvironmentScript(sol::state& lua, const std::string name, const std::string scriptsFolder)
+{
+    // Create a new environment table
+    sol::environment scriptEnv(lua, sol::create, lua.globals());
+                    
+    sol::load_result script = lua.load_file(scriptsFolder + name);
+    Logger::Log(name);
+    if (!script.valid())
+    {
+        sol::error err = script;
+        std::string errorMessage = err.what();
+        Logger::Err("Error loading the script: " + errorMessage);
+    } else
+    {
+        lua.script_file(scriptsFolder + name, scriptEnv);
+        AddScript(scriptEnv);
     }
 }
 

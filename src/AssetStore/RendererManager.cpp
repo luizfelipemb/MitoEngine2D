@@ -4,6 +4,7 @@
 #include <ostream>
 #include <SDL_image.h>
 
+#include "AssetManager.h"
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_impl_sdl2.h"
 #include "../imgui/imgui_impl_sdlrenderer2.h"
@@ -19,6 +20,7 @@ std::string WindowSettings::WindowName;
 std::string WindowSettings::IconImageLocation;
 SDL_Window* RendererManager::Window;
 SDL_Renderer* RendererManager::Renderer;
+bool RendererManager::ShowDebugInfo = false;
 
 RendererManager::~RendererManager()
 {
@@ -37,7 +39,7 @@ void RendererManager::Initialize()
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         WindowSettings::WindowWidth,
-         WindowSettings::WindowHeight,
+        WindowSettings::WindowHeight,
         0
     );
 
@@ -51,13 +53,15 @@ void RendererManager::Initialize()
     {
         std::cerr << "IMG_Load Error: " << IMG_GetError() << '\n';
     }
-    
-    if (!Window) {
+
+    if (!Window)
+    {
         Logger::Err("Error creating SDL window.");
         return;
     }
     Renderer = SDL_CreateRenderer(Window, -1, 0);
-    if (!Renderer) {
+    if (!Renderer)
+    {
         Logger::Err("Error creating SDL renderer.");
         return;
     }
@@ -73,45 +77,42 @@ void RendererManager::ClearFrameRender()
     ImGui_ImplSDLRenderer2_NewFrame();
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
-    
+
     SDL_SetRenderDrawColor(Renderer, 21, 21, 21, 255);
     SDL_RenderClear(Renderer);
 }
 
 void RendererManager::DrawFrameRender()
 {
-    //RenderImage("assets/images/radar.png", 0, 0, 100, 100, 1);
-    //RenderText("TESTEEEE", "assets/fonts/arial.ttf", 100, 0, 0);
-
-    //ImGui::ShowDemoWindow();
-    
-    ImGui::Begin("Log Window");
-    for (auto& element : Logger::Messages)
+    if (ShowDebugInfo)
     {
-        ImVec4 color;
-        switch (element.Type)
+        ImGui::Begin("Log Window");
+        for (auto& element : Logger::Messages)
         {
-        case LOG_INFO:
-            color = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
-            break;
-        case LOG_ERROR:
-            color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
-            break;
-        case LOG_LUA:
-            color = ImVec4(0.12f, 0.69f, 1.f, 1.f);
-            break;
-        default:
-            color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-            break;
+            ImVec4 color;
+            switch (element.Type)
+            {
+            case LOG_INFO:
+                color = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+                break;
+            case LOG_ERROR:
+                color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+                break;
+            case LOG_LUA:
+                color = ImVec4(0.12f, 0.69f, 1.f, 1.f);
+                break;
+            default:
+                color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+                break;
+            }
+            ImGui::PushStyleColor(ImGuiCol_Text, color);
+            ImGui::Text("%s", element.Message.c_str());
+            ImGui::PopStyleColor();
+            ImGui::SetScrollHereY(1.0f); // Scroll to the bottom
         }
-        ImGui::PushStyleColor(ImGuiCol_Text, color);
-        ImGui::Text("%s", element.Message.c_str());
-        ImGui::PopStyleColor();
-        ImGui::SetScrollHereY(1.0f);  // Scroll to the bottom
+        ImGui::End();
     }
-    //ImGui::SetScrollY(ImGui::GetScrollMaxY());
-    ImGui::End();
-    
+
     ImGui::Render();
     ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
 

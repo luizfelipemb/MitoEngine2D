@@ -21,6 +21,7 @@ public:
     static void ClearFrameRender();
     static void DrawFrameRender();
 
+    static bool ShowDebugInfo;
     static SDL_Window* Window;
     static SDL_Renderer* Renderer;
 };

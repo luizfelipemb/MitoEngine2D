@@ -60,6 +60,16 @@ void AddBoxCollider2DComponent(GameObject* gameObject,
         offset ? std::optional<glm::vec2>(*offset) : std::nullopt);
 }
 
+void LuaScript::AddScriptComponent(GameObject* gameObject,
+                                   const std::string& scriptName)
+{
+    if(!gameObject->HasComponent<ScriptComponent>())
+        gameObject->AddComponent<ScriptComponent>();
+    
+    gameObject->GetComponent<ScriptComponent>()->CreateEnvironmentScript
+        (lua,scriptName,SCRIPTS_PATH);
+}
+
 void LuaScript::SettingsSetup()
 {
     Logger::Log("SettingsSetup");
@@ -106,6 +116,11 @@ void LuaScript::LevelSetupViaLua()
             "rigidbody_component",
             "velocity", &RigidBody2DComponent::Velocity
         );
+    lua.new_usertype<SpriteComponent>(
+            "sprite_component",
+            "width", &SpriteComponent::Width,
+            "height", &SpriteComponent::Height
+        );
     lua.new_usertype<ScriptComponent>(
             "script_component",
             "get_function", &ScriptComponent::GetScriptFunction
@@ -119,6 +134,9 @@ void LuaScript::LevelSetupViaLua()
         "add_component_sprite", &AddSpriteComponent,
         "add_component_boxcollider", &AddBoxCollider2DComponent,
         "add_component_rigidbody", &AddRigidBody2DComponent,
+        "add_component_script", [this](GameObject* gameObject, const std::string& scriptName) {
+            AddScriptComponent(gameObject, scriptName);
+        },
         
         "get_component_transform", &GameObject::GetComponent<TransformComponent>,
         "get_component_sprite", &GameObject::GetComponent<SpriteComponent>,
@@ -225,22 +243,7 @@ void LuaScript::LevelSetupViaLua()
                 {
                     std::string scriptName = scriptEntry.second.as<std::string>();
 
-                    // Create a new environment table
-                    //TODO: load all scripts previously and add to a map and assign here according
-                    sol::environment scriptEnv(lua, sol::create, lua.globals());
-                    
-                    sol::load_result script = lua.load_file(SCRIPTS_PATH + scriptName);
-                    Logger::Log(scriptName);
-                    if (!script.valid())
-                    {
-                        sol::error err = script;
-                        std::string errorMessage = err.what();
-                        Logger::Err("Error loading the script: " + errorMessage);
-                    } else
-                    {
-                        lua.script_file(SCRIPTS_PATH + scriptName, scriptEnv);
-                        newGameObject->GetComponent<ScriptComponent>()->AddScript(scriptEnv);
-                    }
+                    newGameObject->GetComponent<ScriptComponent>()->CreateEnvironmentScript(lua,scriptName,SCRIPTS_PATH);
                 }
             }
         }
@@ -248,3 +251,4 @@ void LuaScript::LevelSetupViaLua()
         i++;
     }
 }
+

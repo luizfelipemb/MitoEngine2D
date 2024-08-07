@@ -19,7 +19,6 @@ public:
 	void ProcessInput();
 	void Update();
 	void Destroy();
-
 private:
 	bool m_isRunning;
 	int m_msPreviousFrame = 0;

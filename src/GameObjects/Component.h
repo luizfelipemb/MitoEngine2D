@@ -56,18 +56,17 @@ public:
                              std::optional<std::uint8_t> blue = std::nullopt) 
         : Component(owner), 
           m_sprite(sprite),
-          m_width(width.value_or(0)), 
-          m_height(height.value_or(0)), 
+          Width(width.value_or(0)), 
+          Height(height.value_or(0)), 
           m_color(Color{red.value_or(255), green.value_or(255), blue.value_or(255)})
     {
     }
 
     void Update(float deltaTime) override;
-
+    int Width;
+    int Height;
 private:
     std::string m_sprite;
-    int m_width;
-    int m_height;
     Color m_color;
 };
 
@@ -134,6 +133,7 @@ public:
     void OnKeyPressedEvent(KeyPressedEvent& event);
     void OnKeyReleasedEvent(KeyReleasedEvent& event);
     void AddScript(sol::environment& luaEnv);
+    void CreateEnvironmentScript(sol::state& lua, const std::string name, const std::string scriptsFolder);
     sol::function GetScriptFunction(const std::string& name);
     void Update(float deltaTime) override;
     void CallUpdate(float deltaTime);
