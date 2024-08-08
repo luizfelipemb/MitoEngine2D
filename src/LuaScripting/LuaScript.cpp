@@ -94,7 +94,7 @@ void LuaScript::SettingsSetup()
 
 void LuaScript::LevelSetupViaLua()
 {
-    lua.open_libraries(sol::lib::base, sol::lib::math,sol::lib::string);
+    lua.open_libraries();
     lua.new_usertype<WindowSettings>(
         "Window",
         "width",sol::property(&WindowSettings::GetWidth),

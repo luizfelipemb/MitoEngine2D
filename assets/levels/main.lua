@@ -1,3 +1,5 @@
+bricks_destroyed = 0
+
 Level = {
     entities = {
         {
