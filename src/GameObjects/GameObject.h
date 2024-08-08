@@ -21,7 +21,7 @@ class GameObject
 {
 public:
     GameObject(int id, std::string name = "GameObject"):
-             m_id(id), m_name(name) {}
+             m_id(id), Name(name) {}
     int GetId() const;
     std::string GetName() const;
     template <typename TComponent, typename... TArgs> void AddComponent(TArgs&&... args);
@@ -34,10 +34,10 @@ public:
     bool operator <(const GameObject& other) const { return m_id < other.m_id; }
     std::unordered_map<std::type_index, std::shared_ptr<Component>> Components;
     EventBus LocalEventBus;
+    std::string Name;
 
     private:
         int m_id;
-        std::string m_name;
 };
 
 
@@ -52,6 +52,7 @@ public:
     void CalculateCollisions();
     static std::unique_ptr<GameObject>& CreateGameObject(std::string name = "GameObject");
     static void DestroyGameObject(int id);
+    void ClearGameObjects();
 private:
     static std::vector<int> m_idsToDestroy;
     static int m_nextFreeId;

@@ -13,7 +13,7 @@ int GameObject::GetId() const
 
 std::string GameObject::GetName() const
 {
-	return m_name;
+	return Name;
 }
 std::vector<std::unique_ptr<GameObject>> Registry::m_gameObjects;
 int Registry::m_nextFreeId;
@@ -34,6 +34,11 @@ std::unique_ptr<GameObject>& Registry::CreateGameObject(std::string name)
 void Registry::DestroyGameObject(int id)
 {
 	m_idsToDestroy.emplace_back(id);
+}
+
+void Registry::ClearGameObjects()
+{
+	m_gameObjects.clear();
 }
 
 void Registry::Start()

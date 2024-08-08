@@ -27,6 +27,7 @@ Game::Game():
 
 Game::~Game()
 {
+    m_registry->ClearGameObjects();
     Logger::Log("Game destructor called!");
 }
 

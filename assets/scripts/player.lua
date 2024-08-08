@@ -7,7 +7,7 @@ function start(gameobject)
     rigidbody = gameobject:get_component_rigidbody()
     transform = gameobject:get_component_transform()
     sprite = gameobject:get_component_sprite()
-    mito_log("Start player function called on " .. gameobject:get_name())
+    mito_log("Start player function called on " .. gameobject.name)
 end
 
 function update(gameobject, deltaTime)
@@ -25,7 +25,7 @@ function on_key_pressed(gameobject, key)
     if key == "100" then
         rigidbody.velocity.x = rigidbody.velocity.x + velocity
     end
-    mito_log(gameobject:get_name() .. " with key " .. key)
+    mito_log(gameobject.name .. " with key " .. key)
 end
 
 function on_key_released(gameobject, key)
@@ -35,11 +35,11 @@ function on_key_released(gameobject, key)
     if key == "100" then
         rigidbody.velocity.x = rigidbody.velocity.x - velocity
     end
-    mito_log(gameobject:get_name() .. " with key released " .. key)
+    mito_log(gameobject.name .. " with key released " .. key)
 end
 
 function on_collision_enter(gameobject, other)
-    mito_log(gameobject:get_name() .. " collided with " .. other:get_name())
+    mito_log(gameobject.name .. " collided with " .. other.name)
     local startFunc = other:get_component_script():get_function("test")
     startFunc()
 end

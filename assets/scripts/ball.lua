@@ -1,22 +1,26 @@
-﻿local goingUp = false
+﻿local velocity = vec2:new(0, -200)
 
 function start(gameobject)
-    mito_log(gameobject:get_name() .. "start called")
+    mito_log(gameobject.name .. "start called")
 end
 
 function update(gameobject, deltaTime)
     local rigidbody = gameobject:get_component_rigidbody()
     if goingUp then
-        rigidbody.velocity = vec2:new(100, -200)
+        rigidbody.velocity.y = -200
     else
-        rigidbody.velocity = vec2:new(100, 200)
+        rigidbody.velocity.y = 200
     end
 end
 
 function on_collision_enter(gameobject, other)
-    mito_log(other:get_name())
-    if other:get_name() == "player" then
+    mito_log(other.name)
+    if other.name == "player" then
         goingUp = true
+    end
+    if string.find(other.name, "brick") then
+        goingUp = false
+        destroy(other)
     end
 end
 

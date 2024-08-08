@@ -6,9 +6,9 @@ void LuaPrint(const std::string& message) {
     
     Logger::Lua(message);
 }
-void Destroy(int id)
+void Destroy(GameObject* go)
 {
-    Registry::DestroyGameObject(id);
+    Registry::DestroyGameObject(go->GetId());
 }
 GameObject* CreateGameObject(sol::optional<std::string> name)
 {
@@ -94,7 +94,7 @@ void LuaScript::SettingsSetup()
 
 void LuaScript::LevelSetupViaLua()
 {
-    lua.open_libraries(sol::lib::base, sol::lib::math);
+    lua.open_libraries(sol::lib::base, sol::lib::math,sol::lib::string);
     lua.new_usertype<WindowSettings>(
         "Window",
         "width",sol::property(&WindowSettings::GetWidth),
@@ -128,7 +128,7 @@ void LuaScript::LevelSetupViaLua()
     lua.new_usertype<GameObject>(
         "gameobject",
         "get_id", &GameObject::GetId,
-        "get_name", &GameObject::GetName,
+        "name", &GameObject::Name,
         
         "add_component_transform", &AddTransformComponent,
         "add_component_sprite", &AddSpriteComponent,

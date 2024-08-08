@@ -25,6 +25,8 @@ class AssetManager
         static bool LoadTexture(SDL_Renderer* renderer, std::string fileName);
         static void RenderImage(SDL_Renderer* renderer, std::string filename, int x, int y, int w, int h, double scale,
             std::optional<Color> color = std::nullopt);
+        static int GetWidthOfSprite(SDL_Renderer* renderer, std::string filename);
+        static int GetHeightOfSprite(SDL_Renderer* renderer, std::string filename);
         static void RenderText(SDL_Renderer* renderer, const std::string& text, const std::string& fontFile, int fontSize, int x, int y, double scale = 1,
             bool centered = false, std::optional<Color> color = std::nullopt);
         static void DrawRectangle(SDL_Renderer* renderer, int x, int y, float width, float height, Color color);

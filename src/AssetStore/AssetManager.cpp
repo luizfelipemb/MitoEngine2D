@@ -114,8 +114,31 @@ void AssetManager::RenderImage(SDL_Renderer* renderer, std::string filename, int
 		SDL_SetTextureColorMod(m_textures[filename], 255, 255, 255);
 	}
 }
+
+int AssetManager::GetWidthOfSprite(SDL_Renderer* renderer, std::string filename)
+{
+	if (m_textures.find(filename) == m_textures.end())
+	{
+		LoadTexture(renderer, filename);
+	}
+	int w,h;
+	SDL_QueryTexture(m_textures[filename], nullptr, nullptr, &w, &h);
+	return w;
+}
+
+int AssetManager::GetHeightOfSprite(SDL_Renderer* renderer, std::string filename)
+{
+	if (m_textures.find(filename) == m_textures.end())
+	{
+		LoadTexture(renderer, filename);
+	}
+	int w,h;
+	SDL_QueryTexture(m_textures[filename], nullptr, nullptr, &w, &h);
+	return h;
+}
+
 void AssetManager::RenderText(SDL_Renderer* renderer, const std::string& text, const std::string& fontFile, int fontSize, int x, int y,
-	double scale, bool centered, std::optional<Color> color)
+                              double scale, bool centered, std::optional<Color> color)
 {
 	if (m_fonts.find(fontFile) == m_fonts.end())
 	{

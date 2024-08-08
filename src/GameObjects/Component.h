@@ -53,14 +53,7 @@ public:
                              std::optional<int> height = std::nullopt,
                              std::optional<std::uint8_t> red = std::nullopt, 
                              std::optional<std::uint8_t> green = std::nullopt, 
-                             std::optional<std::uint8_t> blue = std::nullopt) 
-        : Component(owner), 
-          m_sprite(sprite),
-          Width(width.value_or(0)), 
-          Height(height.value_or(0)), 
-          m_color(Color{red.value_or(255), green.value_or(255), blue.value_or(255)})
-    {
-    }
+                             std::optional<std::uint8_t> blue = std::nullopt);
 
     void Update(float deltaTime) override;
     int Width;
@@ -107,13 +100,7 @@ public:
     explicit BoxCollider2DComponent(GameObject* owner, 
                                     std::optional<int> width = std::nullopt, 
                                     std::optional<int> height = std::nullopt, 
-                                    std::optional<glm::vec2> offset = std::nullopt)
-        : Component(owner), 
-          Width(width.value_or(0)), 
-          Height(height.value_or(0)), 
-          Offset(offset.value_or(glm::vec2(0)))
-    {
-    }
+                                    std::optional<glm::vec2> offset = std::nullopt);
 
     void Update(float deltaTime) override;
     int Width;
@@ -127,6 +114,12 @@ public:
     ScriptComponent(GameObject* owner)
         : Component(owner)
     {}
+    ~ScriptComponent()
+    {
+        StartFunc.clear();
+        UpdateFunc.clear();
+        scriptFunctions.clear();
+    }
     void OnCollisionStay(CollisionStayEvent& event);
     void OnCollisionEnter(CollisionEnterEvent& event);
     void OnCollisionExit(CollisionExitEvent& event);
@@ -138,10 +131,11 @@ public:
     void Update(float deltaTime) override;
     void CallUpdate(float deltaTime);
     void CallStart();
+
+public:
     std::vector<sol::function> StartFunc;
     std::vector<sol::function> UpdateFunc;
     std::map<std::string, sol::function> scriptFunctions;
-    std::unordered_map<std::string, std::function<void(Event&)>> scriptFunctions2;
 };
 
 template<typename... Args>

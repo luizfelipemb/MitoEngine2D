@@ -6,6 +6,24 @@ void TransformComponent::Update(float deltaTime)
 }
 
 
+SpriteComponent::SpriteComponent(GameObject* owner, std::string sprite, std::optional<int> width,
+    std::optional<int> height, std::optional<std::uint8_t> red, std::optional<std::uint8_t> green,
+    std::optional<std::uint8_t> blue): Component(owner), 
+          m_sprite(sprite),
+          Width(width.value_or(0)),
+          Height(height.value_or(0)),
+          m_color(Color{red.value_or(255), green.value_or(255), blue.value_or(255)})
+{
+    if(Width==0)
+    {
+        Width = AssetManager::GetWidthOfSprite(RendererManager::Renderer,sprite);
+    }
+    if(Height==0)
+    {
+        Height = AssetManager::GetHeightOfSprite(RendererManager::Renderer,sprite);
+    }
+}
+
 void SpriteComponent::Update(float deltaTime)
 {
     if (auto transform = m_owner->GetComponent<TransformComponent>())
@@ -112,6 +130,23 @@ void RigidBody2DComponent::Update(float deltaTime)
     }
 }
 
+BoxCollider2DComponent::BoxCollider2DComponent(GameObject* owner, std::optional<int> width, std::optional<int> height,
+    std::optional<glm::vec2> offset):
+    Component(owner), Offset(offset.value_or(glm::vec2(0)))
+{
+    Width = width.value_or(0);
+    Height= height.value_or(0);
+    if(Width == 0 && owner->HasComponent<SpriteComponent>())
+    {
+        Width = owner->GetComponent<SpriteComponent>()->Width;
+        Logger::Log("Width: "+std::to_string(Width));
+    }
+    if(Height == 0 && owner->HasComponent<SpriteComponent>())
+    {
+        Height = owner->GetComponent<SpriteComponent>()->Height;
+        Logger::Log("Height: "+std::to_string(Height));
+    }
+}
 void BoxCollider2DComponent::Update(float deltaTime)
 {
 }
