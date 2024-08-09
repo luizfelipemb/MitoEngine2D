@@ -95,6 +95,7 @@ void LuaScript::SettingsSetup()
 void LuaScript::LevelSetupViaLua()
 {
     lua.open_libraries();
+    lua["globals"] = lua.create_table();
     lua.new_usertype<WindowSettings>(
         "Window",
         "width",sol::property(&WindowSettings::GetWidth),

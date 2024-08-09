@@ -9,6 +9,7 @@ function start(gameobject)
 end
 
 function update(gameobject, deltaTime)
+    mito_log(tostring(globals.bricks_destroyed))
     if goingUp then
         rigidbody.velocity.y = -200
     else
@@ -38,7 +39,7 @@ function on_collision_enter(gameobject, other)
     if string.find(other.name, "brick") then
         goingUp = false
         destroy(other)
-        bricks_destroyed = bricks_destroyed + 1
+        globals.bricks_destroyed = globals.bricks_destroyed + 1
     end
 end
 

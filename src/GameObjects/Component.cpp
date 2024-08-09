@@ -242,6 +242,8 @@ void ScriptComponent::CreateEnvironmentScript(sol::state& lua, const std::string
     } else
     {
         lua.script_file(scriptsFolder + name, scriptEnv);
+        // Share the global table
+        scriptEnv["globals"] = lua["globals"];
         AddScript(scriptEnv);
     }
 }

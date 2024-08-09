@@ -59,7 +59,7 @@ private:
 public:
     EventBus()
     {
-        Logger::Log("EventBus constructor called!");
+        //Logger::Log("EventBus constructor called!");
     }
 
     ~EventBus()
