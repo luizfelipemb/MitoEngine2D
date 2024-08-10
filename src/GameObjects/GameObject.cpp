@@ -138,6 +138,42 @@ bool Registry::CheckAABBCollision(double aX, double aY, double aW, double aH, do
 		aY + aH > bY
 		);
 }
+glm::vec2 Registry::GetCollisionDirection(double aX, double aY, double aW, double aH, 
+										  double bX, double bY, double bW, double bH)
+{
+	// Check if there's a collision
+	bool collision = (
+		aX < bX + bW &&
+		aX + aW > bX &&
+		aY < bY + bH &&
+		aY + aH > bY
+	);
+
+	if (!collision)
+	{
+		return glm::vec2(0.0, 0.0); // No collision, return zero vector
+	}
+
+	// Calculate the overlap in both X and Y directions
+	double overlapX = std::min(aX + aW, bX + bW) - std::max(aX, bX);
+	double overlapY = std::min(aY + aH, bY + bH) - std::max(aY, bY);
+
+	// Determine the collision direction based on the overlaps
+	glm::vec2 direction(0.0, 0.0);
+    
+	if (overlapX < overlapY) 
+	{
+		// Collision is more horizontal, set X direction
+		direction.x = (aX < bX) ? -1.0f : 1.0f; // a is to the left or right of b
+	} 
+	else 
+	{
+		// Collision is more vertical, set Y direction
+		direction.y = (aY < bY) ? -1.0f : 1.0f; // a is above or below b
+	}
+
+	return direction; // Return the collision direction vector
+}
 
 void Registry::CalculateCollisions()
 {
@@ -193,8 +229,18 @@ void Registry::CalculateCollisions()
 				if(!wasColliding)
 				{
 					Logger::Log("Entities " + std::to_string(a->GetId()) + " and " + std::to_string(b->GetId()) + " started colliding!");
-					a->LocalEventBus.EmitEvent<CollisionEnterEvent>(b);
-					b->LocalEventBus.EmitEvent<CollisionEnterEvent>(a);
+					glm::vec2 collisionDirectionA = GetCollisionDirection(
+									aTransform->Position.x + aCollider->Offset.x,
+									aTransform->Position.y + aCollider->Offset.y,
+									aCollider->Width,
+									aCollider->Height,
+									bTransform->Position.x + bCollider->Offset.x,
+									bTransform->Position.y + bCollider->Offset.y,
+									bCollider->Width,
+									bCollider->Height
+								);
+					a->LocalEventBus.EmitEvent<CollisionEnterEvent>(b,-collisionDirectionA);
+					b->LocalEventBus.EmitEvent<CollisionEnterEvent>(a,collisionDirectionA);
 					a->LocalEventBus.EmitEvent<CollisionStayEvent>(b);
 					b->LocalEventBus.EmitEvent<CollisionStayEvent>(a);
 					m_objectsColliding.insert(std::make_pair(a->GetId(),b->GetId()));

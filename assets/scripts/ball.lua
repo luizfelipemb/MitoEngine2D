@@ -1,5 +1,6 @@
 ﻿local velocity = vec2:new(0, -200)
 local rigidbody, transform, sprite
+local goingUp
 
 function start(gameobject)
     mito_log(gameobject.name .. "start called")
@@ -9,7 +10,6 @@ function start(gameobject)
 end
 
 function update(gameobject, deltaTime)
-    mito_log(tostring(globals.bricks_destroyed))
     if goingUp then
         rigidbody.velocity.y = -200
     else
@@ -24,23 +24,26 @@ function update(gameobject, deltaTime)
         mito_log("GAME OVER")
     end
     
-    
     if transform.position.x > Window.width - sprite.width or transform.position.x<0 then
         rigidbody.velocity.x = -rigidbody.velocity.x
     end
 end
 
-function on_collision_enter(gameobject, other)
-    mito_log(other.name)
+function on_collision_enter(gameobject, other, direction)
+    mito_log(other.name .. " with direction: " .. tostring(direction.x)..","..tostring(direction.y))
     if other.name == "player" then
         rigidbody.velocity.x = math.random(-100,100)
         goingUp = true
     end
     if string.find(other.name, "brick") then
-        goingUp = false
+        if direction.x ~= 0 and -0 then
+            rigidbody.velocity.x = -rigidbody.velocity.x
+        else
+            goingUp = not goingUp
+        end
         destroy(other)
         globals.bricks_destroyed = globals.bricks_destroyed + 1
-    end
+        end
 end
 
 function test()

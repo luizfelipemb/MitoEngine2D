@@ -48,7 +48,10 @@ public:
     void Update(float deltaTime);
     const std::vector<std::unique_ptr<GameObject>>& GetAllGameObjects() const;
     static std::unique_ptr<GameObject>* GetGameObjectFromId(int id);
-    bool CheckAABBCollision(double aX, double aY, double aW, double aH, double bX, double bY, double bW, double bH);
+    bool CheckAABBCollision(double aX, double aY, double aW, double aH, double bX,
+                                                double bY, double bW, double bH);
+    glm::vec2 Registry::GetCollisionDirection(double aX, double aY, double aW, double aH, 
+                                              double bX, double bY, double bW, double bH);
     void CalculateCollisions();
     static std::unique_ptr<GameObject>& CreateGameObject(std::string name = "GameObject");
     static void DestroyGameObject(int id);

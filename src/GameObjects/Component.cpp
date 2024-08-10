@@ -158,7 +158,7 @@ void ScriptComponent::OnCollisionStay(CollisionStayEvent& event)
 
 void ScriptComponent::OnCollisionEnter(CollisionEnterEvent& event)
 {
-    CallLuaFunction(scriptFunctions["on_collision_enter"], m_owner, event.Other.get());
+    CallLuaFunction(scriptFunctions["on_collision_enter"], m_owner, event.Other.get(),event.Direction);
 }
 
 void ScriptComponent::OnCollisionExit(CollisionExitEvent& event)
