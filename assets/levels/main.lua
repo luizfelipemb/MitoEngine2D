@@ -1,6 +1,24 @@
 Level = {
     entities = {
         {
+            name = "background",
+            components = {
+                transform = {
+                    position = { x = 0, y = 0 },
+                    scale = 1,
+                    rotation = 0.0,
+                },
+                sprite = {
+                    sprite_name = "",
+                    width = Window.width,
+                    height = Window.height,
+                    red = 25,
+                    green = 25,
+                    blue = 25
+                }
+            }
+        },
+        {
             name = "GameManager",
             components = {
                 scripts = {
@@ -55,6 +73,24 @@ Level = {
                 },
                 scripts = {
                     "ball.lua"
+                }
+            }
+        },
+        {
+            name = "score",
+            components = {
+                transform = {
+                    position = { x = 10, y = 0 },
+                    scale = 1,
+                    rotation = 0.0,
+                },
+                text = {
+                    text = "Score:",
+                    font = "assets/fonts/arial.ttf",
+                    scale = 32
+                },
+                scripts = {
+                    "score.lua"
                 }
             }
         }

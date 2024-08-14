@@ -15,6 +15,7 @@ public:
 	Game();
 	~Game();
 	void Initialize();
+	void SwitchLevel(std::string levelName);
 	void Run();
 	void ProcessInput();
 	void Update();

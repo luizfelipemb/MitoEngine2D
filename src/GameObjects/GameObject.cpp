@@ -6,6 +6,13 @@
 class CollisionExitEvent;
 class CollisionEvent;
 
+GameObject::~GameObject()
+{
+	if (HasComponent<ScriptComponent>()) {
+		GlobalEventBus::UnsubscribeFromOwner(GetComponent<ScriptComponent>());
+	}
+}
+
 int GameObject::GetId() const
 {
 	return m_id;

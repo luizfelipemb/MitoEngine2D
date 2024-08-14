@@ -62,6 +62,24 @@ private:
     std::string m_sprite;
     Color m_color;
 };
+class TextComponent : public Component
+{
+public:
+    explicit TextComponent(GameObject* owner,
+        std::string text,
+        std::string font,
+        std::optional<int> fontSize = std::nullopt,
+        std::optional<std::uint8_t> red = std::nullopt,
+        std::optional<std::uint8_t> green = std::nullopt,
+        std::optional<std::uint8_t> blue = std::nullopt);
+
+    void Update(float deltaTime) override;
+    std::string Text;
+    int FontSize;
+    Color textColor;
+private:
+    std::string m_font;
+};
 
 class ControllerComponent : public Component
 {

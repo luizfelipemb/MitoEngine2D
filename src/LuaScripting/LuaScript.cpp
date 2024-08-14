@@ -41,6 +41,22 @@ void AddSpriteComponent(GameObject* gameObject,
         green ? std::optional<std::uint8_t>(*green) : std::nullopt,
         blue ? std::optional<std::uint8_t>(*blue) : std::nullopt);
 }
+void AddTextComponent(GameObject* gameObject,
+    std::string& text,
+    std::string& font,
+    sol::optional<int> scale,
+    sol::optional<std::uint8_t> red,
+    sol::optional<std::uint8_t> green,
+    sol::optional<std::uint8_t> blue)
+{
+    gameObject->AddComponent<TextComponent>(
+        text,
+        font,
+        scale ? std::optional<int>(*scale) : std::nullopt,
+        red ? std::optional<std::uint8_t>(*red) : std::nullopt,
+        green ? std::optional<std::uint8_t>(*green) : std::nullopt,
+        blue ? std::optional<std::uint8_t>(*blue) : std::nullopt);
+}
 
 void AddRigidBody2DComponent(GameObject* gameObject,
     sol::optional<glm::vec2> velocity)
@@ -92,7 +108,7 @@ void LuaScript::SettingsSetup()
     WindowSettings::IconImageLocation = window["icon"].get_or_create<std::string>("./assets/images/icon.png");
 }
 
-void LuaScript::LevelSetupViaLua()
+void LuaScript::LoadLuaBindings()
 {
     lua.open_libraries();
     lua["globals"] = lua.create_table();
@@ -118,9 +134,15 @@ void LuaScript::LevelSetupViaLua()
             "velocity", &RigidBody2DComponent::Velocity
         );
     lua.new_usertype<SpriteComponent>(
-            "sprite_component",
-            "width", &SpriteComponent::Width,
-            "height", &SpriteComponent::Height
+        "sprite_component",
+        "width", &SpriteComponent::Width,
+        "height", &SpriteComponent::Height
+    );
+    lua.new_usertype<TextComponent>(
+            "text_component",
+            "text", &TextComponent::Text,
+            "font_size", &TextComponent::FontSize,
+            "color", &TextComponent::textColor
         );
     lua.new_usertype<ScriptComponent>(
             "script_component",
@@ -133,6 +155,7 @@ void LuaScript::LevelSetupViaLua()
         
         "add_component_transform", &AddTransformComponent,
         "add_component_sprite", &AddSpriteComponent,
+        "add_component_text", &AddTextComponent,
         "add_component_boxcollider", &AddBoxCollider2DComponent,
         "add_component_rigidbody", &AddRigidBody2DComponent,
         "add_component_script", [this](GameObject* gameObject, const std::string& scriptName) {
@@ -141,6 +164,7 @@ void LuaScript::LevelSetupViaLua()
         
         "get_component_transform", &GameObject::GetComponent<TransformComponent>,
         "get_component_sprite", &GameObject::GetComponent<SpriteComponent>,
+        "get_component_text", &GameObject::GetComponent<TextComponent>,
         "get_component_boxcollider", &GameObject::GetComponent<BoxCollider2DComponent>,
         "get_component_rigidbody", &GameObject::GetComponent<RigidBody2DComponent>,
         "get_component_script", &GameObject::GetComponent<ScriptComponent>
@@ -148,8 +172,11 @@ void LuaScript::LevelSetupViaLua()
     lua.set_function("create",CreateGameObject);
     lua.set_function("destroy", Destroy);
     lua.set_function("mito_log",LuaPrint);
+}
 
-    sol::load_result luaScript = lua.load_file(LEVELS_PATH+INITIAL_LEVEL_NAME);
+void LuaScript::LoadLevel(std::string name)
+{
+    sol::load_result luaScript = lua.load_file(LEVELS_PATH + name);
     if (!luaScript.valid())
     {
         sol::error err = luaScript;
@@ -158,7 +185,7 @@ void LuaScript::LevelSetupViaLua()
         return;
     }
     // Executes the script using the Sol state
-    lua.script_file(LEVELS_PATH+INITIAL_LEVEL_NAME);
+    lua.script_file(LEVELS_PATH + name);
 
     // Read the big table for the current level
     sol::table level = lua["Level"];
@@ -180,7 +207,7 @@ void LuaScript::LevelSetupViaLua()
             name.assign(entity["name"]);
         }
         std::unique_ptr<GameObject>& newGameObject = Registry::CreateGameObject(name);
-        
+
         // Components
         sol::optional<sol::table> hasComponents = entity["components"];
         if (hasComponents != sol::nullopt)
@@ -235,6 +262,18 @@ void LuaScript::LevelSetupViaLua()
                     entity["components"]["sprite"]["blue"].get_or(255)
                 );
             }
+            sol::optional<sol::table> text = entity["components"]["text"];
+            if (text != sol::nullopt)
+            {
+                newGameObject->AddComponent<TextComponent>(
+                    entity["components"]["text"]["text"],
+                    entity["components"]["text"]["font"],
+                    entity["components"]["text"]["scale"],
+                    entity["components"]["text"]["red"].get_or(255),
+                    entity["components"]["text"]["green"].get_or(255),
+                    entity["components"]["text"]["blue"].get_or(255)
+                );
+            }
             // Other Lua script add
             sol::optional<sol::table> scriptsTable = entity["components"]["scripts"];
             if (scriptsTable != sol::nullopt)
@@ -244,7 +283,7 @@ void LuaScript::LevelSetupViaLua()
                 {
                     std::string scriptName = scriptEntry.second.as<std::string>();
 
-                    newGameObject->GetComponent<ScriptComponent>()->CreateEnvironmentScript(lua,scriptName,SCRIPTS_PATH);
+                    newGameObject->GetComponent<ScriptComponent>()->CreateEnvironmentScript(lua, scriptName, SCRIPTS_PATH);
                 }
             }
         }

@@ -22,6 +22,7 @@ class GameObject
 public:
     GameObject(int id, std::string name = "GameObject"):
              m_id(id), Name(name) {}
+    ~GameObject();
     int GetId() const;
     std::string GetName() const;
     template <typename TComponent, typename... TArgs> void AddComponent(TArgs&&... args);

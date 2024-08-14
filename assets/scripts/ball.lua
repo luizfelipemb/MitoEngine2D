@@ -31,9 +31,10 @@ end
 
 function on_collision_enter(gameobject, other, direction)
     mito_log(other.name .. " with direction: " .. tostring(direction.x)..","..tostring(direction.y))
-    if other.name == "player" then
-        rigidbody.velocity.x = math.random(-100,100)
+    if other.name == "player" then  
+        local x_dif = other:get_component_transform().position.x - transform.position.x + other:get_component_sprite().width/2
         goingUp = true
+        rigidbody.velocity.x = -x_dif
     end
     if string.find(other.name, "brick") then
         if direction.x ~= 0 and -0 then

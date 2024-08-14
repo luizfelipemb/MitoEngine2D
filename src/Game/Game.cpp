@@ -79,7 +79,16 @@ void Game::Initialize()
     RendererManager::Initialize();
     m_isRunning = true;
 
-    m_luaScript.LevelSetupViaLua();
+    m_luaScript.LoadLuaBindings();
+    m_luaScript.LoadLevel("main.lua");
+    m_registry->Start();
+    SwitchLevel("menu.lua");
+}
+
+void Game::SwitchLevel(std::string levelName)
+{
+    m_registry->ClearGameObjects();
+    m_luaScript.LoadLevel(levelName);
     m_registry->Start();
 }
 

@@ -3,6 +3,39 @@
 
 void TransformComponent::Update(float deltaTime)
 {
+   
+}
+
+TextComponent::TextComponent(GameObject* owner,
+    std::string text,
+    std::string font,
+    std::optional<int> fontSize,
+    std::optional<std::uint8_t> red,
+    std::optional<std::uint8_t> green,
+    std::optional<std::uint8_t> blue) : Component(owner),
+    Text(text),
+    m_font(font),
+    FontSize(fontSize.value_or(0)),
+    textColor(Color{ red.value_or(255), green.value_or(255), blue.value_or(255) })
+{
+}
+
+void TextComponent::Update(float deltaTime)
+{
+    if (auto transform = m_owner->GetComponent<TransformComponent>())
+    {        
+        AssetManager::RenderText(
+            RendererManager::Renderer,
+            Text,
+            m_font,
+            FontSize,
+            transform->Position.x,
+            transform->Position.y,
+            1,
+            false,
+            textColor);
+
+    }
 }
 
 
@@ -27,15 +60,32 @@ SpriteComponent::SpriteComponent(GameObject* owner, std::string sprite, std::opt
 void SpriteComponent::Update(float deltaTime)
 {
     if (auto transform = m_owner->GetComponent<TransformComponent>())
-        AssetManager::RenderImage(
-            RendererManager::Renderer,
-            m_sprite,
-            transform->Position.x,
-            transform->Position.y,
-            Width,
-            Height,
-            transform->Scale,
-            m_color);
+    {
+        if (m_sprite == "")
+        {
+            AssetManager::DrawRectangle(
+                RendererManager::Renderer,
+                transform->Position.x,
+                transform->Position.y,
+                Width,
+                Height,
+                m_color);
+        }
+        else
+        {
+            AssetManager::RenderImage(
+                                RendererManager::Renderer,
+                                m_sprite,
+                                transform->Position.x,
+                                transform->Position.y,
+                                Width,
+                                Height,
+                                transform->Scale,
+                                m_color);
+        }
+        
+    }
+        
 }
 
 
@@ -276,4 +326,3 @@ void ScriptComponent::CallStart()
         CallLuaFunction(func, m_owner);
     }
 }
-
