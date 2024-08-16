@@ -4,6 +4,7 @@
 #include "../GameObjects/GameObject.h"
 #include "../LuaScripting/LuaScript.h"
 
+class OpenLevelEvent;
 class EventBus;
 
 constexpr static int FPS = 60;
@@ -15,7 +16,7 @@ public:
 	Game();
 	~Game();
 	void Initialize();
-	void SwitchLevel(std::string levelName);
+	void SwitchLevel(OpenLevelEvent& levelName);
 	void Run();
 	void ProcessInput();
 	void Update();
@@ -24,7 +25,7 @@ private:
 	bool m_isRunning;
 	int m_msPreviousFrame = 0;
 	std::string m_nextLevelName;
-	bool m_canChangeLevel;
+	bool m_canChangeLevel = false;
 	std::unique_ptr<Registry> m_registry;
 	LuaScript m_luaScript;
 };

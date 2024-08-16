@@ -21,7 +21,7 @@ function update(gameobject, deltaTime)
     end
     if transform.position.y > Window.height then
         --gameover
-        mito_log("GAME OVER")
+        open_level("lose.lua")
     end
     
     if transform.position.x > Window.width - sprite.width or transform.position.x<0 then

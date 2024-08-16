@@ -17,6 +17,7 @@
 #include "../Events/KeyPressedEvent.h"
 #include "../Events/EventBus.h"
 #include "../Events/KeyReleasedEvent.h"
+#include "../Events/OpenLevelEvent.h"
 
 
 Game::Game():
@@ -79,33 +80,36 @@ void Game::Initialize()
     AssetManager::Initialize();
     RendererManager::Initialize();
     m_isRunning = true;
-
+    GlobalEventBus::SubscribeToEvent<OpenLevelEvent>(this, &Game::SwitchLevel);
+    
     m_luaScript.LoadLuaBindings();
     m_luaScript.LoadLevel("main.lua");
     m_registry->Start();
+    //SwitchLevel("lose.lua");
+    //SwitchLevel("menu.lua");
 }
 
-void Game::SwitchLevel(std::string levelName)
+void Game::SwitchLevel(OpenLevelEvent& levelEvent)
 {
     m_canChangeLevel = true;
-    m_nextLevelName = std::move(levelName);
+    m_nextLevelName = levelEvent.LevelName;
 }
 
 void Game::Run()
 {
     while (m_isRunning)
     {
-        if(m_canChangeLevel)
-        {
-            m_registry->ClearGameObjects();
-            m_luaScript.LoadLevel(m_nextLevelName);
-            m_registry->Start();
-            m_canChangeLevel = false;
-        }
         RendererManager::ClearFrameRender();
         ProcessInput();
         Update();
         RendererManager::DrawFrameRender();
+        if(m_canChangeLevel)
+        {
+            m_canChangeLevel = false;
+            m_registry->ClearGameObjects();
+            m_luaScript.LoadLevel(m_nextLevelName);
+            m_registry->Start();
+        }
     }
 }
 

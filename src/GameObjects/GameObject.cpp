@@ -46,6 +46,7 @@ void Registry::DestroyGameObject(int id)
 void Registry::ClearGameObjects()
 {
 	m_gameObjects.clear();
+	Logger::Log("Cleared GameObjects, new size:"+std::to_string(m_gameObjects.size()));
 }
 
 void Registry::Start()

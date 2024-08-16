@@ -1,4 +1,6 @@
 ﻿#include "LuaScript.h"
+
+#include "../Events/OpenLevelEvent.h"
 #include "../Logger/Logger.h"
 #include "../GameObjects/GameObject.h"
 
@@ -173,8 +175,13 @@ void LuaScript::LoadLuaBindings()
     lua.set_function("destroy", Destroy);
     lua.set_function("mito_log",LuaPrint);
     lua.set_function("open_level",[this](const std::string& name) {
-            this->LoadLevel(name);
+            this->EmitOpenLevel(name);
     });
+}
+
+void LuaScript::EmitOpenLevel(const std::string& levelName)
+{
+    GlobalEventBus::EmitEvent<OpenLevelEvent>(levelName);
 }
 
 void LuaScript::LoadLevel(std::string name)

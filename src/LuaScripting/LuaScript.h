@@ -8,6 +8,7 @@ class LuaScript
 public:
     void SettingsSetup();
     void LoadLuaBindings();
+    void EmitOpenLevel(const std::string& levelName);
     void LoadLevel(std::string name);
     void AddScriptComponent(GameObject* gameObject, const std::string& scriptName);
 private:
