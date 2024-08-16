@@ -235,7 +235,8 @@ void Registry::CalculateCollisions()
 			{
 				if(!wasColliding)
 				{
-					Logger::Log("Entities " + std::to_string(a->GetId()) + " and " + std::to_string(b->GetId()) + " started colliding!");
+					Logger::Log("Entities " + a->Name + " and " + b->Name + " started colliding!(Ids:"
+						+ std::to_string(a->GetId())+", " + std::to_string(b->GetId()) + ")");
 					glm::vec2 collisionDirectionA = GetCollisionDirection(
 									aTransform->Position.x + aCollider->Offset.x,
 									aTransform->Position.y + aCollider->Offset.y,

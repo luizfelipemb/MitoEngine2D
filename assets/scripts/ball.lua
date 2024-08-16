@@ -44,7 +44,7 @@ function on_collision_enter(gameobject, other, direction)
         end
         destroy(other)
         globals.bricks_destroyed = globals.bricks_destroyed + 1
-        end
+    end
 end
 
 function test()

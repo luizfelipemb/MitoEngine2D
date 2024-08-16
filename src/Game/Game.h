@@ -23,6 +23,8 @@ public:
 private:
 	bool m_isRunning;
 	int m_msPreviousFrame = 0;
+	std::string m_nextLevelName;
+	bool m_canChangeLevel;
 	std::unique_ptr<Registry> m_registry;
 	LuaScript m_luaScript;
 };

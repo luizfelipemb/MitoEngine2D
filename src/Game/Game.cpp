@@ -4,6 +4,7 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <glm.hpp>
+#include <utility>
 
 #include "../GameObjects/GameObject.h"
 #include "../Logger/Logger.h"
@@ -82,20 +83,25 @@ void Game::Initialize()
     m_luaScript.LoadLuaBindings();
     m_luaScript.LoadLevel("main.lua");
     m_registry->Start();
-    SwitchLevel("menu.lua");
 }
 
 void Game::SwitchLevel(std::string levelName)
 {
-    m_registry->ClearGameObjects();
-    m_luaScript.LoadLevel(levelName);
-    m_registry->Start();
+    m_canChangeLevel = true;
+    m_nextLevelName = std::move(levelName);
 }
 
 void Game::Run()
 {
     while (m_isRunning)
     {
+        if(m_canChangeLevel)
+        {
+            m_registry->ClearGameObjects();
+            m_luaScript.LoadLevel(m_nextLevelName);
+            m_registry->Start();
+            m_canChangeLevel = false;
+        }
         RendererManager::ClearFrameRender();
         ProcessInput();
         Update();

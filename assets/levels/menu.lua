@@ -22,3 +22,4 @@ Level = {
         }
     }
 }
+--open_level("main.lua")

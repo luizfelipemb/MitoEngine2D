@@ -172,6 +172,9 @@ void LuaScript::LoadLuaBindings()
     lua.set_function("create",CreateGameObject);
     lua.set_function("destroy", Destroy);
     lua.set_function("mito_log",LuaPrint);
+    lua.set_function("open_level",[this](const std::string& name) {
+            this->LoadLevel(name);
+    });
 }
 
 void LuaScript::LoadLevel(std::string name)
@@ -181,7 +184,7 @@ void LuaScript::LoadLevel(std::string name)
     {
         sol::error err = luaScript;
         std::string errorMessage = err.what();
-        Logger::Err("Error loading the lua script: " + errorMessage);
+        Logger::Err("Error loading the lua script: "+name + errorMessage);
         return;
     }
     // Executes the script using the Sol state
