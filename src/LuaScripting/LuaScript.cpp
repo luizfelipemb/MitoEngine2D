@@ -154,6 +154,8 @@ void LuaScript::LoadLuaBindings()
         "gameobject",
         "get_id", &GameObject::GetId,
         "name", &GameObject::Name,
+        "has_tag", &GameObject::HasTag,
+        "set_tag", &GameObject::Tag,
         
         "add_component_transform", &AddTransformComponent,
         "add_component_sprite", &AddSpriteComponent,

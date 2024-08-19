@@ -36,7 +36,7 @@ function on_collision_enter(gameobject, other, direction)
         goingUp = true
         rigidbody.velocity.x = -x_dif
     end
-    if string.find(other.name, "brick") then
+    if other:has_tag("brick") then
         if direction.x ~= 0 and -0 then
             rigidbody.velocity.x = -rigidbody.velocity.x
         else

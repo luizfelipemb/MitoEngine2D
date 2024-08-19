@@ -85,8 +85,6 @@ void Game::Initialize()
     m_luaScript.LoadLuaBindings();
     m_luaScript.LoadLevel("main.lua");
     m_registry->Start();
-    //SwitchLevel("lose.lua");
-    //SwitchLevel("menu.lua");
 }
 
 void Game::SwitchLevel(OpenLevelEvent& levelEvent)

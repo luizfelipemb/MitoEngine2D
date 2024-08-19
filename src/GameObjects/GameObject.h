@@ -8,6 +8,7 @@
 #include <vec3.hpp>
 #include <vector>
 #include <tuple>
+#include <unordered_set>
 
 #include "Component.h"
 #include "../Logger/Logger.h"
@@ -21,10 +22,12 @@ class GameObject
 {
 public:
     GameObject(int id, std::string name = "GameObject"):
-             m_id(id), Name(name) {}
+             Name(name), m_id(id) {}
     ~GameObject();
     int GetId() const;
     std::string GetName() const;
+    void Tag(const std::string& tag);
+    bool HasTag(const std::string& tag);
     template <typename TComponent, typename... TArgs> void AddComponent(TArgs&&... args);
     template <typename TComponent> TComponent* GetComponent();
     template <typename TComponent> bool HasComponent();
@@ -33,12 +36,13 @@ public:
     bool operator !=(const GameObject& other) const { return m_id != other.m_id; }
     bool operator >(const GameObject& other) const { return m_id > other.m_id; }
     bool operator <(const GameObject& other) const { return m_id < other.m_id; }
+    
+public:
     std::unordered_map<std::type_index, std::shared_ptr<Component>> Components;
     EventBus LocalEventBus;
     std::string Name;
-
-    private:
-        int m_id;
+private:
+    int m_id;
 };
 
 
@@ -51,17 +55,25 @@ public:
     static std::unique_ptr<GameObject>* GetGameObjectFromId(int id);
     bool CheckAABBCollision(double aX, double aY, double aW, double aH, double bX,
                                                 double bY, double bW, double bH);
-    glm::vec2 Registry::GetCollisionDirection(double aX, double aY, double aW, double aH, 
-                                              double bX, double bY, double bW, double bH);
+    glm::vec2 GetCollisionDirection(double aX, double aY, double aW, double aH, 
+                                    double bX, double bY, double bW, double bH);
     void CalculateCollisions();
     static std::unique_ptr<GameObject>& CreateGameObject(std::string name = "GameObject");
     static void DestroyGameObject(int id);
     void ClearGameObjects();
+    static void TagEntity(int entityid, const std::string& tag);
+    static bool EntityHasTag(int entityid, const std::string& tag);
+    //TODO:
+    //static int GetEntityByTag(const std::string& tag);
+    //static void RemoveEntityTag(int entityid);
 private:
     static std::vector<int> m_idsToDestroy;
     static int m_nextFreeId;
     static std::vector<std::unique_ptr<GameObject>> m_gameObjects;
     std::unordered_multimap<int,int> m_objectsColliding;
+    static std::unordered_map<std::string, std::unordered_set<int>> m_gameObjectIdPerTag;
+    static std::unordered_map<int, std::unordered_set<std::string>> m_tagPerGameObjectId;
+
 };
 
 template <typename TComponent, typename... TArgs>
