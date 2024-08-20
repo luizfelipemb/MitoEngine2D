@@ -28,6 +28,9 @@ Level = {
         },
         {
             name = "player",
+            tags = {
+                "player"
+            },
             components = {
                 transform = {
                     position = { x = 50, y = 650 },

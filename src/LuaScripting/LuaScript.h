@@ -10,6 +10,8 @@ public:
     void LoadLuaBindings();
     void EmitOpenLevel(const std::string& levelName);
     void LoadLevel(std::string name);
+    void SpawnGameObject(sol::table entity);
+    void SpawnPrefab(std::string name);
     void AddScriptComponent(GameObject* gameObject, const std::string& scriptName);
 private:
     sol::state lua;

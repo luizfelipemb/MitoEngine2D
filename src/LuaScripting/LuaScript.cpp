@@ -212,14 +212,31 @@ void LuaScript::LoadLevel(std::string name)
         }
 
         sol::table entity = entities[i];
+        SpawnGameObject(entity);
+        i++;
+    }
+}
 
-        std::string name;
+void LuaScript::SpawnGameObject(sol::table entity)
+{
+    std::string name;
         if (entity["name"] != sol::nil)
         {
             name.assign(entity["name"]);
         }
+        
         std::unique_ptr<GameObject>& newGameObject = Registry::CreateGameObject(name);
 
+        //Tags
+        sol::optional<sol::table> tags = entity["tags"];
+        if (tags != sol::nullopt)
+        {
+            for (auto& tag : tags.value())
+            {
+                newGameObject->Tag(tag.second.as<std::string>());
+            }
+        }
+        
         // Components
         sol::optional<sol::table> hasComponents = entity["components"];
         if (hasComponents != sol::nullopt)
@@ -300,7 +317,21 @@ void LuaScript::LoadLevel(std::string name)
             }
         }
 
-        i++;
+}
+
+void LuaScript::SpawnPrefab(std::string name)
+{
+    sol::load_result luaScript = lua.load_file("./assets/prefabs/" + name);
+    if (!luaScript.valid())
+    {
+        sol::error err = luaScript;
+        std::string errorMessage = err.what();
+        Logger::Err("Error loading the lua script: "+name + errorMessage);
+        return;
     }
+    // Executes the script using the Sol state
+    lua.script_file("./assets/prefabs/" + name);
+    sol::table prefab = lua["Prefab"];
+    SpawnGameObject(prefab);
 }
 
