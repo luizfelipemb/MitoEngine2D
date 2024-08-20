@@ -11,7 +11,6 @@ Prefab = {
             sprite_name = "assets/images/brick.png"
         },
         boxcollider = {
-            
         },
         scripts = { "brick.lua" }
     }

@@ -84,7 +84,6 @@ void Game::Initialize()
     
     m_luaScript.LoadLuaBindings();
     m_luaScript.LoadLevel("main.lua");
-    m_luaScript.SpawnPrefab("brick.lua");
     m_registry->Start();
 }
 

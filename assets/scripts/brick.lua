@@ -1,8 +1,4 @@
-﻿function start(gameobject)
-    mito_log("teste")
-end
-
-function on_enable(gameobject) 
+﻿function on_enable(gameobject) 
     mito_log("on_enable on id ".. gameobject:get_id())
 end
 
