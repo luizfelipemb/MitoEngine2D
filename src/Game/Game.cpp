@@ -58,9 +58,9 @@ void Game::ProcessInput()
             {
                 m_isRunning = false;
             }
-            if(sdlEvent.key.keysym.sym == SDLK_l)
+            if(sdlEvent.key.keysym.sym == SDLK_F3)
             {
-                RendererManager::ShowDebugInfo = !RendererManager::ShowDebugInfo;
+                g_DebugMode = !g_DebugMode;
             }
             if (sdlEvent.key.repeat == 0)
             {

@@ -9,6 +9,7 @@ class EventBus;
 
 constexpr static int FPS = 60;
 constexpr int MILLISECS_PER_FRAME = 1000 / FPS;
+inline bool g_DebugMode = false;
 
 class Game
 {

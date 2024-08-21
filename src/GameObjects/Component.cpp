@@ -1,5 +1,7 @@
 ﻿#include "Component.h"
 
+#include "../Game/Game.h"
+
 
 void TransformComponent::Update(float deltaTime)
 {
@@ -55,6 +57,8 @@ SpriteComponent::SpriteComponent(GameObject* owner, std::string sprite, std::opt
     {
         Height = AssetManager::GetHeightOfSprite(RendererManager::Renderer,sprite);
     }
+
+    //TODO: add to registry to sort and draw by layer
 }
 
 void SpriteComponent::Update(float deltaTime)
@@ -83,9 +87,7 @@ void SpriteComponent::Update(float deltaTime)
                                 transform->Scale,
                                 m_color);
         }
-        
     }
-        
 }
 
 
@@ -199,6 +201,18 @@ BoxCollider2DComponent::BoxCollider2DComponent(GameObject* owner, std::optional<
 }
 void BoxCollider2DComponent::Update(float deltaTime)
 {
+    if (g_DebugMode && m_owner->HasComponent<TransformComponent>())
+    {
+        auto transform = m_owner->GetComponent<TransformComponent>();
+        AssetManager::DrawBorderRectangle(
+                RendererManager::Renderer,
+                transform->Position.x,
+                transform->Position.y,
+                Width,
+                Height,
+                {0,0,255});
+        
+    }
 }
 
 void ScriptComponent::OnCollisionStay(CollisionStayEvent& event)

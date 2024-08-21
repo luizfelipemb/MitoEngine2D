@@ -5,6 +5,7 @@
 #include <SDL_image.h>
 
 #include "AssetManager.h"
+#include "../Game/Game.h"
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_impl_sdl2.h"
 #include "../imgui/imgui_impl_sdlrenderer2.h"
@@ -20,7 +21,6 @@ std::string WindowSettings::WindowName;
 std::string WindowSettings::IconImageLocation;
 SDL_Window* RendererManager::Window;
 SDL_Renderer* RendererManager::Renderer;
-bool RendererManager::ShowDebugInfo = false;
 
 RendererManager::~RendererManager()
 {
@@ -84,7 +84,7 @@ void RendererManager::ClearFrameRender()
 
 void RendererManager::DrawFrameRender()
 {
-    if (ShowDebugInfo)
+    if (g_DebugMode)
     {
         ImGui::Begin("Log Window");
         for (auto& element : Logger::Messages)

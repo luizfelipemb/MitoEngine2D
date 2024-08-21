@@ -216,3 +216,10 @@ void AssetManager::DrawRectangle(SDL_Renderer* renderer, int x, int y, float wid
 	// Draw rectangle
 	SDL_RenderFillRect(renderer, &rect);
 }
+
+void AssetManager::DrawBorderRectangle(SDL_Renderer* renderer, int x, int y, float width, float height, Color color)
+{
+	SDL_SetRenderDrawColor(renderer, color.Red, color.Green, color.Blue, SDL_ALPHA_OPAQUE);
+	SDL_Rect rect = { x, y, static_cast<int>(width), static_cast<int>(height) };
+	SDL_RenderDrawRect(renderer, &rect);
+}

@@ -2,9 +2,8 @@
 #include <SDL_render.h>
 #include <string>
 
-class WindowSettings
+struct WindowSettings
 {
-public:
     static int WindowWidth;
     static int WindowHeight;
     static std::string WindowName;
@@ -21,7 +20,6 @@ public:
     static void ClearFrameRender();
     static void DrawFrameRender();
 
-    static bool ShowDebugInfo;
     static SDL_Window* Window;
     static SDL_Renderer* Renderer;
 };

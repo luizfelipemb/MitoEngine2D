@@ -30,6 +30,7 @@ class AssetManager
         static void RenderText(SDL_Renderer* renderer, const std::string& text, const std::string& fontFile, int fontSize, int x, int y, double scale = 1,
             bool centered = false, std::optional<Color> color = std::nullopt);
         static void DrawRectangle(SDL_Renderer* renderer, int x, int y, float width, float height, Color color);
+        static void DrawBorderRectangle(SDL_Renderer* renderer, int x, int y, float width, float height, Color color);
 
 private:
         static std::map<std::string, SDL_Texture*> m_textures;
