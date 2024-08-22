@@ -8,10 +8,10 @@ class GameObject;
 class CollisionStayEvent : public Event
 {
 public:
-	CollisionStayEvent(const std::unique_ptr<GameObject>& other)
+	CollisionStayEvent(const std::shared_ptr<GameObject>& other)
 		: Other(other)
 	{
 	}
-	const std::unique_ptr<GameObject>& Other;
+	const std::shared_ptr<GameObject>& Other;
 };
 

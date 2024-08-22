@@ -53,9 +53,8 @@ class Registry
 public:
     void Start();
     void Update(float deltaTime);
-    const std::vector<std::unique_ptr<GameObject>>& GetAllGameObjects() const;
-    static std::unique_ptr<GameObject>* GetGameObjectFromId(int id);
-    static std::unique_ptr<GameObject>& CreateGameObject(std::string name = "GameObject");
+    const std::vector<std::shared_ptr<GameObject>>& GetAllGameObjects() const;
+    static std::shared_ptr<GameObject>& CreateGameObject(std::string name = "GameObject");
     static void DestroyGameObject(int id);
     void ClearGameObjects();
     static void TagEntity(int entityid, const std::string& tag);
@@ -68,7 +67,7 @@ private:
     RenderSystem m_renderSystem;
     static std::vector<int> m_idsToDestroy;
     static int m_nextFreeId;
-    static std::vector<std::unique_ptr<GameObject>> m_gameObjects;
+    static std::vector<std::shared_ptr<GameObject>> m_gameObjects;
     static std::unordered_map<std::string, std::unordered_set<int>> m_gameObjectIdPerTag;
     static std::unordered_map<int, std::unordered_set<std::string>> m_tagPerGameObjectId;
 

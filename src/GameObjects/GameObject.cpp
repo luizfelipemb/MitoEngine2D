@@ -37,13 +37,13 @@ bool GameObject::HasTag(const std::string& tag)
     return Registry::EntityHasTag(m_id, tag);
 }
 
-std::vector<std::unique_ptr<GameObject>> Registry::m_gameObjects;
+std::vector<std::shared_ptr<GameObject>> Registry::m_gameObjects;
 int Registry::m_nextFreeId;
 std::vector<int> Registry::m_idsToDestroy;
 std::unordered_map<std::string, std::unordered_set<int>> Registry::m_gameObjectIdPerTag;
 std::unordered_map<int, std::unordered_set<std::string>> Registry::m_tagPerGameObjectId;
 
-std::unique_ptr<GameObject>& Registry::CreateGameObject(std::string name)
+std::shared_ptr<GameObject>& Registry::CreateGameObject(std::string name)
 {
     if (name.empty())
     {
@@ -143,7 +143,7 @@ void Registry::Update(float deltaTime)
     {
         Logger::Log("Trying to destroy id:" + std::to_string(id));
         auto it = std::find_if(m_gameObjects.begin(), m_gameObjects.end(),
-                               [id](const std::unique_ptr<GameObject>& obj)
+                               [id](const std::shared_ptr<GameObject>& obj)
                                {
                                    return obj->GetId() == id;
                                });
@@ -167,25 +167,7 @@ void Registry::Update(float deltaTime)
     m_idsToDestroy.clear();
 }
 
-const std::vector<std::unique_ptr<GameObject>>& Registry::GetAllGameObjects() const
+const std::vector<std::shared_ptr<GameObject>>& Registry::GetAllGameObjects() const
 {
     return m_gameObjects;
-}
-
-std::unique_ptr<GameObject>* Registry::GetGameObjectFromId(int id)
-{
-    auto it = std::find_if(m_gameObjects.begin(), m_gameObjects.end(),
-                           [id](const std::unique_ptr<GameObject>& obj)
-                           {
-                               return obj->GetId() == id;
-                           });
-
-    if (it != m_gameObjects.end())
-    {
-        return &*it;
-    }
-    else
-    {
-        return nullptr; // Return nullptr if not found
-    }
 }

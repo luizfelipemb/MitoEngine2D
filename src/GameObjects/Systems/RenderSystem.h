@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -7,13 +8,15 @@ class GameObject;
 class RenderSystem
 {
 public:
-    void Update(std::vector<std::unique_ptr<GameObject>>& m_gameObjects);
-
-    /*TODO: system rendering
-
-    layer int ---> vector ref gameobjects
-    start ---> organize by layer
-    on object add --> add by layer
-    on object destroy ---> remove by layer
+    void SortByLayer(std::vector<std::shared_ptr<GameObject>>& m_gameObjects);
+    void Update(std::vector<std::shared_ptr<GameObject>>& m_gameObjects);
+private:
+    std::map<int, std::vector<std::weak_ptr<GameObject>>> layeredGameObjects;
+    
+    /*TODO:
+    on start ---> SortByLayer
+    on object add --> add by layer func
+    on object destroy ---> remove by layer func
+    on object change layer ---> change layer func
     */
 };

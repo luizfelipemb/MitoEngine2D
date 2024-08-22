@@ -51,6 +51,7 @@ public:
                              std::string sprite,
                              std::optional<int> width = std::nullopt, 
                              std::optional<int> height = std::nullopt,
+                             std::optional<int> layer = std::nullopt,
                              std::optional<std::uint8_t> red = std::nullopt, 
                              std::optional<std::uint8_t> green = std::nullopt, 
                              std::optional<std::uint8_t> blue = std::nullopt);
@@ -59,6 +60,7 @@ public:
     void Render();
     int Width;
     int Height;
+    int Layer = 0;
 private:
     std::string m_sprite;
     Color m_color;

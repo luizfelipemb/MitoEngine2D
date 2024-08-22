@@ -84,6 +84,14 @@ void Game::Initialize()
     
     m_luaScript.LoadLuaBindings();
     m_luaScript.LoadLevel("main.lua");
+    
+    auto& x = m_registry->CreateGameObject();
+    x->AddComponent<TransformComponent>(glm::vec2(0,0));
+    x->AddComponent<SpriteComponent>("",300,300,0, 0,0,0);
+    auto& y = m_registry->CreateGameObject();
+    y->AddComponent<TransformComponent>(glm::vec2(100,100));
+    y->AddComponent<SpriteComponent>("",100,100,1, 255,255,255);
+    
     m_registry->Start();
 }
 

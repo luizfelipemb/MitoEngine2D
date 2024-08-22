@@ -6,9 +6,9 @@ class GameObject;
 class CollisionExitEvent : public Event
 {
 public:
-    CollisionExitEvent(const std::unique_ptr<GameObject>& other)
+    CollisionExitEvent(const std::shared_ptr<GameObject>& other)
         : Other(other)
     {
     }
-    const std::unique_ptr<GameObject>& Other;
+    const std::shared_ptr<GameObject>& Other;
 };

@@ -34,6 +34,7 @@ void AddSpriteComponent(GameObject* gameObject,
                         const std::string& sprite,
                         sol::optional<int> width,
                         sol::optional<int> height,
+                        sol::optional<int> layer,
                         sol::optional<std::uint8_t> red,
                         sol::optional<std::uint8_t> green,
                         sol::optional<std::uint8_t> blue)
@@ -42,6 +43,7 @@ void AddSpriteComponent(GameObject* gameObject,
         sprite,
         width ? std::optional<int>(*width) : std::nullopt,
         height ? std::optional<int>(*height) : std::nullopt,
+        layer ? std::optional<int>(*layer) : std::nullopt,
         red ? std::optional<std::uint8_t>(*red) : std::nullopt,
         green ? std::optional<std::uint8_t>(*green) : std::nullopt,
         blue ? std::optional<std::uint8_t>(*blue) : std::nullopt);
@@ -304,6 +306,7 @@ GameObject* LuaScript::SpawnGameObject(sol::table entity)
                 entity["components"]["sprite"]["sprite_name"],
                 entity["components"]["sprite"]["width"],
                 entity["components"]["sprite"]["height"],
+                entity["components"]["sprite"]["layer"],
                 entity["components"]["sprite"]["red"].get_or(255),
                 entity["components"]["sprite"]["green"].get_or(255),
                 entity["components"]["sprite"]["blue"].get_or(255)

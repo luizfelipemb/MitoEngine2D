@@ -57,11 +57,11 @@ glm::vec2 CollisionSystem::GetCollisionDirection(double aX, double aY, double aW
     return direction; // Return the collision direction vector
 }
 
-void CollisionSystem::CalculateCollisions(std::vector<std::unique_ptr<GameObject>>& m_gameObjects)
+void CollisionSystem::CalculateCollisions(std::vector<std::shared_ptr<GameObject>>& m_gameObjects)
 {
     for (auto i = m_gameObjects.begin(); i != m_gameObjects.end(); ++i)
     {
-        const std::unique_ptr<GameObject>& a = *i;
+        const std::shared_ptr<GameObject>& a = *i;
 
         if (!a->HasComponent<TransformComponent>() || !a->HasComponent<BoxCollider2DComponent>())
             continue;
@@ -72,7 +72,7 @@ void CollisionSystem::CalculateCollisions(std::vector<std::unique_ptr<GameObject
         // Loop all the entities that still need to be checked (to the right of i)
         for (auto j = i; j != m_gameObjects.end(); ++j)
         {
-            const std::unique_ptr<GameObject>& b = *j;
+            const std::shared_ptr<GameObject>& b = *j;
 
             if (!b->HasComponent<TransformComponent>() || !b->HasComponent<BoxCollider2DComponent>())
                 continue;

@@ -41,12 +41,14 @@ void TextComponent::Update(float deltaTime)
 }
 
 
-SpriteComponent::SpriteComponent(GameObject* owner, std::string sprite, std::optional<int> width,
-    std::optional<int> height, std::optional<std::uint8_t> red, std::optional<std::uint8_t> green,
-    std::optional<std::uint8_t> blue): Component(owner), 
-          m_sprite(sprite),
+SpriteComponent::SpriteComponent(GameObject* owner, std::string sprite,
+    std::optional<int> width, std::optional<int> height, std::optional<int> layer,
+    std::optional<std::uint8_t> red, std::optional<std::uint8_t> green, std::optional<std::uint8_t> blue)
+    :   Component(owner),
           Width(width.value_or(0)),
           Height(height.value_or(0)),
+          Layer(layer.value_or(0)),
+          m_sprite(sprite),
           m_color(Color{red.value_or(255), green.value_or(255), blue.value_or(255)})
 {
     if(Width==0)
