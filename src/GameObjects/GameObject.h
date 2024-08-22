@@ -13,6 +13,8 @@
 #include "Component.h"
 #include "../Logger/Logger.h"
 #include "../Events/EventBus.h"
+#include "Systems/CollisionSystem.h"
+#include "Systems/RenderSystem.h"
 
 class Registry;
 class Component;
@@ -53,11 +55,6 @@ public:
     void Update(float deltaTime);
     const std::vector<std::unique_ptr<GameObject>>& GetAllGameObjects() const;
     static std::unique_ptr<GameObject>* GetGameObjectFromId(int id);
-    bool CheckAABBCollision(double aX, double aY, double aW, double aH, double bX,
-                                                double bY, double bW, double bH);
-    glm::vec2 GetCollisionDirection(double aX, double aY, double aW, double aH, 
-                                    double bX, double bY, double bW, double bH);
-    void CalculateCollisions();
     static std::unique_ptr<GameObject>& CreateGameObject(std::string name = "GameObject");
     static void DestroyGameObject(int id);
     void ClearGameObjects();
@@ -67,10 +64,11 @@ public:
     //static int GetEntityByTag(const std::string& tag);
     //static void RemoveEntityTag(int entityid);
 private:
+    CollisionSystem m_collisionSystem;
+    RenderSystem m_renderSystem;
     static std::vector<int> m_idsToDestroy;
     static int m_nextFreeId;
     static std::vector<std::unique_ptr<GameObject>> m_gameObjects;
-    std::unordered_multimap<int,int> m_objectsColliding;
     static std::unordered_map<std::string, std::unordered_set<int>> m_gameObjectIdPerTag;
     static std::unordered_map<int, std::unordered_set<std::string>> m_tagPerGameObjectId;
 

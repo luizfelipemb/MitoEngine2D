@@ -56,6 +56,7 @@ public:
                              std::optional<std::uint8_t> blue = std::nullopt);
 
     void Update(float deltaTime) override;
+    void Render();
     int Width;
     int Height;
 private:

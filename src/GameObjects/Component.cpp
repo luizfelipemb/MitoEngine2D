@@ -63,6 +63,10 @@ SpriteComponent::SpriteComponent(GameObject* owner, std::string sprite, std::opt
 
 void SpriteComponent::Update(float deltaTime)
 {
+}
+
+void SpriteComponent::Render()
+{
     if (auto transform = m_owner->GetComponent<TransformComponent>())
     {
         if (m_sprite == "")

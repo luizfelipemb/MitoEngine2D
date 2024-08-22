@@ -8,7 +8,8 @@ function start()
             --local r = math.random(50,255)
             --local g = math.random(50,255)
             --local b = math.random(50,255)
-            --go:add_component_sprite("assets/images/brick.png",64,32,r,g,b)
+            --go:add_component_sprite("assets/images/brick.png",64,32,r,g,b)    
+            --TODO: create above function in lua
         end
     end
 end
