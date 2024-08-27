@@ -70,7 +70,7 @@ private:
     static std::vector<std::shared_ptr<GameObject>> m_gameObjects;
     static std::unordered_map<std::string, std::unordered_set<int>> m_gameObjectIdPerTag;
     static std::unordered_map<int, std::unordered_set<std::string>> m_tagPerGameObjectId;
-
+    //TODO: static being "inline"
 };
 
 template <typename TComponent, typename... TArgs>

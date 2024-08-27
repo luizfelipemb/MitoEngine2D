@@ -2,10 +2,10 @@
 
 #include "../GameObject.h"
 
-void RenderSystem::SortByLayer(std::vector<std::shared_ptr<GameObject>>& m_gameObjects)
+void RenderSystem::SortByLayer(std::vector<std::shared_ptr<GameObject>>& gameObjects)
 {
     layeredGameObjects.clear();
-    for (const auto& gameObject : m_gameObjects)
+    for (const auto& gameObject : gameObjects)
     {
         if (gameObject->HasComponent<SpriteComponent>())
         {
@@ -15,10 +15,8 @@ void RenderSystem::SortByLayer(std::vector<std::shared_ptr<GameObject>>& m_gameO
     }
 }
 
-void RenderSystem::Update(std::vector<std::shared_ptr<GameObject>>& m_gameObjects)
+void RenderSystem::Update()
 {
-    SortByLayer(m_gameObjects);
-
     for (const auto& [layer, objects] : layeredGameObjects)
     {
         for (const auto& weakPtr : objects)

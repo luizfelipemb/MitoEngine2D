@@ -8,8 +8,8 @@ class GameObject;
 class RenderSystem
 {
 public:
-    void SortByLayer(std::vector<std::shared_ptr<GameObject>>& m_gameObjects);
-    void Update(std::vector<std::shared_ptr<GameObject>>& m_gameObjects);
+    void SortByLayer(std::vector<std::shared_ptr<GameObject>>& gameObjects);
+    void Update();
 private:
     std::map<int, std::vector<std::weak_ptr<GameObject>>> layeredGameObjects;
     
