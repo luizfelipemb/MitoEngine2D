@@ -65,12 +65,11 @@ public:
 private:
     CollisionSystem m_collisionSystem;
     RenderSystem m_renderSystem;
-    static std::vector<int> m_idsToDestroy;
-    static int m_nextFreeId;
-    static std::vector<std::shared_ptr<GameObject>> m_gameObjects;
-    static std::unordered_map<std::string, std::unordered_set<int>> m_gameObjectIdPerTag;
-    static std::unordered_map<int, std::unordered_set<std::string>> m_tagPerGameObjectId;
-    //TODO: static being "inline"
+    static inline std::vector<int> m_idsToDestroy;
+    static inline int m_nextFreeId;
+    static inline std::vector<std::shared_ptr<GameObject>> m_gameObjects;
+    static inline std::unordered_map<std::string, std::unordered_set<int>> m_gameObjectIdPerTag;
+    static inline std::unordered_map<int, std::unordered_set<std::string>> m_tagPerGameObjectId;
 };
 
 template <typename TComponent, typename... TArgs>

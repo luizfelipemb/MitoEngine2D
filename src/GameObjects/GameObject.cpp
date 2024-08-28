@@ -1,6 +1,7 @@
 #include "GameObject.h"
 #include "../Events/CollisionEnterEvent.h"
 #include "../Events/CollisionStayEvent.h"
+#include "../Events/GameObjectCreatedEvent.h"
 #include "../Logger/Logger.h"
 
 class CollisionExitEvent;
@@ -36,12 +37,6 @@ bool GameObject::HasTag(const std::string& tag)
         + " result: " + std::to_string(Registry::EntityHasTag(m_id, tag)));
     return Registry::EntityHasTag(m_id, tag);
 }
-
-std::vector<std::shared_ptr<GameObject>> Registry::m_gameObjects;
-int Registry::m_nextFreeId;
-std::vector<int> Registry::m_idsToDestroy;
-std::unordered_map<std::string, std::unordered_set<int>> Registry::m_gameObjectIdPerTag;
-std::unordered_map<int, std::unordered_set<std::string>> Registry::m_tagPerGameObjectId;
 
 std::shared_ptr<GameObject>& Registry::CreateGameObject(std::string name)
 {
@@ -138,7 +133,10 @@ void Registry::Update(float deltaTime)
     }
 
     m_collisionSystem.CalculateCollisions(m_gameObjects);
-    m_renderSystem.Update(m_gameObjects);
+    //TODO: Layer sort not every frame
+    m_renderSystem.SortByLayer(m_gameObjects);
+    m_renderSystem.Update();
+    GlobalEventBus::EmitEvent<GameObjectCreatedEvent>();
     for (auto& id : m_idsToDestroy)
     {
         Logger::Log("Trying to destroy id:" + std::to_string(id));

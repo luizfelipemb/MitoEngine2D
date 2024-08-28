@@ -17,6 +17,7 @@ project "MitoEngine2D"
 	{ 	
 		"src/**.cpp",
 		"src/**.h",
+		"src/**.hpp",
 	}
 
     filter "configurations:Debug"
@@ -51,7 +52,7 @@ project "MitoEngine2D"
             "libs/SDL2/lib/x64",
 			"libs/SDL2_image/lib/x64",
 			"libs/SDL2_ttf/lib/x64",
-			"libs/lua"			
+			"libs/lua"
         }
 
         links 
