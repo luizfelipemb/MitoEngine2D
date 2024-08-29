@@ -52,6 +52,7 @@ void AddSpriteComponent(GameObject* gameObject,
 void AddTextComponent(GameObject* gameObject,
                       std::string& text,
                       std::string& font,
+                      sol::optional<int> layer,
                       sol::optional<int> scale,
                       sol::optional<std::uint8_t> red,
                       sol::optional<std::uint8_t> green,
@@ -60,6 +61,7 @@ void AddTextComponent(GameObject* gameObject,
     gameObject->AddComponent<TextComponent>(
         text,
         font,
+        layer ? std::optional<int>(*layer) : std::nullopt,
         scale ? std::optional<int>(*scale) : std::nullopt,
         red ? std::optional<std::uint8_t>(*red) : std::nullopt,
         green ? std::optional<std::uint8_t>(*green) : std::nullopt,
@@ -324,6 +326,7 @@ GameObject* LuaScript::SpawnGameObject(sol::table entity)
                 newGameObject,
                 textStr,
                 fontStr,
+                entity["components"]["text"]["layer"],
                 entity["components"]["text"]["scale"],
                 entity["components"]["text"]["red"].get_or(255),
                 entity["components"]["text"]["green"].get_or(255),
@@ -343,6 +346,7 @@ GameObject* LuaScript::SpawnGameObject(sol::table entity)
             }
         }
     }
+    GlobalEventBus::EmitEvent<GameObjectCreatedEvent>();
     return newGameObject;
 }
 

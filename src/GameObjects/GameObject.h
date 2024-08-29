@@ -51,6 +51,7 @@ private:
 class Registry
 {
 public:
+    Registry() : m_renderSystem(m_gameObjects) {}
     void Start();
     void Update(float deltaTime);
     const std::vector<std::shared_ptr<GameObject>>& GetAllGameObjects() const;

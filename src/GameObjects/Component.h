@@ -71,6 +71,7 @@ public:
     explicit TextComponent(GameObject* owner,
         std::string text,
         std::string font,
+        std::optional<int> layer = std::nullopt,
         std::optional<int> fontSize = std::nullopt,
         std::optional<std::uint8_t> red = std::nullopt,
         std::optional<std::uint8_t> green = std::nullopt,
@@ -78,6 +79,7 @@ public:
 
     void Update(float deltaTime) override;
     std::string Text;
+    int Layer;
     int FontSize;
     Color textColor;
 private:

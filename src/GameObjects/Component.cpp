@@ -11,12 +11,14 @@ void TransformComponent::Update(float deltaTime)
 TextComponent::TextComponent(GameObject* owner,
     std::string text,
     std::string font,
+    std::optional<int> layer,
     std::optional<int> fontSize,
     std::optional<std::uint8_t> red,
     std::optional<std::uint8_t> green,
     std::optional<std::uint8_t> blue) : Component(owner),
     Text(text),
     m_font(font),
+    Layer(layer.value_or(0)),
     FontSize(fontSize.value_or(0)),
     textColor(Color{ red.value_or(255), green.value_or(255), blue.value_or(255) })
 {

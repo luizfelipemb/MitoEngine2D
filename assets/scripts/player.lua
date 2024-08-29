@@ -21,6 +21,8 @@ end
 
 function on_key_pressed(gameobject, key)
     if key == "97" then
+        local go = spawn_prefab("brick.lua")
+        go:get_component_transform().position = vec2:new(250, 250)
         rigidbody.velocity.x = rigidbody.velocity.x - velocity
     end
     if key == "100" then

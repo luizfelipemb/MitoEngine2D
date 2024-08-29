@@ -47,7 +47,8 @@ Level = {
                 sprite = {
                     sprite_name = "assets/images/paddle.png",
                     width = 128,
-                    height = 28
+                    height = 28,
+                    layer = 1
                 },
                 scripts = {
                     "player.lua"
@@ -72,7 +73,8 @@ Level = {
                 sprite = {
                     sprite_name = "assets/images/ball.png",
                     width = 16,
-                    height = 16
+                    height = 16,
+                    layer = 2
                 },
                 scripts = {
                     "ball.lua"
