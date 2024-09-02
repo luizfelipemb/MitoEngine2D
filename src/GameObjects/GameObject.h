@@ -32,7 +32,9 @@ public:
     bool HasTag(const std::string& tag);
     template <typename TComponent, typename... TArgs> void AddComponent(TArgs&&... args);
     template <typename TComponent> TComponent* GetComponent();
+    template <typename TComponent> TComponent* GetComponentBase();
     template <typename TComponent> bool HasComponent();
+    template <typename TComponent> bool HasComponentBase();
     GameObject& operator =(const GameObject& other) = default;
     bool operator ==(const GameObject& other) const { return m_id == other.m_id; }
     bool operator !=(const GameObject& other) const { return m_id != other.m_id; }
@@ -121,4 +123,36 @@ bool GameObject::HasComponent()
 {
     auto it = Components.find(std::type_index(typeid(TComponent)));
     return it != Components.end();
+}
+
+template <typename TBaseComponent>
+bool GameObject::HasComponentBase()
+{
+    // Iterate through all components
+    for (const auto& [typeIndex, componentPtr] : Components)
+    {
+        // Use dynamic_cast to check if the component is of type TBaseComponent or derived from it
+        if (dynamic_cast<TBaseComponent*>(componentPtr.get()))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+template <typename TBaseComponent>
+TBaseComponent* GameObject::GetComponentBase()
+{
+    // Iterate through all components
+    for (const auto& [typeIndex, componentPtr] : Components)
+    {
+        // Use dynamic_cast to check if the component is of type TBaseComponent or derived from it
+        if (TBaseComponent* derivedPtr = dynamic_cast<TBaseComponent*>(componentPtr.get()))
+        {
+            return derivedPtr;
+        }
+    }
+    // If no component is found, return nullptr
+    Logger::Err("Base component not found");
+    return nullptr;
 }

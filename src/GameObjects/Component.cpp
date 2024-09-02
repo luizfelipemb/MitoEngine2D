@@ -9,22 +9,27 @@ void TransformComponent::Update(float deltaTime)
 }
 
 TextComponent::TextComponent(GameObject* owner,
-    std::string text,
-    std::string font,
-    std::optional<int> layer,
-    std::optional<int> fontSize,
-    std::optional<std::uint8_t> red,
-    std::optional<std::uint8_t> green,
-    std::optional<std::uint8_t> blue) : Component(owner),
+                            std::string text,
+                            std::string font,
+                            std::optional<int> layer,
+                            std::optional<int> fontSize,
+                            std::optional<std::uint8_t> red,
+                            std::optional<std::uint8_t> green,
+                            std::optional<std::uint8_t> blue)
+    : RenderableComponent(owner,layer),
     Text(text),
     m_font(font),
-    Layer(layer.value_or(0)),
     FontSize(fontSize.value_or(0)),
     textColor(Color{ red.value_or(255), green.value_or(255), blue.value_or(255) })
 {
 }
 
 void TextComponent::Update(float deltaTime)
+{
+    
+}
+
+void TextComponent::Render()
 {
     if (auto transform = m_owner->GetComponent<TransformComponent>())
     {        
@@ -38,15 +43,16 @@ void TextComponent::Update(float deltaTime)
             1,
             false,
             textColor);
-
     }
 }
 
 
 SpriteComponent::SpriteComponent(GameObject* owner, std::string sprite,
-    std::optional<int> width, std::optional<int> height, std::optional<int> layer,
-    std::optional<std::uint8_t> red, std::optional<std::uint8_t> green, std::optional<std::uint8_t> blue)
-    :   RenderableBaseComponent(owner,width,height,layer),
+                                 std::optional<int> width, std::optional<int> height, std::optional<int> layer,
+                                 std::optional<std::uint8_t> red, std::optional<std::uint8_t> green, std::optional<std::uint8_t> blue)
+    :   RenderableComponent(owner,layer),
+        Width(width.value_or(0)),
+        Height(height.value_or(0)),
           m_sprite(sprite),
           m_color(Color{red.value_or(255), green.value_or(255), blue.value_or(255)})
 {
