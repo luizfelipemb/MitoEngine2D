@@ -46,10 +46,7 @@ void TextComponent::Update(float deltaTime)
 SpriteComponent::SpriteComponent(GameObject* owner, std::string sprite,
     std::optional<int> width, std::optional<int> height, std::optional<int> layer,
     std::optional<std::uint8_t> red, std::optional<std::uint8_t> green, std::optional<std::uint8_t> blue)
-    :   Component(owner),
-          Width(width.value_or(0)),
-          Height(height.value_or(0)),
-          Layer(layer.value_or(0)),
+    :   RenderableBaseComponent(owner,width,height,layer),
           m_sprite(sprite),
           m_color(Color{red.value_or(255), green.value_or(255), blue.value_or(255)})
 {
@@ -61,8 +58,6 @@ SpriteComponent::SpriteComponent(GameObject* owner, std::string sprite,
     {
         Height = AssetManager::GetHeightOfSprite(RendererManager::Renderer,sprite);
     }
-
-    //TODO: add to registry to sort and draw by layer
 }
 
 void SpriteComponent::Update(float deltaTime)

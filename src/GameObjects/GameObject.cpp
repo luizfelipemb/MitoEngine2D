@@ -134,9 +134,8 @@ void Registry::Update(float deltaTime)
     }
 
     m_collisionSystem.CalculateCollisions(m_gameObjects);
-    
-    //TODO: Layer sort not every frame
     m_renderSystem.Update();
+    
     for (auto& id : m_idsToDestroy)
     {
         Logger::Log("Trying to destroy id:" + std::to_string(id));

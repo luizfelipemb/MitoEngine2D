@@ -11,7 +11,13 @@ void LuaPrint(const std::string& message)
 
 void Destroy(GameObject* go)
 {
-    Registry::DestroyGameObject(go->GetId());
+    if(go != nullptr)
+    {
+        Registry::DestroyGameObject(go->GetId());
+    }else
+    {
+        Logger::Err("Tried to destroy NULL object");
+    }
 }
 
 GameObject* CreateGameObject(sol::optional<std::string> name)

@@ -12,6 +12,7 @@ Level = {
                     sprite_name = "",
                     width = Window.width,
                     height = Window.height,
+                    layer = 0,
                     red = 25,
                     green = 25,
                     blue = 25

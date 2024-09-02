@@ -42,6 +42,10 @@ void RenderSystem::Update()
                     gameObject->GetComponent<SpriteComponent>()->Render();
                 }
             }
+            else
+            {
+                Logger::Log("RenderSystem::Update: weakPtr null");
+            }
         }
     }
 }

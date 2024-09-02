@@ -44,10 +44,27 @@ public:
     double Rotation;
 };
 
-class SpriteComponent : public Component
+class RenderableBaseComponent : public Component
 {
 public:
-    explicit SpriteComponent(GameObject* owner, 
+    RenderableBaseComponent(GameObject* owner,
+                            std::optional<int> width = std::nullopt, 
+                             std::optional<int> height = std::nullopt,
+                             std::optional<int> layer = std::nullopt) : Component(owner),
+          Width(width.value_or(0)),
+          Height(height.value_or(0)),
+          Layer(layer.value_or(0)){}
+    
+    virtual void Render() = 0;
+    int Width;
+    int Height;
+    int Layer = 0;
+};
+
+class SpriteComponent : public RenderableBaseComponent
+{
+public:
+    SpriteComponent(GameObject* owner, 
                              std::string sprite,
                              std::optional<int> width = std::nullopt, 
                              std::optional<int> height = std::nullopt,
@@ -57,10 +74,7 @@ public:
                              std::optional<std::uint8_t> blue = std::nullopt);
 
     void Update(float deltaTime) override;
-    void Render();
-    int Width;
-    int Height;
-    int Layer = 0;
+    void Render() override;
 private:
     std::string m_sprite;
     Color m_color;
