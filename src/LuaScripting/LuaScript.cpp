@@ -289,6 +289,22 @@ GameObject* LuaScript::SpawnGameObject(sol::table entity)
                 )
             );
         }
+        
+        // Sprite
+        sol::optional<sol::table> sprite = entity["components"]["sprite"];
+        if (sprite != sol::nullopt)
+        {
+            AddSpriteComponent(
+                newGameObject,
+                entity["components"]["sprite"]["sprite_name"],
+                entity["components"]["sprite"]["width"],
+                entity["components"]["sprite"]["height"],
+                entity["components"]["sprite"]["layer"],
+                entity["components"]["sprite"]["red"].get_or(255),
+                entity["components"]["sprite"]["green"].get_or(255),
+                entity["components"]["sprite"]["blue"].get_or(255)
+            );
+        }
 
         // BoxCollider
         sol::optional<sol::table> collider = entity["components"]["boxcollider"];
@@ -305,21 +321,6 @@ GameObject* LuaScript::SpawnGameObject(sol::table entity)
             );
         }
 
-        // Sprite
-        sol::optional<sol::table> sprite = entity["components"]["sprite"];
-        if (sprite != sol::nullopt)
-        {
-            AddSpriteComponent(
-                newGameObject,
-                entity["components"]["sprite"]["sprite_name"],
-                entity["components"]["sprite"]["width"],
-                entity["components"]["sprite"]["height"],
-                entity["components"]["sprite"]["layer"],
-                entity["components"]["sprite"]["red"].get_or(255),
-                entity["components"]["sprite"]["green"].get_or(255),
-                entity["components"]["sprite"]["blue"].get_or(255)
-            );
-        }
 
         // Text
         sol::optional<sol::table> text = entity["components"]["text"];

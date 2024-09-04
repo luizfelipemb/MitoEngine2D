@@ -1,6 +1,7 @@
 ﻿#include "RenderSystem.h"
 
 #include "../GameObject.h"
+#include "../../Game/Game.h"
 
 RenderSystem::RenderSystem(std::vector<std::shared_ptr<GameObject>>& gameObjects) :
     m_gameObjects(gameObjects)
@@ -41,8 +42,29 @@ void RenderSystem::Update()
             }
             else
             {
-                Logger::Log("RenderSystem::Update: weakPtr null");
+                //Logger::Log("RenderSystem::Update: weakPtr null");
             }
         }
     }
+    
+    if(g_DebugMode)
+    {
+        for(const auto& gameobject : m_gameObjects)
+            {
+                if(gameobject->HasComponent<BoxCollider2DComponent>() && gameobject->HasComponent<TransformComponent>())
+                {
+                    auto transform = gameobject->GetComponent<TransformComponent>();
+                    auto boxco = gameobject->GetComponent<BoxCollider2DComponent>();
+                    AssetManager::DrawBorderRectangle(
+                            RendererManager::Renderer,
+                            transform->Position.x,
+                            transform->Position.y,
+                            boxco->Width,
+                            boxco->Height,
+                            {0,0,255});
+        
+                }
+            }
+    }
+    
 }

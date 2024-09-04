@@ -68,8 +68,6 @@ Level = {
                     velocity = { x = 0.0, y = 0.0 }
                 },
                 boxcollider = {
-                    width = 10,
-                    height = 10
                 },
                 sprite = {
                     sprite_name = "assets/images/ball.png",
