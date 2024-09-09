@@ -11,215 +11,221 @@
 std::map<std::string, SDL_Texture*> AssetManager::m_textures;
 std::map<std::string, TTF_Font*> AssetManager::m_fonts;
 
-AssetManager::AssetManager() {
-	Logger::Log("AssetStore constructor called!");
+AssetManager::AssetManager()
+{
+    Logger::Log("AssetStore constructor called!");
 }
 
-AssetManager::~AssetManager() {
-	ClearAssets();
-	Logger::Log("AssetStore destructor called!");
-
+AssetManager::~AssetManager()
+{
+    ClearAssets();
+    Logger::Log("AssetStore destructor called!");
 }
 
 void AssetManager::Initialize()
 {
-	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-		Logger::Err("Error initializing SDL.");
-		return;
-	}
-	if (TTF_Init() != 0) {
-		Logger::Err("Error initializing SDL TTF.");
-		return;
-	}
+    if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+    {
+        Logger::Err("Error initializing SDL.");
+        return;
+    }
+    if (TTF_Init() != 0)
+    {
+        Logger::Err("Error initializing SDL TTF.");
+        return;
+    }
 }
 
 void AssetManager::ClearAssets()
 {
-	for (auto texture : m_textures)
-	{
-		SDL_DestroyTexture(texture.second);
-	}
-	m_textures.clear();
+    for (auto texture : m_textures)
+    {
+        SDL_DestroyTexture(texture.second);
+    }
+    m_textures.clear();
 
-	for (auto font : m_fonts)
-	{
-		TTF_CloseFont(font.second);
-	}
-	m_fonts.clear();
+    for (auto font : m_fonts)
+    {
+        TTF_CloseFont(font.second);
+    }
+    m_fonts.clear();
 }
 
-bool AssetManager::LoadTexture(SDL_Renderer* renderer,std::string fileName)
+bool AssetManager::LoadTexture(SDL_Renderer* renderer, std::string fileName)
 {
-	if (m_textures.find(fileName) != m_textures.end())
-	{
-		return false;
-	}
-	SDL_Surface* tempSurf = IMG_Load(fileName.c_str());
+    if (m_textures.find(fileName) != m_textures.end())
+    {
+        return false;
+    }
+    SDL_Surface* tempSurf = IMG_Load(fileName.c_str());
 
-	if (tempSurf == nullptr)
-	{
-		std::cout << "could not load image named: '" << fileName.c_str() << "'!!!" << std::endl;
-		return false;
-	}
+    if (tempSurf == nullptr)
+    {
+        std::cout << "could not load image named: '" << fileName.c_str() << "'!!!" << std::endl;
+        return false;
+    }
 
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, tempSurf);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, tempSurf);
 
-	SDL_FreeSurface(tempSurf);
+    SDL_FreeSurface(tempSurf);
 
-	if (texture != nullptr)
-	{
-		std::cout << "Texture loaded successfully... ('" << fileName.c_str() << "')" << std::endl;
-		m_textures[fileName] = texture;
-		return true;
-	}
+    if (texture != nullptr)
+    {
+        std::cout << "Texture loaded successfully... ('" << fileName.c_str() << "')" << std::endl;
+        m_textures[fileName] = texture;
+        return true;
+    }
 
-	std::cout << "Could not create texture from surface!!! ('" << fileName.c_str() << "')" << std::endl;
+    std::cout << "Could not create texture from surface!!! ('" << fileName.c_str() << "')" << std::endl;
 
-	return false;
+    return false;
 }
 
 void AssetManager::RenderImage(SDL_Renderer* renderer, std::string filename, int x, int y, int w, int h, double scale,
-	std::optional<Color> color)
+                               std::optional<Color> color)
 {
+    if (m_textures.find(filename) == m_textures.end())
+    {
+        LoadTexture(renderer, filename);
+    }
 
-	if (m_textures.find(filename) == m_textures.end())
-	{
-		LoadTexture(renderer, filename);
-	}
-
-	if (color.has_value())
-	{
-		SDL_SetTextureColorMod(m_textures[filename], color->Red, color->Green, color->Blue);
-	}
-	if (w == 0 && h==0)
-	{
+    if (color.has_value())
+    {
+        SDL_SetTextureColorMod(m_textures[filename], color->Red, color->Green, color->Blue);
+    }
+    if (w == 0 && h == 0)
+    {
         SDL_QueryTexture(m_textures[filename], nullptr, nullptr, &w, &h);
-	}
-	
-	
-	SDL_Rect destRect;
-	destRect.x = x;
-	destRect.y = y;
-	destRect.w = w * scale;
-	destRect.h = h * scale;
-	SDL_RendererFlip flip = SDL_FLIP_NONE;
+    }
 
-	if (SDL_RenderCopyEx(renderer, m_textures[filename], nullptr, &destRect, 0, nullptr, flip) != 0)
-	{
-		std::cout << SDL_GetError() << std::endl;
-	}
 
-	if (color.has_value())
-	{
-		SDL_SetTextureColorMod(m_textures[filename], 255, 255, 255);
-	}
+    SDL_Rect destRect;
+    destRect.x = x;
+    destRect.y = y;
+    destRect.w = w * scale;
+    destRect.h = h * scale;
+    SDL_RendererFlip flip = SDL_FLIP_NONE;
+
+    if (SDL_RenderCopyEx(renderer, m_textures[filename], nullptr, &destRect, 0, nullptr, flip) != 0)
+    {
+        std::cout << SDL_GetError() << std::endl;
+    }
+
+    if (color.has_value())
+    {
+        SDL_SetTextureColorMod(m_textures[filename], 255, 255, 255);
+    }
 }
 
 int AssetManager::GetWidthOfSprite(SDL_Renderer* renderer, std::string filename)
 {
-	if (m_textures.find(filename) == m_textures.end())
-	{
-		LoadTexture(renderer, filename);
-	}
-	int w,h;
-	SDL_QueryTexture(m_textures[filename], nullptr, nullptr, &w, &h);
-	return w;
+    if (m_textures.find(filename) == m_textures.end())
+    {
+        LoadTexture(renderer, filename);
+    }
+    int w, h;
+    SDL_QueryTexture(m_textures[filename], nullptr, nullptr, &w, &h);
+    return w;
 }
 
 int AssetManager::GetHeightOfSprite(SDL_Renderer* renderer, std::string filename)
 {
-	if (m_textures.find(filename) == m_textures.end())
-	{
-		LoadTexture(renderer, filename);
-	}
-	int w,h;
-	SDL_QueryTexture(m_textures[filename], nullptr, nullptr, &w, &h);
-	return h;
+    if (m_textures.find(filename) == m_textures.end())
+    {
+        LoadTexture(renderer, filename);
+    }
+    int w, h;
+    SDL_QueryTexture(m_textures[filename], nullptr, nullptr, &w, &h);
+    return h;
 }
 
-void AssetManager::RenderText(SDL_Renderer* renderer, const std::string& text, const std::string& fontFile, int fontSize, int x, int y,
+void AssetManager::RenderText(SDL_Renderer* renderer, const std::string& text, const std::string& fontFile,
+                              int fontSize, int x, int y,
                               double scale, bool centered, std::optional<Color> color)
 {
-	if (m_fonts.find(fontFile) == m_fonts.end())
-	{
-		// Load font
-		TTF_Font* font = TTF_OpenFont(fontFile.c_str(), fontSize);
-		if (!font)
-		{
-			std::cerr << "Error loading font: " << TTF_GetError() << std::endl;
-			return;
-		}
-		else
-		{
-			m_fonts[fontFile] = font;
-		}
-	}
+    // Create a unique key for font based on the font file and size
+    std::string fontKey = fontFile + "_" + std::to_string(fontSize);
 
-	// Render text
-	SDL_Color textColor = { 0, 0, 0 }; // Default color (black)
-	if (color.has_value())
-	{
-		textColor = SDL_Color{ color->Red, color->Green, color->Blue };
-	}
-	SDL_Surface* surface = TTF_RenderText_Blended(m_fonts[fontFile], text.c_str(), textColor);
-	if (!surface)
-	{
-		std::cerr << "Error rendering text: " << TTF_GetError() << std::endl;
-		TTF_CloseFont(m_fonts[fontFile]);
-		return;
-	}
+    if (m_fonts.find(fontKey) == m_fonts.end())
+    {
+        // Load font with the specific size
+        TTF_Font* font = TTF_OpenFont(fontFile.c_str(), fontSize);
+        if (!font)
+        {
+            std::cerr << "Error loading font: " << TTF_GetError() << std::endl;
+            return;
+        }
+        else
+        {
+            m_fonts[fontKey] = font; // Store the font using the key
+        }
+    }
 
-	// Create texture from surface
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-	if (!texture)
-	{
-		std::cerr << "Error creating texture from surface: " << SDL_GetError() << std::endl;
-		SDL_FreeSurface(surface);
-		TTF_CloseFont(m_fonts[fontFile]);
-		return;
-	}
+    // Render text
+    SDL_Color textColor = {0, 0, 0}; // Default color (black)
+    if (color.has_value())
+    {
+        textColor = SDL_Color{color->Red, color->Green, color->Blue};
+    }
+    SDL_Surface* surface = TTF_RenderText_Blended(m_fonts[fontKey], text.c_str(), textColor);
+    if (!surface)
+    {
+        std::cerr << "Error rendering text: " << TTF_GetError() << std::endl;
+        TTF_CloseFont(m_fonts[fontKey]);
+        return;
+    }
 
-	// Calculate text dimensions
-	int textWidth = static_cast<int>(surface->w * scale);
-	int textHeight = static_cast<int>(surface->h * scale);
+    // Create texture from surface
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    if (!texture)
+    {
+        std::cerr << "Error creating texture from surface: " << SDL_GetError() << std::endl;
+        SDL_FreeSurface(surface);
+        TTF_CloseFont(m_fonts[fontKey]);
+        return;
+    }
 
-	// Adjust position for centered text
-	if (centered)
-	{
-		x -= textWidth / 2;
-		y -= textHeight / 2;
-	}
+    // Calculate text dimensions
+    int textWidth = static_cast<int>(surface->w * scale);
+    int textHeight = static_cast<int>(surface->h * scale);
 
-	// Destination rectangle
-	SDL_Rect destRect = { x, y, textWidth, textHeight };
+    // Adjust position for centered text
+    if (centered)
+    {
+        x -= textWidth / 2;
+        y -= textHeight / 2;
+    }
 
-	// Render text
-	if (SDL_RenderCopy(renderer, texture, nullptr, &destRect) != 0)
-	{
-		std::cerr << "Error rendering text: " << SDL_GetError() << std::endl;
-	}
+    // Destination rectangle
+    SDL_Rect destRect = {x, y, textWidth, textHeight};
 
-	// Clean up
-	SDL_DestroyTexture(texture);
-	SDL_FreeSurface(surface);
+    // Render text
+    if (SDL_RenderCopy(renderer, texture, nullptr, &destRect) != 0)
+    {
+        std::cerr << "Error rendering text: " << SDL_GetError() << std::endl;
+    }
+
+    // Clean up
+    SDL_DestroyTexture(texture);
+    SDL_FreeSurface(surface);
 }
 
 
 void AssetManager::DrawRectangle(SDL_Renderer* renderer, int x, int y, float width, float height, Color color)
 {
-	// Set render color
-	SDL_SetRenderDrawColor(renderer, color.Red, color.Green, color.Blue, SDL_ALPHA_OPAQUE);
+    // Set render color
+    SDL_SetRenderDrawColor(renderer, color.Red, color.Green, color.Blue, SDL_ALPHA_OPAQUE);
 
-	// Define rectangle
-	SDL_Rect rect = { x, y, static_cast<int>(width), static_cast<int>(height) };
+    // Define rectangle
+    SDL_Rect rect = {x, y, static_cast<int>(width), static_cast<int>(height)};
 
-	// Draw rectangle
-	SDL_RenderFillRect(renderer, &rect);
+    // Draw rectangle
+    SDL_RenderFillRect(renderer, &rect);
 }
 
 void AssetManager::DrawBorderRectangle(SDL_Renderer* renderer, int x, int y, float width, float height, Color color)
 {
-	SDL_SetRenderDrawColor(renderer, color.Red, color.Green, color.Blue, SDL_ALPHA_OPAQUE);
-	SDL_Rect rect = { x, y, static_cast<int>(width), static_cast<int>(height) };
-	SDL_RenderDrawRect(renderer, &rect);
+    SDL_SetRenderDrawColor(renderer, color.Red, color.Green, color.Blue, SDL_ALPHA_OPAQUE);
+    SDL_Rect rect = {x, y, static_cast<int>(width), static_cast<int>(height)};
+    SDL_RenderDrawRect(renderer, &rect);
 }

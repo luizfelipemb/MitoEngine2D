@@ -17,6 +17,25 @@
                 scripts = {
                 }
             }
+        },
+        {
+            name = "title",
+            components = {
+                transform = {
+                    position = 
+                    { 
+                        x = Window.width / 2 - 100, 
+                        y = Window.height / 2
+                    }
+                },
+                text = {
+                    text = "You Lose",
+                    font = "assets/fonts/arial.ttf",
+                    scale = 48
+                },
+                scripts = {
+                }
+            }
         }
     }
 }

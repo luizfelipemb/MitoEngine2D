@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include <sol.hpp>
-
 #include "../GameObjects/GameObject.h"
 
 class LuaScript
@@ -8,6 +7,7 @@ class LuaScript
 public:
     void SettingsSetup();
     void LoadLuaBindings();
+    void LoadLuaKeys();
     void EmitOpenLevel(const std::string& levelName);
     void LoadLevel(std::string name);
     GameObject* SpawnGameObject(sol::table entity);

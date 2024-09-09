@@ -2,7 +2,6 @@
 local transform
 local sprite
 local velocity = 300
-local go
 
 function start(gameobject)
     rigidbody = gameobject:get_component_rigidbody()
@@ -21,23 +20,20 @@ function update(gameobject, deltaTime)
 end
 
 function on_key_pressed(gameobject, key)
-    if key == "97" then
-        go = spawn_prefab("brick.lua")
-        go:get_component_transform().position = vec2:new(250, 250)
+    if key == keycode.a then
         rigidbody.velocity.x = rigidbody.velocity.x - velocity
     end
-    if key == "100" then
+    if key == keycode.d then
         rigidbody.velocity.x = rigidbody.velocity.x + velocity
-        destroy(go)
     end
     mito_log(gameobject.name .. " with key " .. key)
 end
 
 function on_key_released(gameobject, key)
-    if key == "97" then
+    if key == keycode.a then
         rigidbody.velocity.x = rigidbody.velocity.x + velocity
     end
-    if key == "100" then
+    if key == keycode.d then
         rigidbody.velocity.x = rigidbody.velocity.x - velocity
     end
     mito_log(gameobject.name .. " with key released " .. key)

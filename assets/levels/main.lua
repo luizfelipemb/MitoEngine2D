@@ -91,7 +91,8 @@ Level = {
                 text = {
                     text = "Score:",
                     font = "assets/fonts/arial.ttf",
-                    scale = 32
+                    scale = 32,
+                    layer = 99
                 },
                 scripts = {
                     "score.lua"

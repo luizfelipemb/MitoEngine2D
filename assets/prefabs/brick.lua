@@ -1,6 +1,6 @@
 Prefab = {
     name = "brick",
-    tags = { "brick" },
+    tags = { "brick"},
     components = {
         transform = {
             position = { x = 0, y = 0 },

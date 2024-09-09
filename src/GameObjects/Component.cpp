@@ -241,12 +241,12 @@ void ScriptComponent::OnCollisionExit(CollisionExitEvent& event)
 
 void ScriptComponent::OnKeyPressedEvent(KeyPressedEvent& event)
 {
-    CallLuaFunction(scriptFunctions["on_key_pressed"], m_owner, std::to_string(event.Symbol));
+    CallLuaFunction(scriptFunctions["on_key_pressed"], m_owner, event.Symbol);
 }
 
 void ScriptComponent::OnKeyReleasedEvent(KeyReleasedEvent& event)
 {
-    CallLuaFunction(scriptFunctions["on_key_released"], m_owner, std::to_string(event.Symbol));
+    CallLuaFunction(scriptFunctions["on_key_released"], m_owner, event.Symbol);
 }
 
 void ScriptComponent::AddScript(sol::environment& luaEnv)

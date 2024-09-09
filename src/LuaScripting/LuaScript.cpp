@@ -133,6 +133,7 @@ void LuaScript::LoadLuaBindings()
         "width", sol::property(&WindowSettings::GetWidth),
         "height", sol::property(&WindowSettings::GetHeight)
     );
+    LoadLuaKeys();
     lua.new_usertype<glm::vec2>(
         "vec2",
         sol::constructors<glm::vec2(), glm::vec2(float, float)>(),
@@ -200,6 +201,105 @@ void LuaScript::LoadLuaBindings()
         return this->SpawnPrefab(name);
     });
 }
+
+void LuaScript::LoadLuaKeys()
+{
+    lua.new_enum("keycode",
+        // Letters
+        "a", SDLK_a,
+        "b", SDLK_b,
+        "c", SDLK_c,
+        "d", SDLK_d,
+        "e", SDLK_e,
+        "f", SDLK_f,
+        "g", SDLK_g,
+        "h", SDLK_h,
+        "i", SDLK_i,
+        "j", SDLK_j,
+        "k", SDLK_k,
+        "l", SDLK_l,
+        "m", SDLK_m,
+        "n", SDLK_n,
+        "o", SDLK_o,
+        "p", SDLK_p,
+        "q", SDLK_q,
+        "r", SDLK_r,
+        "s", SDLK_s,
+        "t", SDLK_t,
+        "u", SDLK_u,
+        "v", SDLK_v,
+        "w", SDLK_w,
+        "x", SDLK_x,
+        "y", SDLK_y,
+        "z", SDLK_z,
+
+        // Numbers
+        "0", SDLK_0,
+        "1", SDLK_1,
+        "2", SDLK_2,
+        "3", SDLK_3,
+        "4", SDLK_4,
+        "5", SDLK_5,
+        "6", SDLK_6,
+        "7", SDLK_7,
+        "8", SDLK_8,
+        "9", SDLK_9,
+
+        // Function keys
+        "f1", SDLK_F1,
+        "f2", SDLK_F2,
+        "f3", SDLK_F3,
+        "f4", SDLK_F4,
+        "f5", SDLK_F5,
+        "f6", SDLK_F6,
+        "f7", SDLK_F7,
+        "f8", SDLK_F8,
+        "f9", SDLK_F9,
+        "f10", SDLK_F10,
+        "f11", SDLK_F11,
+        "f12", SDLK_F12,
+
+        // Special keys
+        "escape", SDLK_ESCAPE,
+        "return", SDLK_RETURN,
+        "space", SDLK_SPACE,
+        "backspace", SDLK_BACKSPACE,
+        "tab", SDLK_TAB,
+        "capslock", SDLK_CAPSLOCK,
+        "left_shift", SDLK_LSHIFT,
+        "right_shift", SDLK_RSHIFT,
+        "left_ctrl", SDLK_LCTRL,
+        "right_ctrl", SDLK_RCTRL,
+        "left_alt", SDLK_LALT,
+        "right_alt", SDLK_RALT,
+        "left_gui", SDLK_LGUI,
+        "right_gui", SDLK_RGUI,
+
+        // Arrow keys
+        "up", SDLK_UP,
+        "down", SDLK_DOWN,
+        "left", SDLK_LEFT,
+        "right", SDLK_RIGHT,
+
+        // Keypad keys
+        "kp_0", SDLK_KP_0,
+        "kp_1", SDLK_KP_1,
+        "kp_2", SDLK_KP_2,
+        "kp_3", SDLK_KP_3,
+        "kp_4", SDLK_KP_4,
+        "kp_5", SDLK_KP_5,
+        "kp_6", SDLK_KP_6,
+        "kp_7", SDLK_KP_7,
+        "kp_8", SDLK_KP_8,
+        "kp_9", SDLK_KP_9,
+        "kp_enter", SDLK_KP_ENTER,
+        "kp_plus", SDLK_KP_PLUS,
+        "kp_minus", SDLK_KP_MINUS,
+        "kp_multiply", SDLK_KP_MULTIPLY,
+        "kp_divide", SDLK_KP_DIVIDE
+    );
+}
+
 
 void LuaScript::EmitOpenLevel(const std::string& levelName)
 {
