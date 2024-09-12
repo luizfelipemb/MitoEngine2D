@@ -339,8 +339,12 @@ void LuaScript::LoadLevel(std::string name)
     lua.script_file(LEVELS_PATH + name);
 
     // Read the big table for the current level
-    sol::table level = lua["Level"];
-    sol::table entities = level["entities"];
+    sol::optional<sol::table> level = lua["Level"];
+    if(level == sol::nullopt)
+    {
+        return;
+    }
+    sol::table entities = level.value()["entities"];
     int i = 1; // Lua table start at 1
     while (true)
     {

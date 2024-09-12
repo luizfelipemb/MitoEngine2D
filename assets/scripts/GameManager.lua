@@ -1,10 +1,12 @@
 ﻿globals.bricks_destroyed = 0
+local rows = 3
+local columns = 7
 
 function start()
-    for i = 1, 6 do
-        for j = 1, 3 do
+    for i = 1, columns do
+        for j = 1, rows do
             local go = spawn_prefab("brick.lua")
-            go:get_component_transform().position = vec2:new(i * 64, j * 32+50)
+            go:get_component_transform().position = vec2:new(i * 64, j * 32 + 50)
             --local r = math.random(50,255)
             --local g = math.random(50,255)
             --local b = math.random(50,255)

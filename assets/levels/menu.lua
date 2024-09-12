@@ -12,14 +12,73 @@ Level = {
                     sprite_name = "",
                     width = Window.width,
                     height = Window.height,
-                    red = 250,
-                    green = 250,
-                    blue = 250
+                    layer = 0,
+                    red = 25,
+                    green = 25,
+                    blue = 25
+                }
+            }
+        },
+        {
+            name = "title",
+            components = {
+                transform = {
+                    position =
+                    {
+                        x = Window.width / 7,
+                        y = Window.height / 7
+                    }
+                },
+                text = {
+                    text = "Breakout",
+                    font = "assets/fonts/charriot.ttf",
+                    scale = 100
                 },
                 scripts = {
                 }
             }
-        }
+        },
+        {
+            name = "play_button",
+            components = {
+                transform = {
+                    position =
+                    {
+                        x = Window.width / 2.5,
+                        y = Window.height / 3
+                    }
+                },
+                sprite = {
+                    sprite_name = "",
+                    width = 120,
+                    height = 60,
+                    red = 0,
+                    green = 0,
+                    blue = 255
+                },
+                clickable = {
+                },
+                scripts = {
+                    "playbutton.lua"
+                }
+            }
+        },
+        {
+            name = "play_text",
+            components = {
+                transform = {
+                    position =
+                    {
+                        x = Window.width / 2.5,
+                        y = Window.height / 3
+                    }
+                },
+                text = {
+                    text = "Play",
+                    font = "assets/fonts/charriot.ttf",
+                    scale = 60
+                }
+            }
+        },
     }
 }
-open_level("main.lua")

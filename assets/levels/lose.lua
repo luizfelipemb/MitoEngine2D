@@ -10,7 +10,7 @@
                     sprite_name = "",
                     width = Window.width,
                     height = Window.height,
-                    red = 255,
+                    red = 60,
                     green = 25,
                     blue = 25
                 },
@@ -22,16 +22,16 @@
             name = "title",
             components = {
                 transform = {
-                    position = 
-                    { 
-                        x = Window.width / 2 - 100, 
-                        y = Window.height / 2
+                    position =
+                    {
+                        x = Window.width / 7,
+                        y = Window.height / 7
                     }
                 },
                 text = {
                     text = "You Lose",
-                    font = "assets/fonts/arial.ttf",
-                    scale = 48
+                    font = "assets/fonts/charriot.ttf",
+                    scale = 100
                 },
                 scripts = {
                 }
@@ -43,7 +43,7 @@
                 transform = {
                     position =
                     {
-                        x = Window.width / 2 - 100,
+                        x = Window.width / 2.5,
                         y = Window.height / 3
                     }
                 },
@@ -59,6 +59,23 @@
                 },
                 scripts = {
                     "playbutton.lua"
+                }
+            }
+        },
+        {
+            name = "play_text",
+            components = {
+                transform = {
+                    position =
+                    {
+                        x = Window.width / 2.5,
+                        y = Window.height / 3
+                    }
+                },
+                text = {
+                    text = "Play",
+                    font = "assets/fonts/charriot.ttf",
+                    scale = 60
                 }
             }
         }
