@@ -8,6 +8,7 @@
 #include "CollisionExitEvent.h"
 #include "CollisionStayEvent.h"
 #include "GameObjectCreatedEvent.h"
+#include "MouseButtonPressedEvent.h"
 
 #include <map>
 #include <typeindex>

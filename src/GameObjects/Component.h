@@ -6,6 +6,7 @@
 #include "../Events/KeyPressedEvent.h"
 #include "../Events/CollisionStayEvent.h"
 #include "../Events/GlobalEventBus.h"
+#include "../Events/MouseInteractedEvent.h"
 
 class GameObject;
 
@@ -17,7 +18,7 @@ public:
     }
 
     virtual ~Component() = default;
-    virtual void Update(float deltaTime) = 0;
+    virtual void Update(float deltaTime){};
 
 protected:
     GameObject* m_owner;
@@ -59,14 +60,13 @@ class SpriteComponent : public RenderableComponent
 {
 public:
     SpriteComponent(GameObject* owner, 
-                             std::string sprite,
-                             std::optional<int> width = std::nullopt, 
-                             std::optional<int> height = std::nullopt,
-                             std::optional<int> layer = std::nullopt,
-                             std::optional<std::uint8_t> red = std::nullopt, 
-                             std::optional<std::uint8_t> green = std::nullopt, 
-                             std::optional<std::uint8_t> blue = std::nullopt);
-
+                    std::string sprite,
+                    std::optional<int> width = std::nullopt, 
+                    std::optional<int> height = std::nullopt,
+                    std::optional<int> layer = std::nullopt,
+                    std::optional<std::uint8_t> red = std::nullopt, 
+                    std::optional<std::uint8_t> green = std::nullopt, 
+                    std::optional<std::uint8_t> blue = std::nullopt);
     void Update(float deltaTime) override;
     void Render() override;
     int Width;
@@ -128,6 +128,21 @@ public:
     glm::vec2 Velocity;
 };
 
+class ClickableComponent : public Component
+{
+public:
+    ClickableComponent(GameObject* owner, 
+                       std::optional<int> width = std::nullopt,
+                       std::optional<int> height = std::nullopt,
+                       std::optional<glm::vec2> offset = std::nullopt);
+    ~ClickableComponent() override;
+    void OnMousePressedEvent(MouseButtonPressedEvent& event);
+    
+    int Width;
+    int Height;
+    glm::vec2 Offset;
+};
+
 class BoxCollider2DComponent : public Component
 {
 public:
@@ -159,10 +174,11 @@ public:
     void OnCollisionExit(CollisionExitEvent& event);
     void OnKeyPressedEvent(KeyPressedEvent& event);
     void OnKeyReleasedEvent(KeyReleasedEvent& event);
+    void OnMousePressedEvent(MouseButtonPressedEvent& event);
+    void OnMouseInteractedEvent(MouseInteractedEvent& event);
     void AddScript(sol::environment& luaEnv);
     void CreateEnvironmentScript(sol::state& lua, const std::string name, const std::string scriptsFolder);
     sol::function GetScriptFunction(const std::string& name);
-    void Update(float deltaTime) override;
     void CallUpdate(float deltaTime);
     void CallStart();
 

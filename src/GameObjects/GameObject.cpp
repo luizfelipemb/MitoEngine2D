@@ -9,6 +9,7 @@ class CollisionEvent;
 
 GameObject::~GameObject()
 {
+    GlobalEventBus::UnsubscribeFromOwner(this);
     if (HasComponent<ScriptComponent>())
     {
         GlobalEventBus::UnsubscribeFromOwner(GetComponent<ScriptComponent>());

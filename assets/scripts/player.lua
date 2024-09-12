@@ -19,6 +19,14 @@ function update(gameobject, deltaTime)
     end
 end
 
+function on_mouse_pressed(gameobject, key)
+    
+end
+
+function on_mouse_interacted(gameobject)
+    mito_log("on_mouse_interacted called")
+end
+
 function on_key_pressed(gameobject, key)
     if key == keycode.a then
         rigidbody.velocity.x = rigidbody.velocity.x - velocity

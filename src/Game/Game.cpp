@@ -20,6 +20,8 @@
 #include "../Events/OpenLevelEvent.h"
 
 
+class MouseButtonPressedEvent;
+
 Game::Game():
     m_registry(std::make_unique<Registry>())
 {
@@ -69,6 +71,12 @@ void Game::ProcessInput()
             break;
         case SDL_KEYUP:
             GlobalEventBus::EmitEvent<KeyReleasedEvent>(sdlEvent.key.keysym.sym);
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            GlobalEventBus::EmitEvent<MouseButtonPressedEvent>(sdlEvent.button.button, glm::vec2( sdlEvent.button.x, sdlEvent.button.y));
+            break;
+        case SDL_MOUSEBUTTONUP:
+            //GlobalEventBus::EmitEvent<MouseButtonReleasedEvent>(sdlEvent.button.button, sdlEvent.button.x, sdlEvent.button.y);
             break;
         }
     }

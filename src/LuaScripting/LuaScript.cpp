@@ -91,6 +91,17 @@ void AddBoxCollider2DComponent(GameObject* gameObject,
         height ? std::optional<int>(*height) : std::nullopt,
         offset ? std::optional<glm::vec2>(*offset) : std::nullopt);
 }
+void AddClickableComponent(GameObject* gameObject,
+                               sol::optional<int> width,
+                               sol::optional<int> height,
+                               sol::optional<glm::vec2> offset)
+{
+    gameObject->AddComponent<ClickableComponent>(
+        width ? std::optional<int>(*width) : std::nullopt,
+        height ? std::optional<int>(*height) : std::nullopt,
+        offset ? std::optional<glm::vec2>(*offset) : std::nullopt);
+}
+
 
 void LuaScript::AddScriptComponent(GameObject* gameObject,
                                    const std::string& scriptName)
@@ -176,6 +187,7 @@ void LuaScript::LoadLuaBindings()
         "add_component_sprite", &AddSpriteComponent,
         "add_component_text", &AddTextComponent,
         "add_component_boxcollider", &AddBoxCollider2DComponent,
+        "add_component_clickable", &AddClickableComponent,
         "add_component_rigidbody", &AddRigidBody2DComponent,
         "add_component_script", [this](GameObject* gameObject, const std::string& scriptName)
         {
@@ -186,6 +198,7 @@ void LuaScript::LoadLuaBindings()
         "get_component_sprite", &GameObject::GetComponent<SpriteComponent>,
         "get_component_text", &GameObject::GetComponent<TextComponent>,
         "get_component_boxcollider", &GameObject::GetComponent<BoxCollider2DComponent>,
+        "get_component_clickable", &GameObject::GetComponent<ClickableComponent>,
         "get_component_rigidbody", &GameObject::GetComponent<RigidBody2DComponent>,
         "get_component_script", &GameObject::GetComponent<ScriptComponent>
     );
@@ -204,6 +217,12 @@ void LuaScript::LoadLuaBindings()
 
 void LuaScript::LoadLuaKeys()
 {
+    lua.new_enum("mousecode",
+        "right", SDL_BUTTON_RIGHT,
+        "left", SDL_BUTTON_LEFT,
+        "middle", SDL_BUTTON_MIDDLE
+    );
+    
     lua.new_enum("keycode",
         // Letters
         "a", SDLK_a,
@@ -417,6 +436,21 @@ GameObject* LuaScript::SpawnGameObject(sol::table entity)
                 glm::vec2(
                     entity["components"]["boxcollider"]["offset"]["x"].get_or(0),
                     entity["components"]["boxcollider"]["offset"]["y"].get_or(0)
+                )
+            );
+        }
+        
+        // ClickableComponent
+        sol::optional<sol::table> clickable = entity["components"]["clickable"];
+        if (clickable != sol::nullopt)
+        {
+            AddClickableComponent(
+                newGameObject,
+                entity["components"]["clickable"]["width"],
+                entity["components"]["clickable"]["height"],
+                glm::vec2(
+                    entity["components"]["clickable"]["offset"]["x"].get_or(0),
+                    entity["components"]["clickable"]["offset"]["y"].get_or(0)
                 )
             );
         }

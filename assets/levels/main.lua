@@ -45,6 +45,10 @@ Level = {
                     width = 128,
                     height = 16
                 },
+                clickable = {
+                    width = 128,
+                    height = 16
+                },
                 sprite = {
                     sprite_name = "assets/images/paddle.png",
                     width = 128,

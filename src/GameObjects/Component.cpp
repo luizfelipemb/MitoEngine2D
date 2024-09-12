@@ -3,6 +3,8 @@
 #include "../Game/Game.h"
 
 
+class MouseInteractedEvent;
+
 void TransformComponent::Update(float deltaTime)
 {
    
@@ -182,6 +184,8 @@ void ControllerComponent::OnKeyReleasedEvent(KeyReleasedEvent& event)
     }
 }
 
+
+
 void RigidBody2DComponent::Update(float deltaTime)
 {
     if (auto transform = m_owner->GetComponent<TransformComponent>())
@@ -191,8 +195,8 @@ void RigidBody2DComponent::Update(float deltaTime)
     }
 }
 
-BoxCollider2DComponent::BoxCollider2DComponent(GameObject* owner, std::optional<int> width, std::optional<int> height,
-    std::optional<glm::vec2> offset):
+ClickableComponent::ClickableComponent(GameObject* owner, std::optional<int> width, std::optional<int> height,
+                                               std::optional<glm::vec2> offset):
     Component(owner), Offset(offset.value_or(glm::vec2(0)))
 {
     Width = width.value_or(0);
@@ -200,28 +204,50 @@ BoxCollider2DComponent::BoxCollider2DComponent(GameObject* owner, std::optional<
     if(Width == 0 && owner->HasComponent<SpriteComponent>())
     {
         Width = owner->GetComponent<SpriteComponent>()->Width;
-        Logger::Log("Width: "+std::to_string(Width));
     }
     if(Height == 0 && owner->HasComponent<SpriteComponent>())
     {
         Height = owner->GetComponent<SpriteComponent>()->Height;
-        Logger::Log("Height: "+std::to_string(Height));
+    }
+    GlobalEventBus::SubscribeToEvent<MouseButtonPressedEvent>
+    (this,&ClickableComponent::OnMousePressedEvent);
+}
+
+ClickableComponent::~ClickableComponent()
+{
+    GlobalEventBus::UnsubscribeFromOwner(this);
+}
+
+void ClickableComponent::OnMousePressedEvent(MouseButtonPressedEvent& event)
+{
+    if(auto transform = m_owner->GetComponent<TransformComponent>())
+    {
+        if(event.Position.x >= transform->Position.x    && event.Position.x <= transform->Position.x + Width
+           && event.Position.y >= transform->Position.y && event.Position.y <= transform->Position.y + Height)
+        {
+            m_owner->LocalEventBus.EmitEvent<MouseInteractedEvent>();
+        }
+    }
+}
+
+BoxCollider2DComponent::BoxCollider2DComponent(GameObject* owner, std::optional<int> width, std::optional<int> height,
+                                               std::optional<glm::vec2> offset):
+    Component(owner), Offset(offset.value_or(glm::vec2(0)))
+{
+    Width = width.value_or(0);
+    Height= height.value_or(0);
+    if(Width == 0 && owner->HasComponent<SpriteComponent>())
+    {
+        Width = owner->GetComponent<SpriteComponent>()->Width;
+    }
+    if(Height == 0 && owner->HasComponent<SpriteComponent>())
+    {
+        Height = owner->GetComponent<SpriteComponent>()->Height;
     }
 }
 void BoxCollider2DComponent::Update(float deltaTime)
 {
-    if (g_DebugMode && m_owner->HasComponent<TransformComponent>())
-    {
-        auto transform = m_owner->GetComponent<TransformComponent>();
-        AssetManager::DrawBorderRectangle(
-                RendererManager::Renderer,
-                transform->Position.x,
-                transform->Position.y,
-                Width,
-                Height,
-                {0,0,255});
-        
-    }
+    
 }
 
 void ScriptComponent::OnCollisionStay(CollisionStayEvent& event)
@@ -249,6 +275,16 @@ void ScriptComponent::OnKeyReleasedEvent(KeyReleasedEvent& event)
     CallLuaFunction(scriptFunctions["on_key_released"], m_owner, event.Symbol);
 }
 
+void ScriptComponent::OnMousePressedEvent(MouseButtonPressedEvent& event)
+{
+    CallLuaFunction(scriptFunctions["on_mouse_pressed"], m_owner, event.Button);
+}
+
+void ScriptComponent::OnMouseInteractedEvent(MouseInteractedEvent& event)
+{
+    CallLuaFunction(scriptFunctions["on_mouse_interacted"], m_owner);
+}
+
 void ScriptComponent::AddScript(sol::environment& luaEnv)
 {
     if (luaEnv["on_enable"] != sol::lua_nil)
@@ -272,6 +308,16 @@ void ScriptComponent::AddScript(sol::environment& luaEnv)
     {
         GlobalEventBus::SubscribeToEvent<KeyReleasedEvent>
             (this, &ScriptComponent::OnKeyReleasedEvent);
+    }
+    if (luaEnv["on_mouse_pressed"] != sol::lua_nil)
+    {
+        GlobalEventBus::SubscribeToEvent<MouseButtonPressedEvent>
+            (this, &ScriptComponent::OnMousePressedEvent);
+    }
+    if (luaEnv["on_mouse_interacted"] != sol::lua_nil)
+    {
+        m_owner->LocalEventBus.SubscribeToEvent<MouseInteractedEvent>
+            (this, &ScriptComponent::OnMouseInteractedEvent);
     }
     if (luaEnv["on_collision_enter"] != sol::lua_nil)
     {
@@ -330,9 +376,6 @@ sol::function ScriptComponent::GetScriptFunction(const std::string& name)
     return sol::nil;
 }
 
-void ScriptComponent::Update(float deltaTime)
-{
-}
 
 void ScriptComponent::CallUpdate(float deltaTime)
 {
