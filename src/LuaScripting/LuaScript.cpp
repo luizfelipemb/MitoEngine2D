@@ -24,6 +24,10 @@ GameObject* CreateGameObject(sol::optional<std::string> name)
 {
     return Registry::CreateGameObject(name.value_or("")).get();
 }
+GameObject* FindGameObjectByTag(std::string tag)
+{
+    return Registry::GetGameObjectByTag(tag);
+}
 
 void AddTransformComponent(GameObject* gameObject,
                            sol::optional<glm::vec2> position,
@@ -112,8 +116,9 @@ void LuaScript::AddScriptComponent(GameObject* gameObject,
 void LuaScript::SettingsSetup()
 {
     Logger::Log("SettingsSetup");
-    lua.open_libraries(sol::lib::base, sol::lib::math);
-    sol::load_result luaScript = lua.load_file(SETTINGS_PATH + "settings.lua");
+    lua.open_libraries();
+    const std::string& settingsFile = SETTINGS_PATH + "settings.lua";
+    sol::load_result luaScript = lua.load_file(settingsFile);
     if (!luaScript.valid())
     {
         sol::error err = luaScript;
@@ -121,10 +126,11 @@ void LuaScript::SettingsSetup()
         Logger::Err("Error loading the lua script: " + errorMessage);
         return;
     }
-    lua.script_file(SETTINGS_PATH + "settings.lua");
+    lua.script_file(settingsFile);
     sol::table settings = lua["Settings"];
     sol::table window = settings["window"];
 
+    WindowSettings::FPS = window["fps"].get_or(60);
     WindowSettings::WindowHeight = window["height"].get_or(1280);
     WindowSettings::WindowWidth = window["width"].get_or(720);
     WindowSettings::WindowName = window["name"].get_or_create<std::string>("Game");
@@ -208,6 +214,7 @@ void LuaScript::LoadLuaBindings()
     );
     lua.set_function("create", CreateGameObject);
     lua.set_function("destroy", Destroy);
+    lua.set_function("find_by_tag",FindGameObjectByTag);
     lua.set_function("mito_log", LuaPrint);
     lua.set_function("open_level", [this](const std::string& name)
     {

@@ -4,10 +4,11 @@
 
 struct WindowSettings
 {
-    static int WindowWidth;
-    static int WindowHeight;
-    static std::string WindowName;
-    static std::string IconImageLocation;
+    inline static int FPS;
+    inline static int WindowWidth;
+    inline static int WindowHeight;
+    inline static std::string WindowName;
+    inline static std::string IconImageLocation;
     static int GetWidth() { return WindowWidth; }
     static int GetHeight() { return WindowHeight; }
 };
@@ -20,6 +21,6 @@ public:
     static void ClearFrameRender();
     static void DrawFrameRender();
 
-    static SDL_Window* Window;
-    static SDL_Renderer* Renderer;
+    inline static SDL_Window* Window;
+    inline static SDL_Renderer* Renderer;
 };

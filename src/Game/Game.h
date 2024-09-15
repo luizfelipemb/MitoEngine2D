@@ -7,8 +7,6 @@
 class OpenLevelEvent;
 class EventBus;
 
-constexpr static int FPS = 60;
-constexpr int MILLISECS_PER_FRAME = 1000 / FPS;
 inline bool g_DebugMode = false;
 
 class Game
@@ -23,6 +21,7 @@ public:
 	void Update();
 	void Destroy();
 private:
+	int MILLISECS_PER_FRAME;
 	bool m_isRunning;
 	int m_msPreviousFrame = 0;
 	std::string m_nextLevelName;

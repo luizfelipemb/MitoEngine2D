@@ -1,8 +1,11 @@
 ﻿local velocity = vec2:new(0, -200)
 local rigidbody, transform, sprite
 local goingUp
+local gamemanager
 
 function start(gameobject)
+    gamemanager = find_by_tag("gamemanager")
+    mito_log(tostring(gamemanager))
     mito_log(gameobject.name .. "start called")
     transform = gameobject:get_component_transform()
     rigidbody = gameobject:get_component_rigidbody()
@@ -44,6 +47,7 @@ function on_collision_enter(gameobject, other, direction)
         end
         destroy(other)
         globals.bricks_destroyed = globals.bricks_destroyed + 1
+        gamemanager:get_component_script():get_function("on_brick_destroyed")()
     end
 end
 

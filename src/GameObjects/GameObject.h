@@ -57,13 +57,14 @@ public:
     void Start();
     void Update(float deltaTime);
     const std::vector<std::shared_ptr<GameObject>>& GetAllGameObjects() const;
+    static GameObject* GetGameObjectById(int id);
     static std::shared_ptr<GameObject>& CreateGameObject(std::string name = "GameObject");
     static void DestroyGameObject(int id);
     void ClearGameObjects();
-    static void TagEntity(int entityid, const std::string& tag);
-    static bool EntityHasTag(int entityid, const std::string& tag);
+    static void TagGameObject(int id, const std::string& tag);
+    static bool GameObjectHasTag(int id, const std::string& tag);
     //TODO:
-    //static int GetEntityByTag(const std::string& tag);
+    static GameObject* GetGameObjectByTag(const std::string& tag);
     //static void RemoveEntityTag(int entityid);
 private:
     CollisionSystem m_collisionSystem;

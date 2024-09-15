@@ -19,6 +19,7 @@
         },
         {
             name = "GameManager",
+            tags = {"gamemanager"},
             components = {
                 scripts = {
                     "gamemanager.lua"
