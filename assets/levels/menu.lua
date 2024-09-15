@@ -4,7 +4,7 @@ Level = {
             name = "background",
             components = {
                 transform = {
-                    position = { x = 0, y = 0 },
+                    position = vec2.new(0, 0),
                     scale = 1,
                     rotation = 0.0,
                 },
@@ -13,9 +13,7 @@ Level = {
                     width = Window.width,
                     height = Window.height,
                     layer = 0,
-                    red = 25,
-                    green = 25,
-                    blue = 25
+                    color = color.new(25, 25, 25)
                 }
             }
         },
@@ -52,9 +50,7 @@ Level = {
                     sprite_name = "",
                     width = 120,
                     height = 60,
-                    red = 0,
-                    green = 0,
-                    blue = 255
+                    color = color.new(0, 0, 255)
                 },
                 clickable = {
                 },

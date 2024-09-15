@@ -41,18 +41,14 @@ void AddSpriteComponent(GameObject* gameObject,
                         sol::optional<int> width,
                         sol::optional<int> height,
                         sol::optional<int> layer,
-                        sol::optional<std::uint8_t> red,
-                        sol::optional<std::uint8_t> green,
-                        sol::optional<std::uint8_t> blue)
+                        sol::optional<Color> color)
 {
     gameObject->AddComponent<SpriteComponent>(
         sprite,
         width ? std::optional<int>(*width) : std::nullopt,
         height ? std::optional<int>(*height) : std::nullopt,
         layer ? std::optional<int>(*layer) : std::nullopt,
-        red ? std::optional<std::uint8_t>(*red) : std::nullopt,
-        green ? std::optional<std::uint8_t>(*green) : std::nullopt,
-        blue ? std::optional<std::uint8_t>(*blue) : std::nullopt);
+        color ? std::optional<Color>(*color) : std::nullopt);
 }
 
 void AddTextComponent(GameObject* gameObject,
@@ -145,6 +141,13 @@ void LuaScript::LoadLuaBindings()
         "height", sol::property(&WindowSettings::GetHeight)
     );
     LoadLuaKeys();
+    lua.new_usertype<Color>(
+        "color",
+        sol::constructors<Color(), Color(std::uint8_t, std::uint8_t, std::uint8_t)>(),
+        "r", &Color::Red,
+        "g", &Color::Green,
+        "b", &Color::Blue
+    );
     lua.new_usertype<glm::vec2>(
         "vec2",
         sol::constructors<glm::vec2(), glm::vec2(float, float)>(),
@@ -164,7 +167,8 @@ void LuaScript::LoadLuaBindings()
     lua.new_usertype<SpriteComponent>(
         "sprite_component",
         "width", &SpriteComponent::Width,
-        "height", &SpriteComponent::Height
+        "height", &SpriteComponent::Height,
+        "color", &SpriteComponent::color
     );
     lua.new_usertype<TextComponent>(
         "text_component",
@@ -423,9 +427,7 @@ GameObject* LuaScript::SpawnGameObject(sol::table entity)
                 entity["components"]["sprite"]["width"],
                 entity["components"]["sprite"]["height"],
                 entity["components"]["sprite"]["layer"],
-                entity["components"]["sprite"]["red"].get_or(255),
-                entity["components"]["sprite"]["green"].get_or(255),
-                entity["components"]["sprite"]["blue"].get_or(255)
+                entity["components"]["sprite"]["color"]
             );
         }
 

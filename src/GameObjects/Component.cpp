@@ -51,12 +51,12 @@ void TextComponent::Render()
 
 SpriteComponent::SpriteComponent(GameObject* owner, std::string sprite,
                                  std::optional<int> width, std::optional<int> height, std::optional<int> layer,
-                                 std::optional<std::uint8_t> red, std::optional<std::uint8_t> green, std::optional<std::uint8_t> blue)
+                                 std::optional<Color> color)
     :   RenderableComponent(owner,layer),
         Width(width.value_or(0)),
         Height(height.value_or(0)),
           m_sprite(sprite),
-          m_color(Color{red.value_or(255), green.value_or(255), blue.value_or(255)})
+          color(color)
 {
     if(Width==0)
     {
@@ -66,10 +66,6 @@ SpriteComponent::SpriteComponent(GameObject* owner, std::string sprite,
     {
         Height = AssetManager::GetHeightOfSprite(RendererManager::Renderer,sprite);
     }
-}
-
-void SpriteComponent::Update(float deltaTime)
-{
 }
 
 void SpriteComponent::Render()
@@ -84,7 +80,7 @@ void SpriteComponent::Render()
                 transform->Position.y,
                 Width,
                 Height,
-                m_color);
+                color.value_or(Color{255,255,255}));
         }
         else
         {
@@ -96,7 +92,7 @@ void SpriteComponent::Render()
                                 Width,
                                 Height,
                                 transform->Scale,
-                                m_color);
+                                color);
         }
     }
 }

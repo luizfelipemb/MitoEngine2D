@@ -10,9 +10,7 @@
                     sprite_name = "",
                     width = Window.width,
                     height = Window.height,
-                    red = 60,
-                    green = 25,
-                    blue = 25
+                    color = color.new(60,25,25)
                 },
                 scripts = {
                 }
@@ -51,9 +49,7 @@
                     sprite_name = "",
                     width = 120,
                     height = 60,
-                    red = 0,
-                    green = 0,
-                    blue = 255
+                    color = color.new(0,0,255)
                 },
                 clickable = {
                 },
