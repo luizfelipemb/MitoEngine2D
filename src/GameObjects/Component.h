@@ -64,16 +64,13 @@ public:
                     std::optional<int> width = std::nullopt, 
                     std::optional<int> height = std::nullopt,
                     std::optional<int> layer = std::nullopt,
-                    std::optional<std::uint8_t> red = std::nullopt, 
-                    std::optional<std::uint8_t> green = std::nullopt, 
-                    std::optional<std::uint8_t> blue = std::nullopt);
-    void Update(float deltaTime) override;
+                    std::optional<Color> color = std::nullopt);
     void Render() override;
     int Width;
     int Height;
+    std::optional<Color> color;
 private:
     std::string m_sprite;
-    Color m_color;
 };
 
 class TextComponent : public RenderableComponent

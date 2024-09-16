@@ -9,10 +9,13 @@
 
 struct Color
 {
+    Color() : Red(0), Green(0), Blue(0) {}
+    Color(std::uint8_t r, std::uint8_t g, std::uint8_t b) : Red(r), Green(g), Blue(b) {}
     std::uint8_t Red;
     std::uint8_t Green;
     std::uint8_t Blue;
 };
+
 class AssetManager
 {
     public:

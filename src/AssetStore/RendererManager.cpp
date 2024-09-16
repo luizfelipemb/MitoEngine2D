@@ -15,12 +15,6 @@
 #include "../imgui/imgui_impl_sdlrenderer2.h"
 #include "../Logger/Logger.h"
 
-int WindowSettings::WindowWidth;
-int WindowSettings::WindowHeight;
-std::string WindowSettings::WindowName;
-std::string WindowSettings::IconImageLocation;
-SDL_Window* RendererManager::Window;
-SDL_Renderer* RendererManager::Renderer;
 
 RendererManager::~RendererManager()
 {

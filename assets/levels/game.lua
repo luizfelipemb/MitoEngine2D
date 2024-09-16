@@ -13,14 +13,13 @@
                     width = Window.width,
                     height = Window.height,
                     layer = 0,
-                    red = 25,
-                    green = 25,
-                    blue = 25
+                    color = color.new(25,25,25)
                 }
             }
         },
         {
             name = "GameManager",
+            tags = {"gamemanager"},
             components = {
                 scripts = {
                     "gamemanager.lua"

@@ -29,14 +29,14 @@ std::string GameObject::GetName() const
 void GameObject::Tag(const std::string& tag)
 {
     Logger::Log("Tagged id " + std::to_string(m_id) + " with tag:" + tag);
-    Registry::TagEntity(m_id, tag);
+    Registry::TagGameObject(m_id, tag);
 }
 
 bool GameObject::HasTag(const std::string& tag)
 {
     Logger::Log("Has Tag id " + std::to_string(m_id) + " and tag:" + tag
-        + " result: " + std::to_string(Registry::EntityHasTag(m_id, tag)));
-    return Registry::EntityHasTag(m_id, tag);
+        + " result: " + std::to_string(Registry::GameObjectHasTag(m_id, tag)));
+    return Registry::GameObjectHasTag(m_id, tag);
 }
 
 std::shared_ptr<GameObject>& Registry::CreateGameObject(std::string name)
@@ -62,35 +62,40 @@ void Registry::ClearGameObjects()
     Logger::Log("Cleared GameObjects, new size:" + std::to_string(m_gameObjects.size()));
 }
 
-void Registry::TagEntity(int entityid, const std::string& tag)
+void Registry::TagGameObject(int id, const std::string& tag)
 {
-    m_tagPerGameObjectId[entityid].insert(tag);
-    m_gameObjectIdPerTag[tag].insert(entityid);
+    m_tagPerGameObjectId[id].insert(tag);
+    m_gameObjectIdPerTag[tag].insert(id);
     
-    std::cout << "Entity ID " << entityid << " tagged with '" << tag << "'.\n";
+    std::cout << "Entity ID " << id << " tagged with '" << tag << "'.\n";
 }
 
-bool Registry::EntityHasTag(int entityid, const std::string& tag)
+bool Registry::GameObjectHasTag(int id, const std::string& tag)
 {
-    std::cout << "Checking if entity ID " << entityid << " has tag '" << tag << "'...\n";
+    std::cout << "Checking if entity ID " << id << " has tag '" << tag << "'...\n";
 
     // Check if the entity ID exists in m_tagPerGameObjectId
-    auto entityIt = m_tagPerGameObjectId.find(entityid);
+    auto entityIt = m_tagPerGameObjectId.find(id);
     if (entityIt == m_tagPerGameObjectId.end())
     {
-        std::cout << "Entity ID " << entityid << " not found in m_tagPerGameObjectId.\n";
+        std::cout << "Entity ID " << id << " not found in m_tagPerGameObjectId.\n";
         return false;
     }
 
     // Check if the tag exists in the entity's set of tags
     if (entityIt->second.find(tag) == entityIt->second.end())
     {
-        std::cout << "Tag '" << tag << "' not associated with entity ID " << entityid << ".\n";
+        std::cout << "Tag '" << tag << "' not associated with entity ID " << id << ".\n";
         return false;
     }
 
-    std::cout << "Entity ID " << entityid << " is correctly associated with tag '" << tag << "'.\n";
+    std::cout << "Entity ID " << id << " is correctly associated with tag '" << tag << "'.\n";
     return true;
+}
+
+GameObject* Registry::GetGameObjectByTag(const std::string& tag)
+{
+    return GetGameObjectById(*m_gameObjectIdPerTag[tag].begin());
 }
 
 void Registry::Start()
@@ -164,8 +169,22 @@ void Registry::Update(float deltaTime)
     }
     m_idsToDestroy.clear();
 }
+GameObject* Registry::GetGameObjectById(int id)
+{
+    auto it = std::find_if(m_gameObjects.begin(), m_gameObjects.end(),
+                               [id](const std::shared_ptr<GameObject>& obj)
+                               {
+                                   return obj->GetId() == id;
+                               });
+    if (it != m_gameObjects.end())
+    {
+        return it->get();
+    }
+    return nullptr;
+}
 
 const std::vector<std::shared_ptr<GameObject>>& Registry::GetAllGameObjects() const
 {
     return m_gameObjects;
 }
+

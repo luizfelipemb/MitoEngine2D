@@ -19,7 +19,6 @@
 #include "../Events/KeyReleasedEvent.h"
 #include "../Events/OpenLevelEvent.h"
 
-
 class MouseButtonPressedEvent;
 
 Game::Game():
@@ -85,6 +84,7 @@ void Game::ProcessInput()
 void Game::Initialize()
 {
     m_luaScript.SettingsSetup();
+    MILLISECS_PER_FRAME = 1000 / WindowSettings::FPS;
     AssetManager::Initialize();
     RendererManager::Initialize();
     m_isRunning = true;

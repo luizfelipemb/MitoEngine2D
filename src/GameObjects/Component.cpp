@@ -287,10 +287,75 @@ bool AudioComponent::init()
     return AudioManager::GetInstance().init();
 }
 
-
 bool AudioComponent::loadMusic(const std::string& id, const std::string& path)
 {
     return AudioManager::GetInstance().loadMusic(id, path);
+}
+
+void TextComponent::Render()
+{
+    if (auto transform = m_owner->GetComponent<TransformComponent>())
+    {        
+        AssetManager::RenderText(
+            RendererManager::Renderer,
+            Text,
+            m_font,
+            FontSize,
+            transform->Position.x,
+            transform->Position.y,
+            1,
+            false,
+            textColor);
+    }
+}
+
+
+SpriteComponent::SpriteComponent(GameObject* owner, std::string sprite,
+                                 std::optional<int> width, std::optional<int> height, std::optional<int> layer,
+                                 std::optional<Color> color)
+    :   RenderableComponent(owner,layer),
+        Width(width.value_or(0)),
+        Height(height.value_or(0)),
+          m_sprite(sprite),
+          color(color)
+{
+    if(Width==0)
+    {
+        Width = AssetManager::GetWidthOfSprite(RendererManager::Renderer,sprite);
+    }
+    if(Height==0)
+    {
+        Height = AssetManager::GetHeightOfSprite(RendererManager::Renderer,sprite);
+    }
+}
+
+void SpriteComponent::Render()
+{
+    if (auto transform = m_owner->GetComponent<TransformComponent>())
+    {
+        if (m_sprite == "")
+        {
+            AssetManager::DrawRectangle(
+                RendererManager::Renderer,
+                transform->Position.x,
+                transform->Position.y,
+                Width,
+                Height,
+                color.value_or(Color{255,255,255}));
+        }
+        else
+        {
+            AssetManager::RenderImage(
+                                RendererManager::Renderer,
+                                m_sprite,
+                                transform->Position.x,
+                                transform->Position.y,
+                                Width,
+                                Height,
+                                transform->Scale,
+                                color);
+        }
+    }
 }
 
 bool AudioComponent::loadSound(const std::string& id, const std::string& path)

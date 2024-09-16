@@ -2,8 +2,11 @@
 local rigidbody, transform, sprite
 local goingUp
 local audio_manager
+local gamemanager
 
 function start(gameobject)
+    gamemanager = find_by_tag("gamemanager")
+    mito_log(tostring(gamemanager))
     mito_log(gameobject.name .. "start called")
     gameobject:add_component_audio()
 
@@ -56,11 +59,12 @@ function on_collision_enter(gameobject, other, direction)
         end
         destroy(other)
         globals.bricks_destroyed = globals.bricks_destroyed + 1
-
+    
         if globals.bricks_destroyed >= globals.max_bricks then
             open_level("won.lua")
 
         end
+        gamemanager:get_component_script():get_function("on_brick_destroyed")()
     end
 end
 

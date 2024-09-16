@@ -24,6 +24,10 @@ GameObject* CreateGameObject(sol::optional<std::string> name)
 {
     return Registry::CreateGameObject(name.value_or("")).get();
 }
+GameObject* FindGameObjectByTag(std::string tag)
+{
+    return Registry::GetGameObjectByTag(tag);
+}
 
 void AddTransformComponent(GameObject* gameObject,
                            sol::optional<glm::vec2> position,
@@ -41,18 +45,14 @@ void AddSpriteComponent(GameObject* gameObject,
                         sol::optional<int> width,
                         sol::optional<int> height,
                         sol::optional<int> layer,
-                        sol::optional<std::uint8_t> red,
-                        sol::optional<std::uint8_t> green,
-                        sol::optional<std::uint8_t> blue)
+                        sol::optional<Color> color)
 {
     gameObject->AddComponent<SpriteComponent>(
         sprite,
         width ? std::optional<int>(*width) : std::nullopt,
         height ? std::optional<int>(*height) : std::nullopt,
         layer ? std::optional<int>(*layer) : std::nullopt,
-        red ? std::optional<std::uint8_t>(*red) : std::nullopt,
-        green ? std::optional<std::uint8_t>(*green) : std::nullopt,
-        blue ? std::optional<std::uint8_t>(*blue) : std::nullopt);
+        color ? std::optional<Color>(*color) : std::nullopt);
 }
 
 void AddTextComponent(GameObject* gameObject,
@@ -130,8 +130,9 @@ void LuaScript::AddScriptComponent(GameObject* gameObject,
 void LuaScript::SettingsSetup()
 {
     Logger::Log("SettingsSetup");
-    lua.open_libraries(sol::lib::base, sol::lib::math);
-    sol::load_result luaScript = lua.load_file(SETTINGS_PATH + "settings.lua");
+    lua.open_libraries();
+    const std::string& settingsFile = SETTINGS_PATH + "settings.lua";
+    sol::load_result luaScript = lua.load_file(settingsFile);
     if (!luaScript.valid())
     {
         sol::error err = luaScript;
@@ -139,10 +140,11 @@ void LuaScript::SettingsSetup()
         Logger::Err("Error loading the lua script: " + errorMessage);
         return;
     }
-    lua.script_file(SETTINGS_PATH + "settings.lua");
+    lua.script_file(settingsFile);
     sol::table settings = lua["Settings"];
     sol::table window = settings["window"];
 
+    WindowSettings::FPS = window["fps"].get_or(60);
     WindowSettings::WindowHeight = window["height"].get_or(1280);
     WindowSettings::WindowWidth = window["width"].get_or(720);
     WindowSettings::WindowName = window["name"].get_or_create<std::string>("Game");
@@ -159,6 +161,13 @@ void LuaScript::LoadLuaBindings()
         "height", sol::property(&WindowSettings::GetHeight)
     );
     LoadLuaKeys();
+    lua.new_usertype<Color>(
+        "color",
+        sol::constructors<Color(), Color(std::uint8_t, std::uint8_t, std::uint8_t)>(),
+        "r", &Color::Red,
+        "g", &Color::Green,
+        "b", &Color::Blue
+    );
     lua.new_usertype<glm::vec2>(
         "vec2",
         sol::constructors<glm::vec2(), glm::vec2(float, float)>(),
@@ -178,7 +187,8 @@ void LuaScript::LoadLuaBindings()
     lua.new_usertype<SpriteComponent>(
         "sprite_component",
         "width", &SpriteComponent::Width,
-        "height", &SpriteComponent::Height
+        "height", &SpriteComponent::Height,
+        "color", &SpriteComponent::color
     );
     lua.new_usertype<TextComponent>(
         "text_component",
@@ -229,6 +239,7 @@ void LuaScript::LoadLuaBindings()
     );
     lua.set_function("create", CreateGameObject);
     lua.set_function("destroy", Destroy);
+    lua.set_function("find_by_tag",FindGameObjectByTag);
     lua.set_function("mito_log", LuaPrint);
     lua.set_function("open_level", [this](const std::string& name)
     {
@@ -448,9 +459,7 @@ GameObject* LuaScript::SpawnGameObject(sol::table entity)
                 entity["components"]["sprite"]["width"],
                 entity["components"]["sprite"]["height"],
                 entity["components"]["sprite"]["layer"],
-                entity["components"]["sprite"]["red"].get_or(255),
-                entity["components"]["sprite"]["green"].get_or(255),
-                entity["components"]["sprite"]["blue"].get_or(255)
+                entity["components"]["sprite"]["color"]
             );
         }
 
