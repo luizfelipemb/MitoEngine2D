@@ -102,6 +102,20 @@ void AddClickableComponent(GameObject* gameObject,
         offset ? std::optional<glm::vec2>(*offset) : std::nullopt);
 }
 
+void AddAudioComponent(
+    GameObject* gameObject,
+    const sol::optional<std::string> id,
+    const sol::optional<std::string> path,
+    const sol::optional<bool> autoPlay,
+    const sol::optional<bool> isMusic)
+{
+    gameObject->AddComponent<AudioComponent>(
+        id,
+        path,
+        autoPlay,
+        isMusic
+    );
+}
 
 void LuaScript::AddScriptComponent(GameObject* gameObject,
                                    const std::string& scriptName)
@@ -186,6 +200,15 @@ void LuaScript::LoadLuaBindings()
         "script_component",
         "get_function", &ScriptComponent::GetScriptFunction
     );
+    lua.new_usertype<AudioComponent>(
+        "audio_component",
+        "load_music", &AudioComponent::loadMusic,
+        "load_sound", &AudioComponent::loadSound,
+        "play_music", &AudioComponent::playMusic,
+        "play_sound", &AudioComponent::playSound,
+        "stop_music", &AudioComponent::stopMusic,
+        "stop_sound", &AudioComponent::stopSound,
+        "clean_up", &AudioComponent::cleanUp);
     lua.new_usertype<GameObject>(
         "gameobject",
         "get_id", &GameObject::GetId,
@@ -203,6 +226,7 @@ void LuaScript::LoadLuaBindings()
         {
             AddScriptComponent(gameObject, scriptName);
         },
+        "add_component_audio", &AddAudioComponent,
 
         "get_component_transform", &GameObject::GetComponent<TransformComponent>,
         "get_component_sprite", &GameObject::GetComponent<SpriteComponent>,
@@ -210,7 +234,8 @@ void LuaScript::LoadLuaBindings()
         "get_component_boxcollider", &GameObject::GetComponent<BoxCollider2DComponent>,
         "get_component_clickable", &GameObject::GetComponent<ClickableComponent>,
         "get_component_rigidbody", &GameObject::GetComponent<RigidBody2DComponent>,
-        "get_component_script", &GameObject::GetComponent<ScriptComponent>
+        "get_component_script", &GameObject::GetComponent<ScriptComponent>,
+        "get_component_audio", &GameObject::GetComponent<AudioComponent>
     );
     lua.set_function("create", CreateGameObject);
     lua.set_function("destroy", Destroy);
@@ -486,6 +511,21 @@ GameObject* LuaScript::SpawnGameObject(sol::table entity)
                 entity["components"]["text"]["green"].get_or(255),
                 entity["components"]["text"]["blue"].get_or(255)
             );
+        }
+
+        // Audio
+        sol::optional<sol::table> audio = entity["components"]["audio"];
+        if (audio != sol::nullopt)
+        {
+            std::string id = entity["components"]["audio"]["id"];
+            std::string path = entity["components"]["audio"]["path"];
+
+            AddAudioComponent(
+                newGameObject,
+                id,
+                path,
+                entity["components"]["audio"]["auto_play"].get_or(false),
+                entity["components"]["audio"]["music"].get_or(false));
         }
 
         // Scripts

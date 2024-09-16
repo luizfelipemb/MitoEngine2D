@@ -6,4 +6,5 @@ bin-int
 *.user
 *.filters
 .idea
+out
 cmake-build-debug

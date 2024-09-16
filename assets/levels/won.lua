@@ -1,4 +1,4 @@
-﻿Level = {
+Level = {
     entities = {
         {
             name = "background",
@@ -10,13 +10,14 @@
                     sprite_name = "",
                     width = Window.width,
                     height = Window.height,
-                    color = color.new(60,25,25)
+                    red = 25,
+                    green = 180,
+                    blue = 25
                 },
                 audio = {
-                    id = "game_over",
-                    path = "assets/sounds/game_over.mp3",
-                    auto_play = true, --- default -> false
-                    music = false  --- default -> false
+                    id = "you_win",
+                    path = "assets/sounds/you_win.mp3",
+                    auto_play = true,
                 }
             }
         },
@@ -31,7 +32,7 @@
                     }
                 },
                 text = {
-                    text = "You Lose",
+                    text = "You won!!",
                     font = "assets/fonts/charriot.ttf",
                     scale = 100
                 },
@@ -53,7 +54,9 @@
                     sprite_name = "",
                     width = 120,
                     height = 60,
-                    color = color.new(0,0,255)
+                    red = 0,
+                    green = 0,
+                    blue = 255
                 },
                 clickable = {
                 },

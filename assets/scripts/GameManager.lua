@@ -1,4 +1,7 @@
 ﻿globals.bricks_destroyed = 0
+local rows = 2
+local columns = 2
+globals.max_bricks = rows + columns
 
 local rows = 1
 local columns = 1
