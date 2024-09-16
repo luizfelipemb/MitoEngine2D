@@ -157,6 +157,27 @@ public:
     glm::vec2 Offset;
 };
 
+class AudioComponent : public Component
+{
+public:
+    explicit AudioComponent(
+        GameObject* owner,
+        const sol::optional<std::string> id,
+        const sol::optional<std::string> path,
+        sol::optional<bool> autoPlay,
+        sol::optional<bool> isMusic);
+
+    bool init();
+    bool loadMusic(const std::string& id, const std::string& path);
+    bool loadSound(const std::string& id, const std::string& path);
+    void playMusic(const std::string& id, int loops = -1);
+    void playSound(const std::string& id, int loops = 0);
+    void stopMusic();
+    void stopSound(int channel = -1);
+    void cleanUp();
+
+};
+
 class ScriptComponent : public Component
 {
 public:

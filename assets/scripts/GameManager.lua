@@ -1,6 +1,7 @@
 ﻿globals.bricks_destroyed = 0
-local rows = 3
-local columns = 7
+local rows = 2
+local columns = 2
+globals.max_bricks = rows + columns
 
 function start()
     for i = 1, columns do
