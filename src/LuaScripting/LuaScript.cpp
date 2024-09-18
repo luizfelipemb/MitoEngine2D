@@ -103,7 +103,6 @@ void AddClickableComponent(GameObject* gameObject,
         offset ? std::optional<glm::vec2>(*offset) : std::nullopt);
 }
 
-
 void LuaScript::AddScriptComponent(GameObject* gameObject,
                                    const std::string& scriptName)
 {
@@ -213,8 +212,18 @@ void LuaScript::LoadLuaBindings()
         "get_component_rigidbody", &GameObject::GetComponent<RigidBody2DComponent>,
         "get_component_script", &GameObject::GetComponent<ScriptComponent>
     );
+    //audios
     lua.set_function("load_sound", AudioManager::LoadSound);
     lua.set_function("play_sound", AudioManager::PlaySound);
+    lua.set_function("stop_sound", AudioManager::StopSound);
+    lua.set_function("load_music", AudioManager::LoadMusic);
+    lua.set_function("play_music", AudioManager::PlayMusic);
+    lua.set_function("stop_music", AudioManager::StopMusic);
+    lua.set_function("set_music_volume", AudioManager::SetMusicVolume);
+    lua.set_function("set_sound_volume", AudioManager::SetSoundVolume);
+    lua.set_function("get_music_volume", AudioManager::GetMusicVolume);
+    lua.set_function("get_sound_volume", AudioManager::GetGlobalSoundVolume);
+    
     lua.set_function("create", CreateGameObject);
     lua.set_function("destroy", Destroy);
     lua.set_function("find_by_tag",FindGameObjectByTag);

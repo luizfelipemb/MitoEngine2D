@@ -1,76 +1,138 @@
 #include "AudioManager.h"
 
+#include <algorithm>
 #include <iostream>
 #include <SDL.h>
 
 #include "../Logger/Logger.h"
 
+// Convert a normalized volume (0.0 to 1.0) to SDL_mixer's range (0 to 128)
+int AudioManager::NormalizeVolume(float volume)
+{
+    return static_cast<int>(std::clamp(volume * MIX_MAX_VOLUME, 0.0f, static_cast<float>(MIX_MAX_VOLUME)));
+}
+
 void AudioManager::Init()
 {
     if (SDL_Init(SDL_INIT_AUDIO) < 0)
     {
-        Logger::Err("Error initializing SDL:" + std::string(SDL_GetError()));
+        Logger::Err("Error initializing SDL: " + std::string(SDL_GetError()));
+        return;
     }
 
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
     {
-        Logger::Err("Error initializing SDL_mixer:" + std::string(Mix_GetError()));
+        Logger::Err("Error initializing SDL_mixer: " + std::string(Mix_GetError()));
+        SDL_Quit();
+        return;
     }
+
+    // Set default volume levels
+    Mix_VolumeMusic(NormalizeVolume(globalMusicVolume));
+    Mix_Volume(-1, NormalizeVolume(globalSoundVolume));
+
     Logger::Log("AudioManager Loaded");
     initialized = true;
 }
 
 bool AudioManager::LoadMusic(const std::string& id, const std::string& path)
 {
-    Mix_Music* music = Mix_LoadMUS(path.c_str());
+    if (!initialized) Init();
 
-    if (music == nullptr)
+    if (musicTracks.find(id) != musicTracks.end())
     {
-        std::cerr << "Error loading sound: " << Mix_GetError() << std::endl;
+        // Music already loaded
+        return true;
+    }
+
+    Mix_Music* music = Mix_LoadMUS(path.c_str());
+    if (!music)
+    {
+        Logger::Wrn("Error loading music: " + std::string(Mix_GetError()));
         return false;
     }
+
     musicTracks[id] = music;
+    Logger::Log("Music loaded: " + id);
     return true;
 }
 
 bool AudioManager::LoadSound(const std::string& name)
 {
-    if(!initialized)
+    if (!initialized) Init();
+
+    if (soundEffects.find(name) != soundEffects.end())
     {
-        Init();
+        // Sound already loaded
+        return true;
     }
-    const std::string path = "assets/audios/"+name;
+
+    const std::string path = "assets/audios/" + name;
     Mix_Chunk* sound = Mix_LoadWAV(path.c_str());
-    if (sound == nullptr)
+
+    if (!sound)
     {
-        std::cerr << "Error loading sound: " << Mix_GetError() << '\n';
+        Logger::Wrn("Error loading sound: " + std::string(Mix_GetError()));
         return false;
     }
+
     soundEffects[name] = sound;
+    Logger::Log("Sound loaded: " + name);
     return true;
 }
 
-void AudioManager::PlayMusic(const std::string& id, int loops)
+void AudioManager::PlayMusic(const std::string& id, std::optional<float> volume, std::optional<int> loops)
 {
-    if (musicTracks.find(id) != musicTracks.end())
+    // Check if the music is already loaded, if not, attempt to load it
+    if (musicTracks.find(id) == musicTracks.end())
     {
-        Mix_PlayMusic(musicTracks[id], loops);
+        Logger::Wrn("Music not found: " + id + ". Attempting to load it.");
+
+        // You might want to determine a valid path or handle this differently
+        std::string path = "assets/music/" + id + ".mp3"; // Example path
+        if (!LoadMusic(id, path))
+        {
+            Logger::Wrn("Failed to load music: " + id);
+            return;
+        }
     }
-    else
+
+    // Play the music
+    if (volume.has_value())
     {
-        Logger::Err("Music not found: " + id);
+        Mix_VolumeMusic(NormalizeVolume(volume.value()));
+    }
+
+    int loopCount = loops.value_or(-1); // Default to infinite loop if not specified
+    if (Mix_PlayMusic(musicTracks[id], loopCount) == -1)
+    {
+        Logger::Err("Error playing music: " + std::string(Mix_GetError()));
     }
 }
 
-void AudioManager::PlaySound(const std::string& name, int loops)
+void AudioManager::PlaySound(const std::string& name, std::optional<float> volume, std::optional<int> loops)
 {
-    if (soundEffects.find(name) != soundEffects.end())
+    // Check if the sound is already loaded, if not, attempt to load it
+    if (soundEffects.find(name) == soundEffects.end())
     {
-        Mix_PlayChannel(-1, soundEffects[name], loops);
+        Logger::Wrn("Sound not found: " + name + ". Attempting to load it.");
+
+        if (!LoadSound(name))
+        {
+            Logger::Wrn("Failed to load sound: " + name);
+            return;
+        }
     }
-    else
+
+    // Play the sound
+    Mix_Chunk* sound = soundEffects[name];
+    int actualVolume = NormalizeVolume(volume.value_or(globalSoundVolume));
+    Mix_VolumeChunk(sound, actualVolume);
+
+    int loopCount = loops.value_or(0); // Default to no loop if not specified
+    if (Mix_PlayChannel(-1, sound, loopCount) == -1)
     {
-        Logger::Err("Sound not found: " + name);
+        Logger::Err("Error playing sound: " + std::string(Mix_GetError()));
     }
 }
 
@@ -81,11 +143,20 @@ void AudioManager::StopMusic()
 
 void AudioManager::StopSound(int channel)
 {
-    Mix_HaltChannel(channel);
+    if (channel == -1)
+    {
+        Mix_HaltChannel(-1);
+    }
+    else
+    {
+        Mix_HaltChannel(channel);
+    }
 }
 
 void AudioManager::CleanUp()
 {
+    if (!initialized) return;
+
     for (auto& music : musicTracks)
     {
         Mix_FreeMusic(music.second);
@@ -100,4 +171,28 @@ void AudioManager::CleanUp()
 
     Mix_CloseAudio();
     SDL_Quit();
+    initialized = false;
+    Logger::Log("AudioManager cleaned up");
+}
+
+void AudioManager::SetMusicVolume(float volume)
+{
+    globalMusicVolume = std::clamp(volume, 0.0f, 1.0f);
+    Mix_VolumeMusic(NormalizeVolume(globalMusicVolume));
+}
+
+void AudioManager::SetSoundVolume(float volume)
+{
+    globalSoundVolume = std::clamp(volume, 0.0f, 1.0f);
+    Mix_Volume(-1, NormalizeVolume(globalSoundVolume));
+}
+
+float AudioManager::GetMusicVolume()
+{
+    return globalMusicVolume;
+}
+
+float AudioManager::GetGlobalSoundVolume()
+{
+    return globalSoundVolume;
 }

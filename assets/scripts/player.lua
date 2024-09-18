@@ -4,13 +4,13 @@ local sprite
 local velocity = 300
 
 function start(gameobject)
-    load_sound("test.ogg")
-    play_sound("test.ogg",0)
     rigidbody = gameobject:get_component_rigidbody()
     transform = gameobject:get_component_transform()
     sprite = gameobject:get_component_sprite()
     mito_log("Start player function called on " .. gameobject.name)
     mito_log(tostring(gameobject:has_tag("player")))
+    
+    play_sound("test.ogg")
 end
 
 function update(gameobject, deltaTime)

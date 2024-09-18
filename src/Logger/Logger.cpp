@@ -23,7 +23,7 @@ void Logger::Log(const std::string& message)
     LogEntry logEntry;
     logEntry.Type = LOG_INFO;
     logEntry.Message = CurrentDateTimeToString() + ": " + message;
-    std::cout << "\x1B[32m" << logEntry.Message << "\033[0m" << std::endl;
+    std::cout << "\x1B[32m" << logEntry.Message << "\033[0m" << '\n';
     Messages.push_back(logEntry);
 }
 
@@ -33,7 +33,7 @@ void Logger::Lua(const std::string& message)
     logEntry.Type = LOG_LUA;
     logEntry.Message = CurrentDateTimeToString() + ": " + message;
     Messages.push_back(logEntry);
-    std::cerr << "\x1B[94m" << logEntry.Message << "\033[0m" << std::endl;
+    std::cerr << "\x1B[94m" << logEntry.Message << "\033[0m" << '\n';
 }
 
 void Logger::Err(const std::string& message)
@@ -42,5 +42,13 @@ void Logger::Err(const std::string& message)
     logEntry.Type = LOG_ERROR;
     logEntry.Message = CurrentDateTimeToString() + ": " + message;
     Messages.push_back(logEntry);
-    std::cerr << "\x1B[91m"<< logEntry.Message << "\033[0m" << std::endl;
+    std::cerr << "\x1B[91m"<< logEntry.Message << "\033[0m" << '\n';
+}
+void Logger::Wrn(const std::string& message)
+{
+    LogEntry logEntry;
+    logEntry.Type = LOG_WARNING;
+    logEntry.Message = CurrentDateTimeToString() + ": " + message;
+    Messages.push_back(logEntry);
+    std::cerr << "\x1B[93m" << logEntry.Message << "\033[0m" << '\n';
 }
