@@ -41,6 +41,7 @@ project "MitoEngine2D"
         { 
             "libs/SDL2/include",
 			"libs/SDL2_image/include",
+			"libs/SDL2_mixer/include",
 			"libs/SDL2_ttf/include",
 			"libs/glm",
 			"libs/lua",
@@ -51,6 +52,7 @@ project "MitoEngine2D"
         {
             "libs/SDL2/lib/x64",
 			"libs/SDL2_image/lib/x64",
+			"libs/SDL2_mixer/lib/x64",
 			"libs/SDL2_ttf/lib/x64",
 			"libs/lua"
         }
@@ -60,6 +62,7 @@ project "MitoEngine2D"
             "SDL2main", 
             "SDL2",
 			"SDL2_image",
+			"SDL2_mixer",
 			"SDL2_ttf",
 			"liblua53.a"
         }
@@ -67,6 +70,7 @@ project "MitoEngine2D"
         postbuildcommands {
             "{COPY} %{path.getabsolute('libs/SDL2/lib/x64/SDL2.dll')} %{cfg.targetdir}",
 			"{COPY} %{path.getabsolute('libs/SDL2_image/lib/x64/SDL2_image.dll')} %{cfg.targetdir}",
+			"{COPY} %{path.getabsolute('libs/SDL2_mixer/lib/x64/SDL2_mixer.dll')} %{cfg.targetdir}",
 			"{COPY} %{path.getabsolute('libs/SDL2_ttf/lib/x64/SDL2_ttf.dll')} %{cfg.targetdir}",
             "{COPY} %{path.getabsolute('libs/lua/lua53.dll')} %{cfg.targetdir}",
 			"{COPY} %{path.getabsolute('libs/lua/liblua53.a.lib')} %{cfg.targetdir}"

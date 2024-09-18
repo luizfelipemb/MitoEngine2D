@@ -1,5 +1,6 @@
 ﻿#include "LuaScript.h"
 
+#include "../Audio/AudioManager.h"
 #include "../Events/OpenLevelEvent.h"
 #include "../Logger/Logger.h"
 #include "../GameObjects/GameObject.h"
@@ -212,6 +213,8 @@ void LuaScript::LoadLuaBindings()
         "get_component_rigidbody", &GameObject::GetComponent<RigidBody2DComponent>,
         "get_component_script", &GameObject::GetComponent<ScriptComponent>
     );
+    lua.set_function("load_sound", AudioManager::LoadSound);
+    lua.set_function("play_sound", AudioManager::PlaySound);
     lua.set_function("create", CreateGameObject);
     lua.set_function("destroy", Destroy);
     lua.set_function("find_by_tag",FindGameObjectByTag);

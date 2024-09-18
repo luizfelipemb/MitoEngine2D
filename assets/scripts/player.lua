@@ -4,6 +4,8 @@ local sprite
 local velocity = 300
 
 function start(gameobject)
+    load_sound("test.ogg")
+    play_sound("test.ogg",0)
     rigidbody = gameobject:get_component_rigidbody()
     transform = gameobject:get_component_transform()
     sprite = gameobject:get_component_sprite()
