@@ -76,10 +76,12 @@ void AddTextComponent(GameObject* gameObject,
 }
 
 void AddRigidBody2DComponent(GameObject* gameObject,
-                             sol::optional<glm::vec2> velocity)
+                             sol::optional<glm::vec2> velocity,
+                             sol::optional<glm::vec2> acceleration)
 {
     gameObject->AddComponent<RigidBody2DComponent>(
-        velocity ? std::optional<glm::vec2>(*velocity) : std::nullopt);
+        velocity ? std::optional<glm::vec2>(*velocity) : std::nullopt,
+        acceleration ? std::optional<glm::vec2>(*acceleration) : std::nullopt);
 }
 
 void AddBoxCollider2DComponent(GameObject* gameObject,
@@ -135,6 +137,19 @@ void LuaScript::SettingsSetup()
     WindowSettings::WindowWidth = window["width"].get_or(720);
     WindowSettings::WindowName = window["name"].get_or_create<std::string>("Game");
     WindowSettings::IconImageLocation = window["icon"].get_or_create<std::string>("./assets/images/icon.png");
+
+    sol::optional<sol::table> sound = settings["sound"];
+    if (sound != sol::nullopt)
+    {
+        if(sound.value()["music"].valid())
+        {
+            AudioManager::SetMusicVolume(sound.value()["music"]);
+        }
+        if(sound.value()["sound"].valid())
+        {
+            AudioManager::SetSoundVolume(sound.value()["sound"]);
+        }
+    }
 }
 
 void LuaScript::LoadLuaBindings()
@@ -168,7 +183,8 @@ void LuaScript::LoadLuaBindings()
     );
     lua.new_usertype<RigidBody2DComponent>(
         "rigidbody_component",
-        "velocity", &RigidBody2DComponent::Velocity
+        "velocity", &RigidBody2DComponent::Velocity,
+        "acceleration", &RigidBody2DComponent::Acceleration
     );
     lua.new_usertype<SpriteComponent>(
         "sprite_component",
@@ -432,6 +448,10 @@ GameObject* LuaScript::SpawnGameObject(sol::table entity)
                 glm::vec2(
                     entity["components"]["rigidbody"]["velocity"]["x"].get_or(0.0),
                     entity["components"]["rigidbody"]["velocity"]["y"].get_or(0.0)
+                ),
+                glm::vec2(
+                    entity["components"]["rigidbody"]["acceleration"]["x"].get_or(0.0),
+                    entity["components"]["rigidbody"]["acceleration"]["y"].get_or(0.0)
                 )
             );
         }

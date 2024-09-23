@@ -21,8 +21,8 @@ public:
 	void Update();
 	void Destroy();
 private:
-	int MILLISECS_PER_FRAME;
-	bool m_isRunning;
+	int m_millisecsPerFrame;
+	bool m_isRunning = false;
 	int m_msPreviousFrame = 0;
 	std::string m_nextLevelName;
 	bool m_canChangeLevel = false;

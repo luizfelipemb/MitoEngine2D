@@ -83,36 +83,30 @@ bool AudioManager::LoadSound(const std::string& name)
 
 void AudioManager::PlayMusic(const std::string& id, std::optional<float> volume, std::optional<int> loops)
 {
-    // Check if the music is already loaded, if not, attempt to load it
     if (musicTracks.find(id) == musicTracks.end())
     {
         Logger::Wrn("Music not found: " + id + ". Attempting to load it.");
 
-        // You might want to determine a valid path or handle this differently
-        std::string path = "assets/music/" + id + ".mp3"; // Example path
+        std::string path = "assets/audios/" + id;
         if (!LoadMusic(id, path))
         {
             Logger::Wrn("Failed to load music: " + id);
             return;
         }
     }
+    float finalVolume = globalMusicVolume * volume.value_or(1.0f);
+    Mix_VolumeMusic(NormalizeVolume(finalVolume));
 
-    // Play the music
-    if (volume.has_value())
-    {
-        Mix_VolumeMusic(NormalizeVolume(volume.value()));
-    }
-
-    int loopCount = loops.value_or(-1); // Default to infinite loop if not specified
+    int loopCount = loops.value_or(-1);
     if (Mix_PlayMusic(musicTracks[id], loopCount) == -1)
     {
         Logger::Err("Error playing music: " + std::string(Mix_GetError()));
     }
 }
 
+
 void AudioManager::PlaySound(const std::string& name, std::optional<float> volume, std::optional<int> loops)
 {
-    // Check if the sound is already loaded, if not, attempt to load it
     if (soundEffects.find(name) == soundEffects.end())
     {
         Logger::Wrn("Sound not found: " + name + ". Attempting to load it.");
@@ -123,18 +117,17 @@ void AudioManager::PlaySound(const std::string& name, std::optional<float> volum
             return;
         }
     }
-
-    // Play the sound
+    float finalVolume = globalSoundVolume * volume.value_or(1.0f);
     Mix_Chunk* sound = soundEffects[name];
-    int actualVolume = NormalizeVolume(volume.value_or(globalSoundVolume));
-    Mix_VolumeChunk(sound, actualVolume);
+    Mix_VolumeChunk(sound, NormalizeVolume(finalVolume));
 
-    int loopCount = loops.value_or(0); // Default to no loop if not specified
+    int loopCount = loops.value_or(0);
     if (Mix_PlayChannel(-1, sound, loopCount) == -1)
     {
         Logger::Err("Error playing sound: " + std::string(Mix_GetError()));
     }
 }
+
 
 void AudioManager::StopMusic()
 {

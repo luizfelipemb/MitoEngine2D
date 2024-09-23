@@ -63,6 +63,7 @@ public:
     void ClearGameObjects();
     static void TagGameObject(int id, const std::string& tag);
     static bool GameObjectHasTag(int id, const std::string& tag);
+    static void ClearTags();
     //TODO:
     static GameObject* GetGameObjectByTag(const std::string& tag);
     //static void RemoveEntityTag(int entityid);

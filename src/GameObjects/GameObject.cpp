@@ -59,38 +59,35 @@ void Registry::DestroyGameObject(int id)
 void Registry::ClearGameObjects()
 {
     m_gameObjects.clear();
-    Logger::Log("Cleared GameObjects, new size:" + std::to_string(m_gameObjects.size()));
 }
 
 void Registry::TagGameObject(int id, const std::string& tag)
 {
     m_tagPerGameObjectId[id].insert(tag);
     m_gameObjectIdPerTag[tag].insert(id);
-    
-    std::cout << "Entity ID " << id << " tagged with '" << tag << "'.\n";
 }
 
 bool Registry::GameObjectHasTag(int id, const std::string& tag)
 {
-    std::cout << "Checking if entity ID " << id << " has tag '" << tag << "'...\n";
-
     // Check if the entity ID exists in m_tagPerGameObjectId
     auto entityIt = m_tagPerGameObjectId.find(id);
     if (entityIt == m_tagPerGameObjectId.end())
     {
-        std::cout << "Entity ID " << id << " not found in m_tagPerGameObjectId.\n";
         return false;
     }
 
     // Check if the tag exists in the entity's set of tags
     if (entityIt->second.find(tag) == entityIt->second.end())
     {
-        std::cout << "Tag '" << tag << "' not associated with entity ID " << id << ".\n";
         return false;
     }
-
-    std::cout << "Entity ID " << id << " is correctly associated with tag '" << tag << "'.\n";
     return true;
+}
+
+void Registry::ClearTags()
+{
+    m_gameObjectIdPerTag.clear();
+    m_tagPerGameObjectId.clear();
 }
 
 GameObject* Registry::GetGameObjectByTag(const std::string& tag)

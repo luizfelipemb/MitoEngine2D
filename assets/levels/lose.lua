@@ -1,4 +1,7 @@
-﻿Level = {
+﻿globals.bricks_destroyed = 0
+globals.level = 0
+
+Level = {
     entities = {
         {
             name = "background",

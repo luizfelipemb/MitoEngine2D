@@ -9,8 +9,6 @@ function start(gameobject)
     sprite = gameobject:get_component_sprite()
     mito_log("Start player function called on " .. gameobject.name)
     mito_log(tostring(gameobject:has_tag("player")))
-    
-    play_sound("test.ogg")
 end
 
 function update(gameobject, deltaTime)

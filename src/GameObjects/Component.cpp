@@ -186,6 +186,8 @@ void RigidBody2DComponent::Update(float deltaTime)
 {
     if (auto transform = m_owner->GetComponent<TransformComponent>())
     {
+        Velocity.x += Acceleration.x * deltaTime;
+        Velocity.y += Acceleration.y * deltaTime;
         transform->Position.x += Velocity.x * deltaTime;
         transform->Position.y += Velocity.y * deltaTime;
     }

@@ -115,14 +115,17 @@ class RigidBody2DComponent : public Component
 {
 public:
     explicit RigidBody2DComponent(GameObject* owner, 
-                                  std::optional<glm::vec2> velocity = std::nullopt) 
+                                  std::optional<glm::vec2> velocity = std::nullopt,
+                                  std::optional<glm::vec2> acceleration = std::nullopt) 
         : Component(owner), 
-          Velocity(velocity.value_or(glm::vec2(0.0, 0.0)))
+          Velocity(velocity.value_or(glm::vec2(0.0, 0.0))),
+          Acceleration(acceleration.value_or(glm::vec2(0.0, 0.0)))
     {
     }
 
     void Update(float deltaTime) override;
     glm::vec2 Velocity;
+    glm::vec2 Acceleration;
 };
 
 class ClickableComponent : public Component

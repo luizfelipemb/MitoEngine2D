@@ -24,7 +24,6 @@ class MouseButtonPressedEvent;
 Game::Game():
     m_registry(std::make_unique<Registry>())
 {
-    m_isRunning = false;
     Logger::Log("Game constructor called!");
 }
 
@@ -84,7 +83,7 @@ void Game::ProcessInput()
 void Game::Initialize()
 {
     m_luaScript.SettingsSetup();
-    MILLISECS_PER_FRAME = 1000 / WindowSettings::FPS;
+    m_millisecsPerFrame = 1000 / WindowSettings::FPS;
     AssetManager::Initialize();
     RendererManager::Initialize();
     m_isRunning = true;
@@ -113,6 +112,7 @@ void Game::Run()
         {
             m_canChangeLevel = false;
             m_registry->ClearGameObjects();
+            m_registry->ClearTags();
             m_luaScript.LoadLevel(m_nextLevelName);
             m_registry->Start();
         }
@@ -122,8 +122,8 @@ void Game::Run()
 void Game::Update()
 {
     // If we are too fast, waste some time until we reach the MILLISECS_PER_FRAME
-    int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - m_msPreviousFrame);
-    if (timeToWait > 0 && timeToWait <= MILLISECS_PER_FRAME)
+    int timeToWait = m_millisecsPerFrame - (SDL_GetTicks() - m_msPreviousFrame);
+    if (timeToWait > 0 && timeToWait <= m_millisecsPerFrame)
     {
         SDL_Delay(timeToWait);
     }

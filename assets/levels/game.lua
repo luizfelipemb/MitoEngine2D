@@ -1,4 +1,6 @@
-﻿Level = {
+﻿stop_music("menu_music.ogg")
+play_music("game_music.ogg",0.04)
+Level = {
     entities = {
         {
             name = "background",
@@ -19,7 +21,9 @@
         },
         {
             name = "GameManager",
-            tags = {"gamemanager"},
+            tags = {
+                "gamemanager"
+            },
             components = {
                 scripts = {
                     "gamemanager.lua"

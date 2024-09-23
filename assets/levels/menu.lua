@@ -1,3 +1,5 @@
+play_music("menu_music.ogg")
+--TODO: music player as component
 Level = {
     entities = {
         {

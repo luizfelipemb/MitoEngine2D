@@ -71,7 +71,6 @@ bool AssetManager::LoadTexture(SDL_Renderer* renderer, std::string fileName)
 
     if (texture != nullptr)
     {
-        std::cout << "Texture loaded successfully... ('" << fileName.c_str() << "')" << std::endl;
         m_textures[fileName] = texture;
         return true;
     }
