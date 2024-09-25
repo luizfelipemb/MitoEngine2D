@@ -11,9 +11,9 @@ Level = {
                 },
                 sprite = {
                     sprite_name = "",
-                    width = Window.width,
-                    height = Window.height,
-                    color = color.new(60,25,25)
+                    width = mito.window.width,
+                    height = mito.window.height,
+                    color = mito.color.new(60,25,25)
                 },
                 scripts = {
                 }
@@ -25,8 +25,8 @@ Level = {
                 transform = {
                     position =
                     {
-                        x = Window.width / 7,
-                        y = Window.height / 7
+                        x = mito.window.width / 7,
+                        y = mito.window.height / 7
                     }
                 },
                 text = {
@@ -44,15 +44,15 @@ Level = {
                 transform = {
                     position =
                     {
-                        x = Window.width / 2.5,
-                        y = Window.height / 3
+                        x = mito.window.width / 2.5,
+                        y = mito.window.height / 3
                     }
                 },
                 sprite = {
                     sprite_name = "",
                     width = 120,
                     height = 60,
-                    color = color.new(0,0,255)
+                    color = mito.color.new(0,0,255)
                 },
                 clickable = {
                 },
@@ -67,8 +67,8 @@ Level = {
                 transform = {
                     position =
                     {
-                        x = Window.width / 2.5,
-                        y = Window.height / 3
+                        x = mito.window.width / 2.5,
+                        y = mito.window.height / 3
                     }
                 },
                 text = {

@@ -1,5 +1,5 @@
-﻿stop_music("menu_music.ogg")
-play_music("game_music.ogg",0.04)
+﻿mito.audio.stop_music("menu_music.ogg")
+mito.audio.play_music("game_music.ogg",0.04)
 Level = {
     entities = {
         {
@@ -12,10 +12,10 @@ Level = {
                 },
                 sprite = {
                     sprite_name = "",
-                    width = Window.width,
-                    height = Window.height,
+                    width = mito.window.width,
+                    height = mito.window.height,
                     layer = 0,
-                    color = color.new(25,25,25)
+                    color = mito.color.new(25,25,25)
                 }
             }
         },
@@ -37,7 +37,7 @@ Level = {
             },
             components = {
                 transform = {
-                    position = { x = Window.width/2.5, y = 650 },
+                    position = { x = mito.window.width/2.5, y = 650 },
                     scale = 1,
                     rotation = 0.0,
                 },
@@ -67,7 +67,7 @@ Level = {
             name = "ball",
             components = {
                 transform = {
-                    position = { x = Window.width/2, y = 300 },
+                    position = { x = mito.window.width/2, y = 300 },
                     scale = 1,
                     rotation = 0.0,
                 },

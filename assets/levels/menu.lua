@@ -1,4 +1,4 @@
-play_music("menu_music.ogg")
+mito.audio.play_music("menu_music.ogg")
 --TODO: music player as component
 Level = {
     entities = {
@@ -6,16 +6,16 @@ Level = {
             name = "background",
             components = {
                 transform = {
-                    position = vec2.new(0, 0),
+                    position = mito.vec2.new(0, 0),
                     scale = 1,
                     rotation = 0.0,
                 },
                 sprite = {
                     sprite_name = "",
-                    width = Window.width,
-                    height = Window.height,
+                    width = mito.window.width,
+                    height = mito.window.height,
                     layer = 0,
-                    color = color.new(25, 25, 25)
+                    color = mito.color.new(25, 25, 25)
                 }
             }
         },
@@ -25,8 +25,8 @@ Level = {
                 transform = {
                     position =
                     {
-                        x = Window.width / 7,
-                        y = Window.height / 7
+                        x = mito.window.width / 7,
+                        y = mito.window.height / 7
                     }
                 },
                 text = {
@@ -44,15 +44,15 @@ Level = {
                 transform = {
                     position =
                     {
-                        x = Window.width / 2.5,
-                        y = Window.height / 3
+                        x = mito.window.width / 2.5,
+                        y = mito.window.height / 3
                     }
                 },
                 sprite = {
                     sprite_name = "",
                     width = 120,
                     height = 60,
-                    color = color.new(0, 0, 255)
+                    color = mito.color.new(0, 0, 255)
                 },
                 clickable = {
                 },
@@ -67,8 +67,8 @@ Level = {
                 transform = {
                     position =
                     {
-                        x = Window.width / 2.5,
-                        y = Window.height / 3
+                        x = mito.window.width / 2.5,
+                        y = mito.window.height / 3
                     }
                 },
                 text = {

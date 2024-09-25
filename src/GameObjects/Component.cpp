@@ -285,61 +285,69 @@ void ScriptComponent::OnMouseInteractedEvent(MouseInteractedEvent& event)
 
 void ScriptComponent::AddScript(sol::environment& luaEnv)
 {
-    if (luaEnv["on_enable"] != sol::lua_nil)
+    if (luaEnv["mito"]["on_enable"] != sol::lua_nil)
     {
-        luaEnv["on_enable"](m_owner);
+        luaEnv["mito"]["on_enable"](m_owner);
     }
-    if (luaEnv["start"] != sol::lua_nil)
+    if (luaEnv["mito"]["start"] != sol::lua_nil)
     {
-        StartFunc.push_back(luaEnv["start"]);
+        StartFunc.push_back(luaEnv["mito"]["start"]);
     }
-    if (luaEnv["update"] != sol::lua_nil)
+    if (luaEnv["mito"]["update"] != sol::lua_nil)
     {
-        UpdateFunc.push_back(luaEnv["update"]);
+        UpdateFunc.push_back(luaEnv["mito"]["update"]);
     }
-    if (luaEnv["on_key_pressed"] != sol::lua_nil)
+    if (luaEnv["mito"]["on_key_pressed"] != sol::lua_nil)
     {
         GlobalEventBus::SubscribeToEvent<KeyPressedEvent>
             (this, &ScriptComponent::OnKeyPressedEvent);
     }
-    if (luaEnv["on_key_released"] != sol::lua_nil)
+    if (luaEnv["mito"]["on_key_released"] != sol::lua_nil)
     {
         GlobalEventBus::SubscribeToEvent<KeyReleasedEvent>
             (this, &ScriptComponent::OnKeyReleasedEvent);
     }
-    if (luaEnv["on_mouse_pressed"] != sol::lua_nil)
+    if (luaEnv["mito"]["on_mouse_pressed"] != sol::lua_nil)
     {
         GlobalEventBus::SubscribeToEvent<MouseButtonPressedEvent>
             (this, &ScriptComponent::OnMousePressedEvent);
     }
-    if (luaEnv["on_mouse_interacted"] != sol::lua_nil)
+    if (luaEnv["mito"]["on_mouse_interacted"] != sol::lua_nil)
     {
         m_owner->LocalEventBus.SubscribeToEvent<MouseInteractedEvent>
             (this, &ScriptComponent::OnMouseInteractedEvent);
     }
-    if (luaEnv["on_collision_enter"] != sol::lua_nil)
+    if (luaEnv["mito"]["on_collision_enter"] != sol::lua_nil)
     {
         m_owner->LocalEventBus.SubscribeToEvent<CollisionEnterEvent>
         (this, &ScriptComponent::OnCollisionEnter);
     }
-    if (luaEnv["on_collision_stay"] != sol::lua_nil)
+    if (luaEnv["mito"]["on_collision_stay"] != sol::lua_nil)
     {
         m_owner->LocalEventBus.SubscribeToEvent<CollisionStayEvent>
         (this, &ScriptComponent::OnCollisionStay);
     }
-    if (luaEnv["on_collision_exit"] != sol::lua_nil)
+    if (luaEnv["mito"]["on_collision_exit"] != sol::lua_nil)
     {
         m_owner->LocalEventBus.SubscribeToEvent<CollisionExitEvent>
         (this, &ScriptComponent::OnCollisionExit);
     }
-
-    // Store functions in a map for retrieval
-    for (auto& pair : luaEnv)
+    
+    for (const auto& pair : luaEnv)
     {
         std::string funcName = pair.first.as<std::string>();
         if (luaEnv[funcName].is<sol::function>())
-        {
+        { 
             scriptFunctions[funcName] = luaEnv[funcName];
+        }
+    }
+    auto mitoTable = luaEnv["mito"].get<sol::table>();
+    for (const auto& pair : mitoTable)
+    {
+        std::string funcName = pair.first.as<std::string>();
+        if (mitoTable[funcName].is<sol::function>())
+        { 
+            scriptFunctions[funcName] = mitoTable[funcName];
         }
     }
 }

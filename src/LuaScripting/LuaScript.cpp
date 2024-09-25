@@ -156,20 +156,23 @@ void LuaScript::LoadLuaBindings()
 {
     lua.open_libraries();
     lua["globals"] = lua.create_table();
-    lua.new_usertype<WindowSettings>(
-        "Window",
+    lua["mito"] = lua.create_table();
+    auto mitoTable = lua["mito"].get<sol::table>();
+    
+    mitoTable.new_usertype<WindowSettings>(
+        "window",
         "width", sol::property(&WindowSettings::GetWidth),
         "height", sol::property(&WindowSettings::GetHeight)
     );
     LoadLuaKeys();
-    lua.new_usertype<Color>(
+    mitoTable.new_usertype<Color>(
         "color",
         sol::constructors<Color(), Color(std::uint8_t, std::uint8_t, std::uint8_t)>(),
         "r", &Color::Red,
         "g", &Color::Green,
         "b", &Color::Blue
     );
-    lua.new_usertype<glm::vec2>(
+    mitoTable.new_usertype<glm::vec2>(
         "vec2",
         sol::constructors<glm::vec2(), glm::vec2(float, float)>(),
         "x", &glm::vec2::x,
@@ -229,26 +232,29 @@ void LuaScript::LoadLuaBindings()
         "get_component_script", &GameObject::GetComponent<ScriptComponent>
     );
     //audios
-    lua.set_function("load_sound", AudioManager::LoadSound);
-    lua.set_function("play_sound", AudioManager::PlaySound);
-    lua.set_function("stop_sound", AudioManager::StopSound);
-    lua.set_function("load_music", AudioManager::LoadMusic);
-    lua.set_function("play_music", AudioManager::PlayMusic);
-    lua.set_function("stop_music", AudioManager::StopMusic);
-    lua.set_function("set_music_volume", AudioManager::SetMusicVolume);
-    lua.set_function("set_sound_volume", AudioManager::SetSoundVolume);
-    lua.set_function("get_music_volume", AudioManager::GetMusicVolume);
-    lua.set_function("get_sound_volume", AudioManager::GetGlobalSoundVolume);
-    
-    lua.set_function("create", CreateGameObject);
-    lua.set_function("destroy", Destroy);
-    lua.set_function("find_by_tag",FindGameObjectByTag);
-    lua.set_function("mito_log", LuaPrint);
-    lua.set_function("open_level", [this](const std::string& name)
+    lua["mito"]["audio"] = lua.create_table_with(
+        "load_sound", AudioManager::LoadSound,
+        "play_sound", AudioManager::PlaySound,
+        "stop_sound", AudioManager::StopSound,
+        "load_music", AudioManager::LoadMusic,
+        "play_music", AudioManager::PlayMusic,
+        "stop_music", AudioManager::StopMusic,
+        "set_music_volume", AudioManager::SetMusicVolume,
+        "set_sound_volume", AudioManager::SetSoundVolume,
+        "get_music_volume", AudioManager::GetMusicVolume,
+        "get_sound_volume", AudioManager::GetGlobalSoundVolume
+    );
+    lua["mito"]["gameobject"] = lua.create_table();
+    lua["mito"]["gameobject"]["create"] = CreateGameObject;
+    lua["mito"]["gameobject"]["destroy"] = Destroy;
+    lua["mito"]["gameobject"]["find_by_tag"] = FindGameObjectByTag;
+
+    lua["mito"]["log"] = LuaPrint;
+    mitoTable.set_function("open_level", [this](const std::string& name)
     {
         this->EmitOpenLevel(name);
     });
-    lua.set_function("spawn_prefab", [this](const std::string& name)
+    mitoTable.set_function("spawn_prefab", [this](const std::string& name)
     {
         return this->SpawnPrefab(name);
     });
@@ -256,13 +262,15 @@ void LuaScript::LoadLuaBindings()
 
 void LuaScript::LoadLuaKeys()
 {
-    lua.new_enum("mousecode",
+    auto mitoTable = lua["mito"].get<sol::table>();
+    
+    mitoTable.new_enum("mousecode",
         "right", SDL_BUTTON_RIGHT,
         "left", SDL_BUTTON_LEFT,
         "middle", SDL_BUTTON_MIDDLE
     );
     
-    lua.new_enum("keycode",
+    mitoTable.new_enum("keycode",
         // Letters
         "a", SDLK_a,
         "b", SDLK_b,

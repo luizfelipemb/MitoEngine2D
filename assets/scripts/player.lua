@@ -1,54 +1,54 @@
 ﻿local rigidbody
 local transform
 local sprite
-local velocity = 300
+local velocity = 100
 
-function start(gameobject)
+function mito.start(gameobject)
     rigidbody = gameobject:get_component_rigidbody()
     transform = gameobject:get_component_transform()
     sprite = gameobject:get_component_sprite()
-    mito_log("Start player function called on " .. gameobject.name)
-    mito_log(tostring(gameobject:has_tag("player")))
+    mito.log("Start player function called on " .. gameobject.name)
+    mito.log(tostring(gameobject:has_tag("player")))
 end
 
-function update(gameobject, deltaTime)
+function mito.update(gameobject, deltaTime)
     if transform.position.x < 0 then
         transform.position.x = 0
-    elseif (transform.position.x > Window.width - sprite.width) then
-        transform.position.x = Window.width - sprite.width
+    elseif (transform.position.x > mito.window.width - sprite.width) then
+        transform.position.x = mito.window.width - sprite.width
     end
 end
 
-function on_mouse_pressed(gameobject, key)
+function mito.on_mouse_pressed(gameobject, key)
     
 end
 
-function on_mouse_interacted(gameobject)
-    mito_log("on_mouse_interacted called")
+function mito.on_mouse_interacted(gameobject)
+    mito.log("on_mouse_interacted called")
 end
 
-function on_key_pressed(gameobject, key)
-    if key == keycode.a then
+function mito.on_key_pressed(gameobject, key)
+    if key == mito.keycode.a then
         rigidbody.velocity.x = rigidbody.velocity.x - velocity
     end
-    if key == keycode.d then
+    if key == mito.keycode.d then
         rigidbody.velocity.x = rigidbody.velocity.x + velocity
     end
-    mito_log(gameobject.name .. " with key " .. key)
+    mito.log(gameobject.name .. " with key " .. key)
 end
 
-function on_key_released(gameobject, key)
-    if key == keycode.a then
+function mito.on_key_released(gameobject, key)
+    if key == mito.keycode.a then
         rigidbody.velocity.x = rigidbody.velocity.x + velocity
     end
-    if key == keycode.d then
+    if key == mito.keycode.d then
         rigidbody.velocity.x = rigidbody.velocity.x - velocity
     end
-    mito_log(gameobject.name .. " with key released " .. key)
+    mito.log(gameobject.name .. " with key released " .. key)
 end
 
-function on_collision_enter(gameobject, other)
-    mito_log(gameobject.name .. " collided with " .. other.name)
+function mito.on_collision_enter(gameobject, other)
+    mito.log(gameobject.name .. " collided with " .. other.name)
     local startFunc = other:get_component_script():get_function("test")
     startFunc()
 end
