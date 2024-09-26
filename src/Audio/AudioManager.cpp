@@ -67,7 +67,7 @@ bool AudioManager::LoadSound(const std::string& name)
         return true;
     }
 
-    const std::string path = "assets/audios/" + name;
+    const std::string path = "assets/sounds/" + name;
     Mix_Chunk* sound = Mix_LoadWAV(path.c_str());
 
     if (!sound)
@@ -87,7 +87,7 @@ void AudioManager::PlayMusic(const std::string& id, std::optional<float> volume,
     {
         Logger::Wrn("Music not found: " + id + ". Attempting to load it.");
 
-        std::string path = "assets/audios/" + id;
+        std::string path = "assets/sounds/" + id;
         if (!LoadMusic(id, path))
         {
             Logger::Wrn("Failed to load music: " + id);
