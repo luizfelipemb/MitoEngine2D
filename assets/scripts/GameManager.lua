@@ -4,6 +4,7 @@ local localBricksDestroyed = 0
 local totalBricks = rows * columns
 
 function mito.start()
+    mito.spawn_prefab("explosionFX.lua")
     local totalLength = columns * 64
     for i = 1, columns do
         for j = 1, rows do

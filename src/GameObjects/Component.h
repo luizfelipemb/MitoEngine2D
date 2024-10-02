@@ -68,9 +68,23 @@ public:
     void Render() override;
     int Width;
     int Height;
+    glm::vec2 SourceVec = glm::vec2(0,0);
     std::optional<Color> color;
 private:
     std::string m_sprite;
+};
+
+class AnimationComponent : public Component
+{
+public:
+    AnimationComponent(GameObject* owner, std::optional<int> numFrames, std::optional<int> frameSpeedRate, std::optional<bool> isLoop);
+    void Update(float deltaTime) override;
+
+    int currentFrame = 1;
+    int numFrames = 13;
+    int frameSpeedRate = 20;
+    bool isLoop = false;
+    int startTime = SDL_GetTicks();
 };
 
 class TextComponent : public RenderableComponent

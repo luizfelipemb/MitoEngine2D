@@ -91,11 +91,17 @@ void Game::Initialize()
     
     m_luaScript.LoadLuaBindings();
     m_luaScript.LoadLevel("main.lua");
+    //auto& x = m_registry->CreateGameObject();
+    //x->AddComponent<TransformComponent>(glm::vec2(0,0));
+    //x->AddComponent<SpriteComponent>("assets/images/explosion.png",64,64);
+    //x->AddComponent<AnimationComponent>(13,20,true);
     m_registry->Start();
+   
 }
 
 void Game::SwitchLevel(OpenLevelEvent& levelEvent)
 {
+    Logger::Log("level changed to: "+levelEvent.LevelName);
     m_canChangeLevel = true;
     m_nextLevelName = levelEvent.LevelName;
 }

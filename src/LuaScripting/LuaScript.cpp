@@ -55,7 +55,16 @@ void AddSpriteComponent(GameObject* gameObject,
         layer ? std::optional<int>(*layer) : std::nullopt,
         color ? std::optional<Color>(*color) : std::nullopt);
 }
-
+void AddAnimationComponent(GameObject* gameObject,
+    sol::optional<int> frameCount,
+    sol::optional<int> frameDuration,
+    sol::optional<bool> loop)
+{
+    gameObject->AddComponent<AnimationComponent>(
+        frameCount ? std::optional<int>(*frameCount) : std::nullopt,
+        frameDuration? std::optional<int>(*frameDuration) : std::nullopt,
+        loop ? std::optional<bool>(*loop) : std::nullopt);
+}
 void AddTextComponent(GameObject* gameObject,
                       std::string& text,
                       std::string& font,
@@ -219,6 +228,7 @@ void LuaScript::LoadLuaBindings()
 
         "add_component_transform", &AddTransformComponent,
         "add_component_sprite", &AddSpriteComponent,
+        "add_component_animation", &AddAnimationComponent,
         "add_component_text", &AddTextComponent,
         "add_component_boxcollider", &AddBoxCollider2DComponent,
         "add_component_clickable", &AddClickableComponent,
@@ -230,6 +240,7 @@ void LuaScript::LoadLuaBindings()
 
         "get_component_transform", &GameObject::GetComponent<TransformComponent>,
         "get_component_sprite", &GameObject::GetComponent<SpriteComponent>,
+        "get_component_animation", &GameObject::GetComponent<AnimationComponent>,
         "get_component_text", &GameObject::GetComponent<TextComponent>,
         "get_component_boxcollider", &GameObject::GetComponent<BoxCollider2DComponent>,
         "get_component_clickable", &GameObject::GetComponent<ClickableComponent>,
@@ -482,7 +493,17 @@ GameObject* LuaScript::SpawnGameObject(sol::table entity)
                 entity["components"]["sprite"]["color"]
             );
         }
-
+        // Animation
+        sol::optional<sol::table> animation = entity["components"]["animation"];
+        if (animation != sol::nullopt)
+        {
+            AddAnimationComponent(
+                newGameObject,
+                entity["components"]["animation"]["frame_count"],
+                entity["components"]["animation"]["frame_duration"],
+                entity["components"]["animation"]["loop"]
+            );
+        }
         // BoxCollider
         sol::optional<sol::table> collider = entity["components"]["boxcollider"];
         if (collider != sol::nullopt)

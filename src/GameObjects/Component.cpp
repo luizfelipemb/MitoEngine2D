@@ -10,14 +10,30 @@ void TransformComponent::Update(float deltaTime)
    
 }
 
+AnimationComponent::AnimationComponent(GameObject* owner, std::optional<int> numFrames,
+    std::optional<int> frameSpeedRate, std::optional<bool> isLoop)
+        : Component(owner),
+        numFrames(numFrames.value_or(1)),
+        frameSpeedRate(frameSpeedRate.value_or(1)),
+        isLoop(isLoop.value_or(false))
+{
+}
+
+void AnimationComponent::Update(float deltaTime)
+{
+    auto sprite = m_owner->GetComponent<SpriteComponent>();
+    currentFrame = ((SDL_GetTicks() - startTime) * frameSpeedRate / 1000) % numFrames;
+    sprite->SourceVec.x = currentFrame * sprite->Width;
+}
+
 TextComponent::TextComponent(GameObject* owner,
-                            std::string text,
-                            std::string font,
-                            std::optional<int> layer,
-                            std::optional<int> fontSize,
-                            std::optional<std::uint8_t> red,
-                            std::optional<std::uint8_t> green,
-                            std::optional<std::uint8_t> blue)
+                             std::string text,
+                             std::string font,
+                             std::optional<int> layer,
+                             std::optional<int> fontSize,
+                             std::optional<std::uint8_t> red,
+                             std::optional<std::uint8_t> green,
+                             std::optional<std::uint8_t> blue)
     : RenderableComponent(owner,layer),
     Text(text),
     m_font(font),
@@ -85,14 +101,16 @@ void SpriteComponent::Render()
         else
         {
             AssetManager::RenderImage(
-                                RendererManager::Renderer,
-                                m_sprite,
-                                transform->Position.x,
-                                transform->Position.y,
-                                Width,
-                                Height,
-                                transform->Scale,
-                                color);
+                                    RendererManager::Renderer,
+                                    m_sprite,
+                                    transform->Position.x,
+                                    transform->Position.y,
+                                    Width,
+                                    Height,
+                                    transform->Scale,
+                                    color,
+                            SourceVec.x,
+                            SourceVec.y);
         }
     }
 }

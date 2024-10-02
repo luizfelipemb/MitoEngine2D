@@ -81,40 +81,58 @@ bool AssetManager::LoadTexture(SDL_Renderer* renderer, std::string fileName)
 }
 
 void AssetManager::RenderImage(SDL_Renderer* renderer, std::string filename, int x, int y, int w, int h, double scale,
-                               std::optional<Color> color)
+                               std::optional<Color> color, std::optional<int> sourceX, std::optional<int> sourceY)
 {
+    // Load texture if not already loaded
     if (m_textures.find(filename) == m_textures.end())
     {
         LoadTexture(renderer, filename);
     }
 
+    // Apply color modulation if a color is provided
     if (color.has_value())
     {
         SDL_SetTextureColorMod(m_textures[filename], color->Red, color->Green, color->Blue);
     }
+
+    // Default source rectangle to the whole texture if sourceX or sourceY isn't provided
+    int srcX = sourceX.value_or(0);
+    int srcY = sourceY.value_or(0);
+    
+    SDL_Rect sourceRect;
+    sourceRect.x = srcX;
+    sourceRect.y = srcY;
+    sourceRect.w = w; // Use the width passed in the parameters for the source width
+    sourceRect.h = h; // Use the height passed in the parameters for the source height
+
+    // If no width or height is provided, query the texture's full size
     if (w == 0 && h == 0)
     {
         SDL_QueryTexture(m_textures[filename], nullptr, nullptr, &w, &h);
     }
 
-
+    // Create the destination rectangle for rendering
     SDL_Rect destRect;
     destRect.x = x;
     destRect.y = y;
     destRect.w = w * scale;
     destRect.h = h * scale;
+
     SDL_RendererFlip flip = SDL_FLIP_NONE;
 
-    if (SDL_RenderCopyEx(renderer, m_textures[filename], nullptr, &destRect, 0, nullptr, flip) != 0)
+    // Render the texture using the source and destination rectangles
+    if (SDL_RenderCopyEx(renderer, m_textures[filename], &sourceRect, &destRect, 0, nullptr, flip) != 0)
     {
         std::cout << SDL_GetError() << std::endl;
     }
 
+    // Reset texture color modulation if applied
     if (color.has_value())
     {
         SDL_SetTextureColorMod(m_textures[filename], 255, 255, 255);
     }
 }
+
 
 int AssetManager::GetWidthOfSprite(SDL_Renderer* renderer, std::string filename)
 {

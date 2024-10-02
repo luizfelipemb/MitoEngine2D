@@ -111,7 +111,7 @@ void Registry::Start()
             script->CallStart();
         }
     }
-    
+    GlobalEventBus::EmitEvent<GameObjectCreatedEvent>();
 }
 
 void Registry::Update(float deltaTime)
