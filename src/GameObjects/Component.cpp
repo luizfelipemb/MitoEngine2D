@@ -67,12 +67,13 @@ void TextComponent::Render()
 
 SpriteComponent::SpriteComponent(GameObject* owner, std::string sprite,
                                  std::optional<int> width, std::optional<int> height, std::optional<int> layer,
-                                 std::optional<Color> color)
+                                 std::optional<Color> color, std::optional<glm::vec4> sourceVec)
     :   RenderableComponent(owner,layer),
         Width(width.value_or(0)),
         Height(height.value_or(0)),
           m_sprite(sprite),
-          color(color)
+          color(color),
+          SourceVec(sourceVec.value_or(glm::vec4(0,0,Width,Height)))
 {
     if(Width==0)
     {
@@ -103,14 +104,10 @@ void SpriteComponent::Render()
             AssetManager::RenderImage(
                                     RendererManager::Renderer,
                                     m_sprite,
-                                    transform->Position.x,
-                                    transform->Position.y,
-                                    Width,
-                                    Height,
+                                    glm::vec4(transform->Position.x,transform->Position.y,Width,Height),
                                     transform->Scale,
                                     color,
-                            SourceVec.x,
-                            SourceVec.y);
+                            SourceVec);
         }
     }
 }

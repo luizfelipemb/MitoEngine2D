@@ -4,6 +4,7 @@
 
 #include "../Logger/Logger.h"
 #include <SDL_image.h>
+
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_impl_sdl2.h"
 #include "../imgui/imgui_impl_sdlrenderer2.h"
@@ -80,8 +81,8 @@ bool AssetManager::LoadTexture(SDL_Renderer* renderer, std::string fileName)
     return false;
 }
 
-void AssetManager::RenderImage(SDL_Renderer* renderer, std::string filename, int x, int y, int w, int h, double scale,
-                               std::optional<Color> color, std::optional<int> sourceX, std::optional<int> sourceY)
+void AssetManager::RenderImage(SDL_Renderer* renderer, std::string filename, glm::vec4 destRect, double scale,
+                               std::optional<Color> color, std::optional<glm::vec4> sourceRect)
 {
     // Load texture if not already loaded
     if (m_textures.find(filename) == m_textures.end())
@@ -95,33 +96,33 @@ void AssetManager::RenderImage(SDL_Renderer* renderer, std::string filename, int
         SDL_SetTextureColorMod(m_textures[filename], color->Red, color->Green, color->Blue);
     }
 
-    // Default source rectangle to the whole texture if sourceX or sourceY isn't provided
-    int srcX = sourceX.value_or(0);
-    int srcY = sourceY.value_or(0);
-    
-    SDL_Rect sourceRect;
-    sourceRect.x = srcX;
-    sourceRect.y = srcY;
-    sourceRect.w = w; // Use the width passed in the parameters for the source width
-    sourceRect.h = h; // Use the height passed in the parameters for the source height
-
-    // If no width or height is provided, query the texture's full size
-    if (w == 0 && h == 0)
+    // Set the source rectangle, defaulting to the full texture if not provided
+    SDL_Rect src;
+    if (sourceRect.has_value())
     {
-        SDL_QueryTexture(m_textures[filename], nullptr, nullptr, &w, &h);
+        src.x = sourceRect->x;
+        src.y = sourceRect->y;
+        src.w = sourceRect->z;
+        src.h = sourceRect->w;
+    }
+    else
+    {
+        SDL_QueryTexture(m_textures[filename], nullptr, nullptr, &src.w, &src.h);
+        src.x = 0;
+        src.y = 0;
     }
 
-    // Create the destination rectangle for rendering
-    SDL_Rect destRect;
-    destRect.x = x;
-    destRect.y = y;
-    destRect.w = w * scale;
-    destRect.h = h * scale;
+    // Create the destination rectangle using the passed glm::vec4 and apply the scaling
+    SDL_Rect dest;
+    dest.x = destRect.x;
+    dest.y = destRect.y;
+    dest.w = destRect.z * scale;
+    dest.h = destRect.w * scale;
 
     SDL_RendererFlip flip = SDL_FLIP_NONE;
 
-    // Render the texture using the source and destination rectangles
-    if (SDL_RenderCopyEx(renderer, m_textures[filename], &sourceRect, &destRect, 0, nullptr, flip) != 0)
+    // Render the texture
+    if (SDL_RenderCopyEx(renderer, m_textures[filename], &src, &dest, 0, nullptr, flip) != 0)
     {
         std::cout << SDL_GetError() << std::endl;
     }
@@ -132,6 +133,7 @@ void AssetManager::RenderImage(SDL_Renderer* renderer, std::string filename, int
         SDL_SetTextureColorMod(m_textures[filename], 255, 255, 255);
     }
 }
+
 
 
 int AssetManager::GetWidthOfSprite(SDL_Renderer* renderer, std::string filename)

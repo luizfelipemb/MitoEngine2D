@@ -80,7 +80,8 @@ Level = {
                     sprite_name = "assets/images/ball.png",
                     width = 16,
                     height = 16,
-                    layer = 2
+                    layer = 2,
+                    source = mito.vec4.new(0,0,32,32)
                 },
                 scripts = {
                     "ball.lua"

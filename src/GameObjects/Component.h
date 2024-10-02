@@ -64,11 +64,12 @@ public:
                     std::optional<int> width = std::nullopt, 
                     std::optional<int> height = std::nullopt,
                     std::optional<int> layer = std::nullopt,
-                    std::optional<Color> color = std::nullopt);
+                    std::optional<Color> color = std::nullopt,
+                    std::optional<glm::vec4> sourceVec = std::nullopt);
     void Render() override;
     int Width;
     int Height;
-    glm::vec2 SourceVec = glm::vec2(0,0);
+    glm::vec4 SourceVec;
     std::optional<Color> color;
 private:
     std::string m_sprite;

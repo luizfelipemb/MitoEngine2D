@@ -6,6 +6,7 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <cstdint>
+#include <vec4.hpp>
 
 struct Color
 {
@@ -26,8 +27,8 @@ class AssetManager
         static void ClearAssets();
 
         static bool LoadTexture(SDL_Renderer* renderer, std::string fileName);
-        static void RenderImage(SDL_Renderer* renderer, std::string filename, int x, int y, int w, int h, double scale,
-            std::optional<Color> color,std::optional<int> sourceX = std::nullopt, std::optional<int> sourceY = std::nullopt);
+        static void RenderImage(SDL_Renderer* renderer, std::string filename, glm::vec4 destRect, double scale,
+                           std::optional<Color> color = std::nullopt, std::optional<glm::vec4> sourceRect = std::nullopt);
         static int GetWidthOfSprite(SDL_Renderer* renderer, std::string filename);
         static int GetHeightOfSprite(SDL_Renderer* renderer, std::string filename);
         static void RenderText(SDL_Renderer* renderer, const std::string& text, const std::string& fontFile, int fontSize, int x, int y, double scale = 1,

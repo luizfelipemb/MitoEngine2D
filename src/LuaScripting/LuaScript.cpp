@@ -4,6 +4,7 @@
 #include "../Events/OpenLevelEvent.h"
 #include "../Logger/Logger.h"
 #include "../GameObjects/GameObject.h"
+#include <vec4.hpp>
 
 void LuaPrint(const std::string& message)
 {
@@ -46,14 +47,16 @@ void AddSpriteComponent(GameObject* gameObject,
                         sol::optional<int> width,
                         sol::optional<int> height,
                         sol::optional<int> layer,
-                        sol::optional<Color> color)
+                        sol::optional<Color> color,
+                        sol::optional<glm::vec4> sourceVec)
 {
     gameObject->AddComponent<SpriteComponent>(
         sprite,
-        width ? std::optional<int>(*width) : std::nullopt,
-        height ? std::optional<int>(*height) : std::nullopt,
-        layer ? std::optional<int>(*layer) : std::nullopt,
-        color ? std::optional<Color>(*color) : std::nullopt);
+        width ? std::optional(*width) : std::nullopt,
+        height ? std::optional(*height) : std::nullopt,
+        layer ? std::optional(*layer) : std::nullopt,
+        color ? std::optional(*color) : std::nullopt,
+        sourceVec ? std::optional(*sourceVec) : std::nullopt);
 }
 void AddAnimationComponent(GameObject* gameObject,
     sol::optional<int> frameCount,
@@ -186,6 +189,14 @@ void LuaScript::LoadLuaBindings()
         sol::constructors<glm::vec2(), glm::vec2(float, float)>(),
         "x", &glm::vec2::x,
         "y", &glm::vec2::y
+    );
+    mitoTable.new_usertype<glm::vec4>(
+        "vec4",
+        sol::constructors<glm::vec4(), glm::vec4(float, float, float, float)>(),
+        "x", &glm::vec4::x,
+        "y", &glm::vec4::y,
+        "w", &glm::vec4::z,
+        "h", &glm::vec4::w
     );
     mitoTable.new_usertype<TransformComponent>(
         "transform_component",
@@ -490,7 +501,8 @@ GameObject* LuaScript::SpawnGameObject(sol::table entity)
                 entity["components"]["sprite"]["width"],
                 entity["components"]["sprite"]["height"],
                 entity["components"]["sprite"]["layer"],
-                entity["components"]["sprite"]["color"]
+                entity["components"]["sprite"]["color"],
+                entity["components"]["sprite"]["source"]
             );
         }
         // Animation
