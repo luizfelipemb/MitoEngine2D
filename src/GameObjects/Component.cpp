@@ -22,7 +22,23 @@ AnimationComponent::AnimationComponent(GameObject* owner, std::optional<int> num
 void AnimationComponent::Update(float deltaTime)
 {
     auto sprite = m_owner->GetComponent<SpriteComponent>();
-    currentFrame = ((SDL_GetTicks() - startTime) * frameSpeedRate / 1000) % numFrames;
+    
+    int elapsedTime = SDL_GetTicks() - startTime;
+    int newFrame = (elapsedTime * frameSpeedRate / 1000);
+
+    if (isLoop)
+    {
+        currentFrame = newFrame % numFrames;
+    }
+    else
+    {
+        currentFrame = (newFrame >= numFrames) ? numFrames - 1 : newFrame;
+        if (newFrame >= numFrames && autoDestroy)
+        {
+            Registry::DestroyGameObject(m_owner->GetId());
+            return;
+        }
+    }
     sprite->SourceVec.x = currentFrame * sprite->Width;
 }
 

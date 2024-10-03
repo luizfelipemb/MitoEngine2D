@@ -14,7 +14,7 @@
         animation = { 
             frame_count = 13,
             frame_duration = 20,
-            loop = true
+            loop = false
         }
     }
 }

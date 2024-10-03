@@ -85,6 +85,7 @@ public:
     int numFrames = 13;
     int frameSpeedRate = 20;
     bool isLoop = false;
+    bool autoDestroy = true;
     int startTime = SDL_GetTicks();
 };
 
