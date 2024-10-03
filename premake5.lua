@@ -36,7 +36,8 @@ project "MitoEngine2D"
 
     filter "system:windows"
         system "Windows"
-
+		buildoptions { "/bigobj" }
+		
         includedirs
         { 
             "libs/SDL2/include",

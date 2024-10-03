@@ -61,13 +61,16 @@ void AddSpriteComponent(GameObject* gameObject,
 void AddAnimationComponent(GameObject* gameObject,
     sol::optional<int> frameCount,
     sol::optional<int> frameDuration,
-    sol::optional<bool> loop)
+    sol::optional<bool> loop,
+    sol::optional<bool> autoDestroy)
 {
     gameObject->AddComponent<AnimationComponent>(
-        frameCount ? std::optional<int>(*frameCount) : std::nullopt,
-        frameDuration? std::optional<int>(*frameDuration) : std::nullopt,
-        loop ? std::optional<bool>(*loop) : std::nullopt);
+        frameCount ? std::optional(*frameCount) : std::nullopt,
+        frameDuration? std::optional(*frameDuration) : std::nullopt,
+        loop ? std::optional(*loop) : std::nullopt,
+        autoDestroy ? std::optional(*autoDestroy) : std::nullopt);
 }
+
 void AddTextComponent(GameObject* gameObject,
                       std::string& text,
                       std::string& font,
@@ -217,7 +220,16 @@ void LuaScript::LoadLuaBindings()
         "height", &SpriteComponent::Height,
         "color", &SpriteComponent::color
     );
-
+    mitoTable.new_usertype<AnimationComponent>(
+            "animation_component",
+            "play", &AnimationComponent::Play,
+            "is_playing", &AnimationComponent::IsPlaying,
+            "current_frame", &AnimationComponent::GetCurrentFrame,
+            "loop_count", &AnimationComponent::GetLoopCount,
+            "pause", &AnimationComponent::Pause,
+            "stop", &AnimationComponent::Stop,
+            "set_frame", &AnimationComponent::SetFrame
+    );
     mitoTable.new_usertype<TextComponent>(
         "text_component",
         "text", &TextComponent::Text,
@@ -513,7 +525,8 @@ GameObject* LuaScript::SpawnGameObject(sol::table entity)
                 newGameObject,
                 entity["components"]["animation"]["frame_count"],
                 entity["components"]["animation"]["frame_duration"],
-                entity["components"]["animation"]["loop"]
+                entity["components"]["animation"]["loop"],
+                entity["components"]["animation"]["auto_destroy"]
             );
         }
         // BoxCollider

@@ -78,15 +78,32 @@ private:
 class AnimationComponent : public Component
 {
 public:
-    AnimationComponent(GameObject* owner, std::optional<int> numFrames, std::optional<int> frameSpeedRate, std::optional<bool> isLoop);
+    AnimationComponent(GameObject* owner, std::optional<int> numFrames = 13, std::optional<int> frameSpeedRate = 20, 
+                       std::optional<bool> isLoop = false, std::optional<bool> autoDestroy = true);
+
     void Update(float deltaTime) override;
 
-    int currentFrame = 1;
+    void Play();
+    void Pause();
+    void Stop();
+    void Restart();
+    void SetFrame(int frame);
+
+    bool IsPlaying() const { return isPlaying; }
+    int GetCurrentFrame() const { return currentFrame; }
+    int GetLoopCount() const { return loopCount; }
+
+private:
+    int currentFrame = 0;
     int numFrames = 13;
     int frameSpeedRate = 20;
     bool isLoop = false;
-    bool autoDestroy = true;
+    bool autoDestroy = false;
+    bool isPlaying = true;
     int startTime = SDL_GetTicks();
+    int loopCount = 0;
+
+    void HandleAnimationEnd();
 };
 
 class TextComponent : public RenderableComponent

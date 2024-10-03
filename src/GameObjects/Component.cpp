@@ -10,17 +10,66 @@ void TransformComponent::Update(float deltaTime)
    
 }
 
-AnimationComponent::AnimationComponent(GameObject* owner, std::optional<int> numFrames,
-    std::optional<int> frameSpeedRate, std::optional<bool> isLoop)
-        : Component(owner),
-        numFrames(numFrames.value_or(1)),
-        frameSpeedRate(frameSpeedRate.value_or(1)),
-        isLoop(isLoop.value_or(false))
+AnimationComponent::AnimationComponent(GameObject* owner, std::optional<int> numFrames, std::optional<int> frameSpeedRate, 
+                                       std::optional<bool> isLoop, std::optional<bool> autoDestroy)
+    : Component(owner),
+      numFrames(numFrames.value_or(13)),
+      frameSpeedRate(frameSpeedRate.value_or(20)),
+      isLoop(isLoop.value_or(false)),
+      autoDestroy(autoDestroy.value_or(true)),
+      startTime(SDL_GetTicks())
 {
+}
+void AnimationComponent::Play()
+{
+    if (!isPlaying)
+    {
+        isPlaying = true;
+        startTime = SDL_GetTicks() - (currentFrame * 1000 / frameSpeedRate);  // Resume from the current frame
+    }
+}
+
+void AnimationComponent::Pause()
+{
+    isPlaying = false;
+}
+
+void AnimationComponent::Stop()
+{
+    isPlaying = false;
+    currentFrame = 0;
+}
+
+void AnimationComponent::Restart()
+{
+    currentFrame = 0;
+    startTime = SDL_GetTicks();
+    Play();
+}
+
+void AnimationComponent::SetFrame(int frame)
+{
+    if (frame >= 0 && frame < numFrames)
+    {
+        currentFrame = frame;
+    }
+}
+
+void AnimationComponent::HandleAnimationEnd()
+{
+    if (autoDestroy)
+    {
+        Registry::DestroyGameObject(m_owner->GetId());
+    }
 }
 
 void AnimationComponent::Update(float deltaTime)
 {
+    if (!isPlaying)
+    {
+        return;
+    }
+
     auto sprite = m_owner->GetComponent<SpriteComponent>();
     
     int elapsedTime = SDL_GetTicks() - startTime;
@@ -29,19 +78,25 @@ void AnimationComponent::Update(float deltaTime)
     if (isLoop)
     {
         currentFrame = newFrame % numFrames;
+        loopCount = newFrame / numFrames;
     }
     else
     {
         currentFrame = (newFrame >= numFrames) ? numFrames - 1 : newFrame;
-        if (newFrame >= numFrames && autoDestroy)
+
+        if (newFrame >= numFrames)
         {
-            Registry::DestroyGameObject(m_owner->GetId());
+            HandleAnimationEnd();
+            if (!isLoop)
+            {
+                Pause();
+            }
             return;
         }
     }
+
     sprite->SourceVec.x = currentFrame * sprite->Width;
 }
-
 TextComponent::TextComponent(GameObject* owner,
                              std::string text,
                              std::string font,
@@ -94,10 +149,12 @@ SpriteComponent::SpriteComponent(GameObject* owner, std::string sprite,
     if(Width==0)
     {
         Width = AssetManager::GetWidthOfSprite(RendererManager::Renderer,sprite);
+        SourceVec.z = Width;
     }
     if(Height==0)
     {
         Height = AssetManager::GetHeightOfSprite(RendererManager::Renderer,sprite);
+        SourceVec.w = Height;
     }
 }
 
