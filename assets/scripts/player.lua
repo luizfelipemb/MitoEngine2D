@@ -1,7 +1,9 @@
 ﻿local rigidbody
 local transform
 local sprite
-local velocity = 100
+local velocity = 300
+local Apressed = false
+local Dpressed = false
 
 function mito.start(gameobject)
     rigidbody = gameobject:get_component_rigidbody()
@@ -27,23 +29,39 @@ function mito.on_mouse_interacted(gameobject)
     mito.log("on_mouse_interacted called")
 end
 
+function adjust_velocity()
+    if Apressed then
+        if Dpressed then
+            rigidbody.velocity.x = 0
+        else
+            rigidbody.velocity.x = -velocity
+        end
+    elseif Dpressed then
+        rigidbody.velocity.x = velocity
+    else
+        rigidbody.velocity.x = 0
+    end
+end
+
 function mito.on_key_pressed(gameobject, key)
     if key == mito.keycode.a then
-        rigidbody.velocity.x = rigidbody.velocity.x - velocity
+        Apressed = true
     end
     if key == mito.keycode.d then
-        rigidbody.velocity.x = rigidbody.velocity.x + velocity
+        Dpressed = true
     end
+    adjust_velocity()
     mito.log(gameobject.name .. " with key " .. key)
 end
 
 function mito.on_key_released(gameobject, key)
     if key == mito.keycode.a then
-        rigidbody.velocity.x = rigidbody.velocity.x + velocity
+        Apressed = false
     end
     if key == mito.keycode.d then
-        rigidbody.velocity.x = rigidbody.velocity.x - velocity
+        Dpressed = false
     end
+    adjust_velocity()
     mito.log(gameobject.name .. " with key released " .. key)
 end
 

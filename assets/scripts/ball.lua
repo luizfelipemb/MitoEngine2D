@@ -50,6 +50,7 @@ function mito.on_collision_enter(gameobject, other, direction)
         end
         local fx = mito.spawn_prefab("explosionFX.lua")
         fx:get_component_transform().position = other:get_component_transform().position
+        fx:get_component_sprite().color = other:get_component_sprite().color
         mito.gameobject.destroy(other)
         globals.bricks_destroyed = globals.bricks_destroyed + 1
         mito.audio.play_sound("brick_destroyed.wav")
