@@ -3,8 +3,7 @@ local columns = 1 + globals.level
 local localBricksDestroyed = 0
 local totalBricks = rows * columns
 
-function mito.start()
-    mito.spawn_prefab("explosionFX.lua")
+function mito.event.start()
     local totalLength = columns * 64
     for i = 1, columns do
         for j = 1, rows do
@@ -22,11 +21,11 @@ function mito.start()
     mito.log("level:" .. tostring(globals.level))
 end
 
-function mito.update(gameobject, deltaTime)
+function mito.event.update(gameobject, deltaTime)
 
 end
 
-function mito.on_brick_destroyed()
+function mito.event.on_brick_destroyed()
     localBricksDestroyed = localBricksDestroyed + 1
     mito.log("on_brick_destroyed")
     if localBricksDestroyed == totalBricks then

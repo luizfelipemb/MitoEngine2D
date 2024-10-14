@@ -5,7 +5,7 @@ local velocity = 300
 local Apressed = false
 local Dpressed = false
 
-function mito.start(gameobject)
+function mito.event.start(gameobject)
     rigidbody = gameobject:get_component_rigidbody()
     transform = gameobject:get_component_transform()
     sprite = gameobject:get_component_sprite()
@@ -13,7 +13,7 @@ function mito.start(gameobject)
     mito.log(tostring(gameobject:has_tag("player")))
 end
 
-function mito.update(gameobject, deltaTime)
+function mito.event.update(gameobject, deltaTime)
     if transform.position.x < 0 then
         transform.position.x = 0
     elseif (transform.position.x > mito.window.width - sprite.width) then
@@ -21,11 +21,11 @@ function mito.update(gameobject, deltaTime)
     end
 end
 
-function mito.on_mouse_pressed(gameobject, key)
+function mito.event.on_mouse_pressed(gameobject, key)
     
 end
 
-function mito.on_mouse_interacted(gameobject)
+function mito.event.on_mouse_interacted(gameobject)
     mito.log("on_mouse_interacted called")
 end
 
@@ -43,7 +43,7 @@ function adjust_velocity()
     end
 end
 
-function mito.on_key_pressed(gameobject, key)
+function mito.event.on_key_pressed(gameobject, key)
     if key == mito.keycode.a then
         Apressed = true
     end
@@ -54,7 +54,7 @@ function mito.on_key_pressed(gameobject, key)
     mito.log(gameobject.name .. " with key " .. key)
 end
 
-function mito.on_key_released(gameobject, key)
+function mito.event.on_key_released(gameobject, key)
     if key == mito.keycode.a then
         Apressed = false
     end
@@ -65,7 +65,7 @@ function mito.on_key_released(gameobject, key)
     mito.log(gameobject.name .. " with key released " .. key)
 end
 
-function mito.on_collision_enter(gameobject, other)
+function mito.event.on_collision_enter(gameobject, other)
     mito.log(gameobject.name .. " collided with " .. other.name)
     local startFunc = other:get_component_script():get_function("test")
     startFunc()

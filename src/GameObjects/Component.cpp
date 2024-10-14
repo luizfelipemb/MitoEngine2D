@@ -373,63 +373,68 @@ void ScriptComponent::OnMouseInteractedEvent(MouseInteractedEvent& event)
 
 void ScriptComponent::AddScript(sol::environment& luaEnv)
 {
-    if (luaEnv["mito"]["on_enable"] != sol::lua_nil)
+    const std::string tableName = "event";
+    if (luaEnv["mito"][tableName]["on_enable"] != sol::lua_nil)
     {
-        luaEnv["mito"]["on_enable"](m_owner);
+        luaEnv["mito"][tableName]["on_enable"](m_owner);
     }
-    if (luaEnv["mito"]["start"] != sol::lua_nil)
+    if (luaEnv["mito"][tableName]["start"] != sol::lua_nil)
     {
-        StartFunc.push_back(luaEnv["mito"]["start"]);
+        StartFunc.push_back(luaEnv["mito"][tableName]["start"]);
     }
-    if (luaEnv["mito"]["update"] != sol::lua_nil)
+    if (luaEnv["mito"][tableName]["update"] != sol::lua_nil)
     {
-        UpdateFunc.push_back(luaEnv["mito"]["update"]);
+        UpdateFunc.push_back(luaEnv["mito"][tableName]["update"]);
     }
-    if (luaEnv["mito"]["on_key_pressed"] != sol::lua_nil)
+    if (luaEnv["mito"][tableName]["on_key_pressed"] != sol::lua_nil)
     {
         GlobalEventBus::SubscribeToEvent<KeyPressedEvent>
             (this, &ScriptComponent::OnKeyPressedEvent);
     }
-    if (luaEnv["mito"]["on_key_released"] != sol::lua_nil)
+    if (luaEnv["mito"][tableName]["on_key_released"] != sol::lua_nil)
     {
         GlobalEventBus::SubscribeToEvent<KeyReleasedEvent>
             (this, &ScriptComponent::OnKeyReleasedEvent);
     }
-    if (luaEnv["mito"]["on_mouse_pressed"] != sol::lua_nil)
+    if (luaEnv["mito"][tableName]["on_mouse_pressed"] != sol::lua_nil)
     {
         GlobalEventBus::SubscribeToEvent<MouseButtonPressedEvent>
             (this, &ScriptComponent::OnMousePressedEvent);
     }
-    if (luaEnv["mito"]["on_mouse_interacted"] != sol::lua_nil)
+    if (luaEnv["mito"][tableName]["on_mouse_interacted"] != sol::lua_nil)
     {
         m_owner->LocalEventBus.SubscribeToEvent<MouseInteractedEvent>
             (this, &ScriptComponent::OnMouseInteractedEvent);
     }
-    if (luaEnv["mito"]["on_collision_enter"] != sol::lua_nil)
+    if (luaEnv["mito"][tableName]["on_collision_enter"] != sol::lua_nil)
     {
         m_owner->LocalEventBus.SubscribeToEvent<CollisionEnterEvent>
         (this, &ScriptComponent::OnCollisionEnter);
     }
-    if (luaEnv["mito"]["on_collision_stay"] != sol::lua_nil)
+    if (luaEnv["mito"][tableName]["on_collision_stay"] != sol::lua_nil)
     {
         m_owner->LocalEventBus.SubscribeToEvent<CollisionStayEvent>
         (this, &ScriptComponent::OnCollisionStay);
     }
-    if (luaEnv["mito"]["on_collision_exit"] != sol::lua_nil)
+    if (luaEnv["mito"][tableName]["on_collision_exit"] != sol::lua_nil)
     {
         m_owner->LocalEventBus.SubscribeToEvent<CollisionExitEvent>
         (this, &ScriptComponent::OnCollisionExit);
     }
-    
+    if(luaEnv["mito"][tableName] == sol::lua_nil)
+        {
+            return;
+        }
     for (const auto& pair : luaEnv)
     {
         std::string funcName = pair.first.as<std::string>();
-        if (luaEnv[funcName].is<sol::function>())
+        if (luaEnv["mito"][funcName].is<sol::function>())
         { 
-            scriptFunctions[funcName] = luaEnv[funcName];
+            scriptFunctions[funcName] = luaEnv["mito"][funcName];
         }
     }
-    auto mitoTable = luaEnv["mito"].get<sol::table>();
+    
+    auto mitoTable = luaEnv["mito"][tableName].get<sol::table>();
     for (const auto& pair : mitoTable)
     {
         std::string funcName = pair.first.as<std::string>();
@@ -444,7 +449,8 @@ void ScriptComponent::CreateEnvironmentScript(sol::state& lua, const std::string
 {
     // Create a new environment table
     sol::environment scriptEnv(lua, sol::create, lua.globals());
-                    
+    scriptEnv["mito"]["event"] = lua.create_table();
+    
     sol::load_result script = lua.load_file(scriptsFolder + name);
     Logger::Log(name);
     if (!script.valid())
@@ -457,6 +463,8 @@ void ScriptComponent::CreateEnvironmentScript(sol::state& lua, const std::string
         lua.script_file(scriptsFolder + name, scriptEnv);
         // Share the global table
         scriptEnv["globals"] = lua["globals"];
+        scriptEnv["mito"] = lua["mito"];
+        
         AddScript(scriptEnv);
     }
 }

@@ -1,7 +1,7 @@
 ﻿local rigidbody, transform, sprite
 local gamemanager
 
-function mito.start(gameobject)
+function mito.event.start(gameobject)
     gamemanager = mito.gameobject.find_by_tag("gamemanager")
     mito.log("gamemanager: " .. tostring(gamemanager))
     mito.log(gameobject.name .. "start called")
@@ -17,7 +17,7 @@ function InvertBallY()
     rigidbody.acceleration.y = -rigidbody.acceleration.y
 end
 
-function mito.update(gameobject, deltaTime)
+function mito.event.update(gameobject, deltaTime)
     if transform.position.y < 0 and rigidbody.velocity.y < 0 then
         mito.audio.play_sound("ball_hit.wav")
         InvertBallY()
@@ -34,7 +34,7 @@ function mito.update(gameobject, deltaTime)
     end
 end
 
-function mito.on_collision_enter(gameobject, other, direction)
+function mito.event.on_collision_enter(gameobject, other, direction)
     mito.log(other.name .. " with direction: " .. tostring(direction.x)..","..tostring(direction.y))
     if other:has_tag("player") then
         local x_dif = other:get_component_transform().position.x - transform.position.x + other:get_component_sprite().width/2
