@@ -57,7 +57,3 @@ function mito.event.on_collision_enter(gameobject, other, direction)
         gamemanager:get_component_script():get_function("on_brick_destroyed")()
     end
 end
-
-function test()
-    mito.log("test function called")
-end

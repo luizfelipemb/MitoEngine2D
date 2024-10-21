@@ -68,11 +68,13 @@ public:
     static GameObject* GetGameObjectByTag(const std::string& tag);
     //static void RemoveEntityTag(int entityid);
 private:
+    void AddNewGameObjects();
     CollisionSystem m_collisionSystem;
     RenderSystem m_renderSystem;
     static inline std::vector<int> m_idsToDestroy;
     static inline int m_nextFreeId;
     static inline std::vector<std::shared_ptr<GameObject>> m_gameObjects;
+    static inline std::vector<std::shared_ptr<GameObject>> m_objectsToCreate;
     static inline std::unordered_map<std::string, std::unordered_set<int>> m_gameObjectIdPerTag;
     static inline std::unordered_map<int, std::unordered_set<std::string>> m_tagPerGameObjectId;
 };

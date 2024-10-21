@@ -67,6 +67,4 @@ end
 
 function mito.event.on_collision_enter(gameobject, other)
     mito.log(gameobject.name .. " collided with " .. other.name)
-    local startFunc = other:get_component_script():get_function("test")
-    startFunc()
 end

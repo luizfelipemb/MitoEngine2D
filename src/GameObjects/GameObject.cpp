@@ -45,10 +45,13 @@ std::shared_ptr<GameObject>& Registry::CreateGameObject(std::string name)
     {
         name = "GameObject";
     }
-    m_gameObjects.emplace_back(std::make_unique<GameObject>(m_nextFreeId, name));
-    Logger::Log("GameObject with id:" + std::to_string(m_nextFreeId) + " created");
+
+    // Create the object and add it to the temporary list
+    m_objectsToCreate.emplace_back(std::make_unique<GameObject>(m_nextFreeId, name));
+    Logger::Log("GameObject with id:" + std::to_string(m_nextFreeId) + " created (deferred)");
     m_nextFreeId++;
-    return m_gameObjects.back();
+
+    return m_objectsToCreate.back();
 }
 
 void Registry::DestroyGameObject(int id)
@@ -95,8 +98,21 @@ GameObject* Registry::GetGameObjectByTag(const std::string& tag)
     return GetGameObjectById(*m_gameObjectIdPerTag[tag].begin());
 }
 
+void Registry::AddNewGameObjects()
+{
+    // Add new game objects at the end of Update
+    if(!m_objectsToCreate.empty())
+    {
+        m_gameObjects.insert(m_gameObjects.end(), m_objectsToCreate.begin(), m_objectsToCreate.end());
+        m_objectsToCreate.clear();
+        GlobalEventBus::EmitEvent<GameObjectCreatedEvent>();
+    }
+}
+
 void Registry::Start()
 {
+    AddNewGameObjects();
+    
     std::vector<GameObject*> temp;
     for (auto& entity : m_gameObjects)
     {
@@ -116,6 +132,8 @@ void Registry::Start()
 
 void Registry::Update(float deltaTime)
 {
+    AddNewGameObjects();
+    
     //Update GameObjects
     for (auto& gameObject : m_gameObjects)
     {
