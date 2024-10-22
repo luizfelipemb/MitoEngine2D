@@ -289,20 +289,17 @@ The Mito 2D Game Engine provides a comprehensive set of Lua bindings, allowing d
 
 - **`mito.color`**  
   Represents an RGB color value.  
-  - **Creating a Color**:  
-    - `color()`: Creates a new color with default values (0, 0, 0).
-    - `color(r, g, b)`: Creates a new color with specified red (`r`), green (`g`), and blue (`b`) values (each ranging from 0 to 255).
+  - **Creating a Color**: 
+    - `mito.color.new(r, g, b)`: Creates a new color with specified red (`r`), green (`g`), and blue (`b`) values (each ranging from 0 to 255).
 
 - **`mito.vec2`**  
   Represents a 2D vector.  
-  - **Creating a vec2**:  
-    - `vec2()`: Creates a new 2D vector with default values (0, 0).
-    - `vec2(x, y)`: Creates a new 2D vector with specified `x` and `y` components.
+  - **Creating a vec2**: 
+    - `mito.vec2.new(x, y)`: Creates a new 2D vector with specified `x` and `y` components.
 
 - **`mito.vec4`**  
   Represents a 4D vector.
-  - **Creating a vec4**:  
-    - `vec4()`: Creates a new 4D vector with default values (0, 0, 0, 0).
-    - `vec4(x, y, width, height)`: Creates a new 4D vector with specified `x`, `y`, `w`, and `h` components.
+  - **Creating a vec4**: 
+    - `mito.vec4.new(x, y, width, height)`: Creates a new 4D vector with specified `x`, `y`, `w`, and `h` components.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
