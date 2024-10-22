@@ -279,10 +279,10 @@ The Mito 2D Game Engine provides a comprehensive set of Lua bindings, allowing d
 
 ### Window Settings
 
-- **`window.width`**  
+- **`mito.window.width`**  
   Gets the width of the game window.
 
-- **`window.height`**  
+- **`mito.window.height`**  
   Gets the height of the game window.
   
 ### Custom Data Structures
