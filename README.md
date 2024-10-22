@@ -156,7 +156,7 @@ The Mito 2D Game Engine provides a comprehensive set of Lua bindings, allowing d
 - **`gameobject.get_id()`**  
   Returns the ID of the game object.
 
-- **`gameobject.name()`**  
+- **`gameobject.name`**  
   Gets the name of the game object.
 
 - **`gameobject.has_tag(tag)`**  
