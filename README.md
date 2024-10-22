@@ -7,7 +7,11 @@ A lightweight game engine built with **C++**, **SDL2**, and **ImGui**, featuring
 - **Lua Scripting** for customizable game behavior
 - **Unity** familiarities like namings and scene structure
 - **Collision and Logs** debugging by pressing F3
-- **Pong Game** already implemented as an example
+- **Breakout Game** already implemented as an example
+## Images
+![image](https://github.com/user-attachments/assets/883d9291-85c5-4978-af9b-6537a24ab36a)
+
+![image](https://github.com/user-attachments/assets/ab0abcb2-cfb2-4a31-96c2-f22f6d812db9)
 
 ## Installation
 
