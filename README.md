@@ -100,6 +100,29 @@ Prefab = {
 }
 ```
 
+## Configuring Game Settings
+
+The `settings.lua` file is a central configuration file placed in the folder `assets/settings/` that allows you to set various parameters for your game, such as window properties and audio settings. This single file provides an organized way to manage game-wide settings, ensuring consistency across different components of your game.
+
+### Example: `settings.lua`
+
+```lua
+Settings = 
+{
+    window = {
+        name = "Breakout Game",
+        fps = 999,
+        width = 600,
+        height = 800,
+        icon = "./assets/images/icon.png"
+    },
+    sound = {
+        music = .2,
+        sound = .2
+    }
+}
+```
+
 ## Lua Bindings in Mito 2D Game Engine
 
 The Mito 2D Game Engine provides a comprehensive set of Lua bindings, allowing developers to create and manipulate game objects and components using Lua scripts. Below is a detailed overview of the available bindings:
@@ -257,6 +280,25 @@ The Mito 2D Game Engine provides a comprehensive set of Lua bindings, allowing d
 
 - **`window.height`**  
   Gets the height of the game window.
+  
+### Custom Data Structures
 
+- **`mito.color`**  
+  Represents an RGB color value.  
+  - **Creating a Color**:  
+    - `color()`: Creates a new color with default values (0, 0, 0).
+    - `color(r, g, b)`: Creates a new color with specified red (`r`), green (`g`), and blue (`b`) values (each ranging from 0 to 255).
+
+- **`mito.vec2`**  
+  Represents a 2D vector.  
+  - **Creating a vec2**:  
+    - `vec2()`: Creates a new 2D vector with default values (0, 0).
+    - `vec2(x, y)`: Creates a new 2D vector with specified `x` and `y` components.
+
+- **`mito.vec4`**  
+  Represents a 4D vector.
+  - **Creating a vec4**:  
+    - `vec4()`: Creates a new 4D vector with default values (0, 0, 0, 0).
+    - `vec4(x, y, width, height)`: Creates a new 4D vector with specified `x`, `y`, `w`, and `h` components.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
